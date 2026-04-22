@@ -1,76 +1,35 @@
 @extends('layouts.admin')
 
-@section('page-title', 'Beranda - Dashboard')
-@section('page-subtitle', 'Ringkasan sistem SIBIKON setelah login admin')
+@section('page-title', 'Dashboard')
+@section('page-subtitle', 'Ringkasan informasi sistem')
 
 @section('content')
-    <div class="space-y-4">
-        <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-                <div class="flex items-center gap-2 text-sm text-slate-400">
-                    <a href="{{ route('admin.dashboard') }}" class="hover:text-white">Home</a>
-                    <span>/</span>
-                    <span class="font-medium text-slate-200">Dashboard</span>
-                </div>
-                <p class="mt-1 text-sm text-slate-500">
-                    © 2026 <span class="font-medium text-rose-400">SIBIKON DPUPRPERA Prov. Kaltim</span>
-                </p>
-            </div>
+    <div class="space-y-6">
+        {{-- top row --}}
+        <div class="grid grid-cols-1 gap-5 xl:grid-cols-4">
+            @foreach($stats as $index => $item)
+                @php
+                    $accent = match($index) {
+                        0 => 'bg-[#C5CAE9] text-[#21325E]',
+                        1 => 'bg-sky-100 text-sky-600',
+                        2 => 'bg-[#F7E578] text-[#8A6A00]',
+                        default => 'bg-indigo-100 text-[#3A4FAC]',
+                    };
+                @endphp
 
-            <div class="flex flex-wrap items-center gap-2">
-                <select class="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200 outline-none focus:border-indigo-500">
-                    <option>2026</option>
-                    <option>2025</option>
-                    <option>2024</option>
-                </select>
-
-                <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500">
-                    Refresh Dashboard
-                </button>
-            </div>
-        </div>
-
-        <div class="rounded-2xl border border-slate-800 bg-gradient-to-r from-slate-900 to-slate-800 p-4 md:p-5">
-            <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-                <div class="max-w-3xl">
-                    <h3 class="text-xl font-bold md:text-2xl">
-                        Selamat datang, {{ auth()->check() ? auth()->user()->name : 'Admin' }} 👋
-                    </h3>
-                    <p class="mt-2 text-sm leading-7 text-slate-400 md:text-base">
-                        Halaman ini adalah pusat kontrol admin untuk memantau statistik, upload data,
-                        validasi, deteksi duplikat, dan integrasi fitur utama project optimalisasi SIBIKON.
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3 xl:shrink-0">
-                    <div class="min-w-[140px] rounded-xl border border-slate-700 bg-slate-900/70 p-4">
-                        <p class="text-[11px] uppercase tracking-wider text-slate-500">Duplicate NIB</p>
-                        <p class="mt-1 text-2xl font-bold text-amber-400">{{ $summary['duplicate_nib'] }}</p>
-                    </div>
-
-                    <div class="min-w-[140px] rounded-xl border border-slate-700 bg-slate-900/70 p-4">
-                        <p class="text-[11px] uppercase tracking-wider text-slate-500">Pending Validasi</p>
-                        <p class="mt-1 text-2xl font-bold text-sky-400">{{ $summary['pending_verification'] }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            @foreach($stats as $item)
-                <div class="rounded-2xl border border-slate-800 bg-slate-900 p-4 shadow-lg shadow-black/10">
+                <div class="sibikon-card rounded-[28px] p-5">
                     <div class="flex items-start justify-between gap-3">
                         <div>
-                            <p class="text-sm text-slate-400">{{ $item['title'] }}</p>
-                            <h3 class="mt-1 text-2xl font-bold">{{ $item['value'] }}</h3>
-                            <p class="mt-2 text-sm text-slate-500">{{ $item['description'] }}</p>
+                            <p class="text-sm font-medium text-slate-500">{{ $item['title'] }}</p>
+                            <h3 class="mt-2 text-4xl font-extrabold tracking-tight text-slate-900">{{ $item['value'] }}</h3>
+                            <p class="mt-3 text-sm text-slate-500">{{ $item['description'] }}</p>
                         </div>
 
-                        <div class="rounded-xl bg-slate-800 p-3 text-indigo-300">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl {{ $accent }}">
                             @if($item['icon'] === 'users')
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                          d="M17 20h5V18a4 4 0 00-5-3.87M17 20H7m10 0v-2c0-.653-.126-1.277-.356-1.848M7 20H2V18a4 4 0 015-3.87M7 20v-2c0-.653.126-1.277.356-1.848m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                          d="M17 20h5V18a4 4 0 00-5-3.87M17 20H7m10 0v-2c0-.653-.126-1.277-.356-1.848M7 20H2V18a4 4 0 015-3.87M7 20v-2c0-.653.126-1.277.356-1.848m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 </svg>
                             @elseif($item['icon'] === 'briefcase')
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -91,8 +50,8 @@
                         </div>
                     </div>
 
-                    <div class="mt-4 border-t border-slate-800 pt-3">
-                        <span class="inline-flex rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400">
+                    <div class="mt-5">
+                        <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $index === 2 ? 'sibikon-badge-yellow' : 'sibikon-badge-blue' }}">
                             {{ $item['trend'] }}
                         </span>
                     </div>
@@ -100,51 +59,103 @@
             @endforeach
         </div>
 
-        <div class="grid grid-cols-1 gap-4 xl:grid-cols-3">
-            <div class="xl:col-span-2 rounded-2xl border border-slate-800 bg-slate-900 p-4 md:p-5">
-                <div class="mb-4 flex items-center justify-between gap-3">
+        {{-- chart + summary --}}
+        <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+            <div class="sibikon-card rounded-[28px] p-6 xl:col-span-2">
+                <div class="mb-5 flex items-center justify-between gap-3">
                     <div>
-                        <h3 class="text-xl font-bold">Statistik Aktivitas Sistem</h3>
-                        <p class="text-sm text-slate-400">Monitoring upload dan pertumbuhan data</p>
+                        <h3 class="text-2xl font-extrabold tracking-tight text-slate-900">Grafik Aktivitas Sistem</h3>
+                        <p class="text-sm text-slate-500">Perkembangan upload dan pertumbuhan pengguna</p>
                     </div>
-                    <span class="rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-400">6 bulan terakhir</span>
+                    <span class="rounded-full bg-slate-100 px-4 py-2 text-xs font-medium text-slate-500">6 bulan terakhir</span>
                 </div>
 
-                <div class="h-[300px] md:h-[320px]">
+                <div class="h-[320px]">
                     <canvas id="dashboardChart"></canvas>
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-slate-800 bg-slate-900 p-4 md:p-5">
-                <div class="mb-4">
-                    <h3 class="text-xl font-bold">Ringkasan Data</h3>
-                    <p class="text-sm text-slate-400">Informasi prioritas untuk admin</p>
+            <div class="sibikon-card rounded-[28px] p-6">
+                <div class="mb-5">
+                    <h3 class="text-2xl font-extrabold tracking-tight text-slate-900">Ringkasan Data</h3>
+                    <p class="text-sm text-slate-500">Informasi penting untuk admin</p>
                 </div>
 
                 <div class="space-y-3">
-                    <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">
-                        <span class="text-sm text-slate-300">Duplicate NIB</span>
-                        <span class="font-bold text-amber-400">{{ $summary['duplicate_nib'] }}</span>
+                    <div class="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
+                        <span class="text-sm font-medium text-slate-600">Duplicate NIB</span>
+                        <span class="text-lg font-bold text-[#FB923C]">{{ $summary['duplicate_nib'] }}</span>
                     </div>
-                    <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">
-                        <span class="text-sm text-slate-300">Duplicate Alamat</span>
-                        <span class="font-bold text-rose-400">{{ $summary['duplicate_alamat'] }}</span>
+                    <div class="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
+                        <span class="text-sm font-medium text-slate-600">Duplicate Alamat</span>
+                        <span class="text-lg font-bold text-[#3A4FAC]">{{ $summary['duplicate_alamat'] }}</span>
                     </div>
-                    <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">
-                        <span class="text-sm text-slate-300">Pending Verification</span>
-                        <span class="font-bold text-sky-400">{{ $summary['pending_verification'] }}</span>
+                    <div class="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
+                        <span class="text-sm font-medium text-slate-600">Pending Verification</span>
+                        <span class="text-lg font-bold text-sky-500">{{ $summary['pending_verification'] }}</span>
                     </div>
-                    <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">
-                        <span class="text-sm text-slate-300">Total Berita</span>
-                        <span class="font-bold text-indigo-400">{{ $summary['total_berita'] }}</span>
+                    <div class="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
+                        <span class="text-sm font-medium text-slate-600">Total Berita</span>
+                        <span class="text-lg font-bold text-[#21325E]">{{ $summary['total_berita'] }}</span>
                     </div>
-                    <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">
-                        <span class="text-sm text-slate-300">Kategori Berita</span>
-                        <span class="font-bold text-emerald-400">{{ $summary['total_kategori'] }}</span>
+                    <div class="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
+                        <span class="text-sm font-medium text-slate-600">Kategori Berita</span>
+                        <span class="text-lg font-bold text-[#7282CC]">{{ $summary['total_kategori'] }}</span>
                     </div>
-                    <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">
-                        <span class="text-sm text-slate-300">Buku Tamu</span>
-                        <span class="font-bold text-fuchsia-400">{{ $summary['total_buku_tamu'] }}</span>
+                    <div class="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
+                        <span class="text-sm font-medium text-slate-600">Buku Tamu</span>
+                        <span class="text-lg font-bold text-[#3A4FAC]">{{ $summary['total_buku_tamu'] }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- activity --}}
+        <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+            <div class="sibikon-card rounded-[28px] p-6 xl:col-span-2">
+                <div class="mb-5">
+                    <h3 class="text-2xl font-extrabold tracking-tight text-slate-900">Aktivitas Terbaru</h3>
+                    <p class="text-sm text-slate-500">Riwayat proses terbaru dari sistem</p>
+                </div>
+
+                <div class="space-y-3">
+                    @foreach($latestActivities as $activity)
+                        <div class="flex items-start justify-between gap-4 rounded-2xl bg-slate-50 px-4 py-4">
+                            <div class="flex items-start gap-3">
+                                <div class="mt-1 h-2.5 w-2.5 rounded-full bg-[#3A4FAC]"></div>
+                                <div>
+                                    <h4 class="font-semibold text-slate-900">{{ $activity['title'] }}</h4>
+                                    <p class="mt-1 text-sm text-slate-500">{{ $activity['meta'] }}</p>
+                                    <p class="mt-1 text-xs text-slate-400">{{ $activity['time'] }}</p>
+                                </div>
+                            </div>
+
+                            <span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm">
+                                {{ $activity['status'] }}
+                            </span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="sibikon-card rounded-[28px] p-6">
+                <div class="mb-5">
+                    <h3 class="text-2xl font-extrabold tracking-tight text-slate-900">Informasi Sistem</h3>
+                    <p class="text-sm text-slate-500">Status dan catatan umum</p>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="rounded-2xl bg-slate-50 px-4 py-4">
+                        <p class="text-sm font-semibold text-slate-900">Sistem Informasi SIBIKON</p>
+                        <p class="mt-1 text-sm text-slate-500">Versi dashboard admin sedang dalam pengembangan aktif.</p>
+                    </div>
+                    <div class="rounded-2xl bg-slate-50 px-4 py-4">
+                        <p class="text-sm font-semibold text-slate-900">Validasi Data</p>
+                        <p class="mt-1 text-sm text-slate-500">Fitur validasi per kolom dan deteksi duplikat akan terintegrasi dari dashboard.</p>
+                    </div>
+                    <div class="rounded-2xl bg-slate-50 px-4 py-4">
+                        <p class="text-sm font-semibold text-slate-900">Integrasi Upload</p>
+                        <p class="mt-1 text-sm text-slate-500">Upload file akan digunakan sebagai input otomatis untuk banyak modul data.</p>
                     </div>
                 </div>
             </div>
@@ -165,20 +176,24 @@
                 {
                     label: 'File Upload',
                     data: @json($chartData['uploads']),
-                    borderColor: '#6366f1',
-                    backgroundColor: 'rgba(99,102,241,0.15)',
-                    tension: 0.35,
+                    borderColor: '#3A4FAC',
+                    backgroundColor: 'rgba(58,79,172,0.10)',
+                    tension: 0.4,
                     fill: true,
-                    borderWidth: 2
+                    borderWidth: 3,
+                    pointBackgroundColor: '#3A4FAC',
+                    pointRadius: 4
                 },
                 {
                     label: 'Pengguna Baru',
                     data: @json($chartData['users']),
-                    borderColor: '#22c55e',
-                    backgroundColor: 'rgba(34,197,94,0.15)',
-                    tension: 0.35,
+                    borderColor: '#F1D00A',
+                    backgroundColor: 'rgba(241,208,10,0.08)',
+                    tension: 0.4,
                     fill: true,
-                    borderWidth: 2
+                    borderWidth: 3,
+                    pointBackgroundColor: '#F1D00A',
+                    pointRadius: 4
                 }
             ]
         },
@@ -188,19 +203,21 @@
             plugins: {
                 legend: {
                     labels: {
-                        color: '#cbd5e1',
-                        boxWidth: 28
+                        color: '#475569',
+                        boxWidth: 26,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
                     }
                 }
             },
             scales: {
                 x: {
-                    ticks: { color: '#94a3b8', font: { size: 11 } },
-                    grid: { color: 'rgba(148,163,184,0.08)' }
+                    ticks: { color: '#64748B', font: { size: 11 } },
+                    grid: { color: 'rgba(148, 163, 184, 0.15)' }
                 },
                 y: {
-                    ticks: { color: '#94a3b8', font: { size: 11 } },
-                    grid: { color: 'rgba(148,163,184,0.08)' }
+                    ticks: { color: '#64748B', font: { size: 11 } },
+                    grid: { color: 'rgba(148, 163, 184, 0.15)' }
                 }
             }
         }
