@@ -85,7 +85,7 @@
             </div>
 
             <!-- dark overlay -->
-            <div class="absolute inset-0 bg-gradient-to-r from-[#0E224A]/90 via-[#1A3568]/72 to-[#243B78]/35"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-[#0E224A]/gi90 via-[#1A3568]/72 to-[#243B78]/35"></div>
 
             <!-- soft white mist -->
             <div class="absolute inset-0 bg-white/10 backdrop-blur-[2px]"></div>
