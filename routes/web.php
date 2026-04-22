@@ -15,6 +15,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::view('/prodi-pendidikan', 'admin.placeholder', ['title' => 'Prodi Pendidikan'])->name('prodi-pendidikan');
     Route::view('/pegawai', 'admin.placeholder', ['title' => 'Pegawai'])->name('pegawai');
     Route::view('/masyarakat-jasa-konstruksi', 'admin.placeholder', ['title' => 'Masyarakat Jasa Konstruksi'])->name('masyarakat-jasa-konstruksi');
+    // Submenu Masyarakat Jasa Konstruksi
+    Route::view('/pengguna-jasa', 'admin.placeholder', ['title' => 'Pengguna Jasa'])->name('pengguna-jasa');
+    Route::view('/asosiasi-perusahaan', 'admin.placeholder', ['title' => 'Asosiasi Perusahaan'])->name('asosiasi-perusahaan');
+    Route::view('/asosiasi-profesi', 'admin.placeholder', ['title' => 'Asosiasi Profesi'])->name('asosiasi-profesi');
+    Route::view('/lsp', 'admin.placeholder', ['title' => 'LSP'])->name('lsp');
+    Route::view('/perguruan-tinggi', 'admin.placeholder', ['title' => 'Perguruan Tinggi / Pakar'])->name('perguruan-tinggi');
+    Route::view('/lppkk', 'admin.placeholder', ['title' => 'LPPKK'])->name('lppkk');
+    Route::view('/pemerhati-konstruksi', 'admin.placeholder', ['title' => 'Pemerhati Konstruksi'])->name('pemerhati-konstruksi');
+    Route::view('/pemanfaat-produk', 'admin.placeholder', ['title' => 'Pemanfaat Produk'])->name('pemanfaat-produk');
+    Route::view('/rantai-pasok', 'admin.placeholder', ['title' => 'Rantai Pasok'])->name('rantai-pasok');
+    Route::view('/bujk', 'admin.placeholder', ['title' => 'BUJK'])->name('bujk');
+
     Route::view('/paket-konstruksi', 'admin.placeholder', ['title' => 'Paket Konstruksi'])->name('paket-konstruksi');
     Route::view('/kotak-saran', 'admin.placeholder', ['title' => 'Kotak Saran'])->name('kotak-saran');
     Route::view('/file-upload', 'admin.placeholder', ['title' => 'File Upload'])->name('file-upload');

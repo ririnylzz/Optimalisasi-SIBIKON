@@ -86,52 +86,151 @@
                     <div class="mb-4">
                         <p
                             x-text="(sidebarPinned || sidebarHovered) ? 'Data Master' : '•••'"
-                            :class="(sidebarPinned || sidebarHovered) ? 'text-left px-2' : 'text-center justify-center'"
-                            class="mb-2 flex items-center text-xs font-semibold uppercase tracking-wider text-slate-500 opacity-70"
+                            :class="(sidebarPinned || sidebarHovered) ? 'text-left px-2' : 'text-center justify-center text-sm'"
+                            class="mb-2 flex items-center text-xs font-semibold uppercase tracking-wider text-slate-500"
                         ></p>
 
                         <div class="space-y-1">
-                            @php
-                                $masterMenus = [
-                                    ['label' => 'Pengguna', 'route' => 'admin.pengguna', 'icon' => 'users'],
-                                    ['label' => 'Jabatan Kerja', 'route' => 'admin.jabatan-kerja', 'icon' => 'briefcase'],
-                                    ['label' => 'Prodi Pendidikan', 'route' => 'admin.prodi-pendidikan', 'icon' => 'academic'],
-                                    ['label' => 'Pegawai', 'route' => 'admin.pegawai', 'icon' => 'pegawai'],
-                                    ['label' => 'Masyarakat Jasa Konstruksi', 'route' => 'admin.masyarakat-jasa-konstruksi', 'icon' => 'community'],
-                                    ['label' => 'Paket Konstruksi', 'route' => 'admin.paket-konstruksi', 'icon' => 'folder'],
-                                    ['label' => 'Kotak Saran', 'route' => 'admin.kotak-saran', 'icon' => 'mail'],
-                                    ['label' => 'File Upload', 'route' => 'admin.file-upload', 'icon' => 'upload'],
-                                    ['label' => 'Buku Tamu', 'route' => 'admin.buku-tamu', 'icon' => 'book'],
-                                ];
-                            @endphp
+                            {{-- Pengguna --}}
+                            <a href="{{ route('admin.pengguna') }}"
+                            class="group flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition {{ request()->routeIs('admin.pengguna') ? 'border border-slate-700 bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5V18a4 4 0 00-5-3.87M17 20H7m10 0v-2a5.002 5.002 0 00-9.288 0M15 7a3 3 0 11-6 0" />
+                                </svg>
+                                <span x-show="sidebarPinned || sidebarHovered" x-transition>Pengguna</span>
+                            </a>
 
-                            @foreach($masterMenus as $menu)
-                                <a href="{{ route($menu['route']) }}"
-                                   class="group flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition
-                                   {{ request()->routeIs($menu['route']) ? 'border border-slate-700 bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}">
-                                    @if($menu['icon'] === 'users')
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5V18a4 4 0 00-5-3.87M17 20H7m10 0v-2a5.002 5.002 0 00-9.288 0M15 7a3 3 0 11-6 0" /></svg>
-                                    @elseif($menu['icon'] === 'briefcase')
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2m-6 0h6m-6 0H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V8a2 2 0 00-2-2h-3" /></svg>
-                                    @elseif($menu['icon'] === 'academic')
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422A12.083 12.083 0 0112 20.055a12.083 12.083 0 01-6.16-9.477L12 14z" /></svg>
-                                    @elseif($menu['icon'] === 'pegawai')
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.121 17.804A11.953 11.953 0 0112 15c2.5 0 4.824.765 6.879 2.071M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                    @elseif($menu['icon'] === 'community')
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 10a3 3 0 110-6 3 3 0 010 6zm8 0a3 3 0 110-6 3 3 0 010 6zM8 14c-2.67 0-8 1.34-8 4v2h10m6-6c2.67 0 8 1.34 8 4v2H14" /></svg>
-                                    @elseif($menu['icon'] === 'folder')
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" /></svg>
-                                    @elseif($menu['icon'] === 'mail')
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 8l9 6 9-6m-18 8h18V8H3v8z" /></svg>
-                                    @elseif($menu['icon'] === 'upload')
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 8l-4-4m0 0L8 8m4-4v12" /></svg>
-                                    @else
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.483 9.246 5 7.5 5 5.014 5 3 6.12 3 7.5v9C3 15.12 5.014 14 7.5 14c1.746 0 3.332.483 4.5 1.253m0-9C13.168 5.483 14.754 5 16.5 5c2.486 0 4.5 1.12 4.5 2.5v9c0-1.38-2.014-2.5-4.5-2.5-1.746 0-3.332.483-4.5 1.253" /></svg>
-                                    @endif
+                            {{-- Jabatan Kerja --}}
+                            <a href="{{ route('admin.jabatan-kerja') }}"
+                            class="group flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition {{ request()->routeIs('admin.jabatan-kerja') ? 'border border-slate-700 bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2m-6 0h6m-6 0H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V8a2 2 0 00-2-2h-3" />
+                                </svg>
+                                <span x-show="sidebarPinned || sidebarHovered" x-transition>Jabatan Kerja</span>
+                            </a>
 
-                                    <span x-show="sidebarPinned || sidebarHovered" x-transition>{{ $menu['label'] }}</span>
-                                </a>
-                            @endforeach
+                            {{-- Prodi Pendidikan --}}
+                            <a href="{{ route('admin.prodi-pendidikan') }}"
+                            class="group flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition {{ request()->routeIs('admin.prodi-pendidikan') ? 'border border-slate-700 bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422A12.083 12.083 0 0112 20.055a12.083 12.083 0 01-6.16-9.477L12 14z" />
+                                </svg>
+                                <span x-show="sidebarPinned || sidebarHovered" x-transition>Prodi Pendidikan</span>
+                            </a>
+
+                            {{-- Pegawai --}}
+                            <a href="{{ route('admin.pegawai') }}"
+                            class="group flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition {{ request()->routeIs('admin.pegawai') ? 'border border-slate-700 bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.121 17.804A11.953 11.953 0 0112 15c2.5 0 4.824.765 6.879 2.071M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span x-show="sidebarPinned || sidebarHovered" x-transition>Pegawai</span>
+                            </a>
+
+                            {{-- Masyarakat Jasa Konstruksi Dropdown --}}
+                            <div
+                                x-data="{ open: {{ request()->routeIs(
+                                    'admin.masyarakat-jasa-konstruksi',
+                                    'admin.pengguna-jasa',
+                                    'admin.asosiasi-perusahaan',
+                                    'admin.asosiasi-profesi',
+                                    'admin.lsp',
+                                    'admin.perguruan-tinggi',
+                                    'admin.lppkk',
+                                    'admin.pemerhati-konstruksi',
+                                    'admin.pemanfaat-produk',
+                                    'admin.rantai-pasok',
+                                    'admin.bujk'
+                                ) ? 'true' : 'false' }} }"
+                                class="space-y-1"
+                            >
+                                <button
+                                    type="button"
+                                    @click="open = !open"
+                                    class="group flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition
+                                    {{ request()->routeIs(
+                                        'admin.masyarakat-jasa-konstruksi',
+                                        'admin.pengguna-jasa',
+                                        'admin.asosiasi-perusahaan',
+                                        'admin.asosiasi-profesi',
+                                        'admin.lsp',
+                                        'admin.perguruan-tinggi',
+                                        'admin.lppkk',
+                                        'admin.pemerhati-konstruksi',
+                                        'admin.pemanfaat-produk',
+                                        'admin.rantai-pasok',
+                                        'admin.bujk'
+                                    ) ? 'border border-slate-700 bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}"
+                                >
+                                    <div class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 10a3 3 0 110-6 3 3 0 010 6zm8 0a3 3 0 110-6 3 3 0 010 6zM8 14c-2.67 0-8 1.34-8 4v2h10m6-6c2.67 0 8 1.34 8 4v2H14" />
+                                        </svg>
+                                        <span x-show="sidebarPinned || sidebarHovered" x-transition>Masyarakat Jasa Konstruksi</span>
+                                    </div>
+
+                                    <svg
+                                        x-show="sidebarPinned || sidebarHovered"
+                                        :class="open ? 'rotate-90' : ''"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-3.5 w-3.5 transition-transform duration-200"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+
+                                <div x-show="open && (sidebarPinned || sidebarHovered)" x-transition class="ml-6 space-y-1">
+                                    <a href="{{ route('admin.pengguna-jasa') }}" class="block rounded-md px-2 py-1.5 text-xs text-slate-400 hover:bg-slate-800/50 hover:text-white">Pengguna Jasa</a>
+                                    <a href="{{ route('admin.asosiasi-perusahaan') }}" class="block rounded-md px-2 py-1.5 text-xs text-slate-400 hover:bg-slate-800/50 hover:text-white">Asosiasi Perusahaan</a>
+                                    <a href="{{ route('admin.asosiasi-profesi') }}" class="block rounded-md px-2 py-1.5 text-xs text-slate-400 hover:bg-slate-800/50 hover:text-white">Asosiasi Profesi</a>
+                                    <a href="{{ route('admin.lsp') }}" class="block rounded-md px-2 py-1.5 text-xs text-slate-400 hover:bg-slate-800/50 hover:text-white">LSP</a>
+                                    <a href="{{ route('admin.perguruan-tinggi') }}" class="block rounded-md px-2 py-1.5 text-xs text-slate-400 hover:bg-slate-800/50 hover:text-white">Perguruan Tinggi / Pakar</a>
+                                    <a href="{{ route('admin.lppkk') }}" class="block rounded-md px-2 py-1.5 text-xs text-slate-400 hover:bg-slate-800/50 hover:text-white">LPPKK</a>
+                                    <a href="{{ route('admin.pemerhati-konstruksi') }}" class="block rounded-md px-2 py-1.5 text-xs text-slate-400 hover:bg-slate-800/50 hover:text-white">Pemerhati Konstruksi</a>
+                                    <a href="{{ route('admin.pemanfaat-produk') }}" class="block rounded-md px-2 py-1.5 text-xs text-slate-400 hover:bg-slate-800/50 hover:text-white">Pemanfaat Produk</a>
+                                    <a href="{{ route('admin.rantai-pasok') }}" class="block rounded-md px-2 py-1.5 text-xs text-slate-400 hover:bg-slate-800/50 hover:text-white">Rantai Pasok</a>
+                                    <a href="{{ route('admin.bujk') }}" class="block rounded-md px-2 py-1.5 text-xs text-slate-400 hover:bg-slate-800/50 hover:text-white">BUJK</a>
+                                </div>
+                            </div>
+
+                            {{-- Paket Konstruksi --}}
+                            <a href="{{ route('admin.paket-konstruksi') }}"
+                            class="group flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition {{ request()->routeIs('admin.paket-konstruksi') ? 'border border-slate-700 bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+                                </svg>
+                                <span x-show="sidebarPinned || sidebarHovered" x-transition>Paket Konstruksi</span>
+                            </a>
+
+                            {{-- Kotak Saran --}}
+                            <a href="{{ route('admin.kotak-saran') }}"
+                            class="group flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition {{ request()->routeIs('admin.kotak-saran') ? 'border border-slate-700 bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 8l9 6 9-6m-18 8h18V8H3v8z" />
+                                </svg>
+                                <span x-show="sidebarPinned || sidebarHovered" x-transition>Kotak Saran</span>
+                            </a>
+
+                            {{-- File Upload --}}
+                            <a href="{{ route('admin.file-upload') }}"
+                            class="group flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition {{ request()->routeIs('admin.file-upload') ? 'border border-slate-700 bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 8l-4-4m0 0L8 8m4-4v12" />
+                                </svg>
+                                <span x-show="sidebarPinned || sidebarHovered" x-transition>File Upload</span>
+                            </a>
+
+                            {{-- Buku Tamu --}}
+                            <a href="{{ route('admin.buku-tamu') }}"
+                            class="group flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition {{ request()->routeIs('admin.buku-tamu') ? 'border border-slate-700 bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-slate-400 group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.483 9.246 5 7.5 5 5.014 5 3 6.12 3 7.5v9C3 15.12 5.014 14 7.5 14c1.746 0 3.332.483 4.5 1.253m0-9C13.168 5.483 14.754 5 16.5 5c2.486 0 4.5 1.12 4.5 2.5v9c0-1.38-2.014-2.5-4.5-2.5-1.746 0-3.332.483-4.5 1.253" />
+                                </svg>
+                                <span x-show="sidebarPinned || sidebarHovered" x-transition>Buku Tamu</span>
+                            </a>
                         </div>
                     </div>
 
@@ -321,6 +420,16 @@
                         <a href="{{ route('admin.prodi-pendidikan') }}" class="block rounded-lg px-2.5 py-2 text-xs text-slate-300 hover:bg-slate-800/60">Prodi Pendidikan</a>
                         <a href="{{ route('admin.pegawai') }}" class="block rounded-lg px-2.5 py-2 text-xs text-slate-300 hover:bg-slate-800/60">Pegawai</a>
                         <a href="{{ route('admin.masyarakat-jasa-konstruksi') }}" class="block rounded-lg px-2.5 py-2 text-xs text-slate-300 hover:bg-slate-800/60">Masyarakat Jasa Konstruksi</a>
+                        <a href="{{ route('admin.pengguna-jasa') }}">Pengguna Jasa</a>
+                        <a href="{{ route('admin.asosiasi-perusahaan') }}">Asosiasi Perusahaan</a>
+                        <a href="{{ route('admin.asosiasi-profesi') }}">Asosiasi Profesi</a>
+                        <a href="{{ route('admin.lsp') }}">LSP</a>
+                        <a href="{{ route('admin.perguruan-tinggi') }}">Perguruan Tinggi/Pakar</a>
+                        <a href="{{ route('admin.lppkk') }}">LPPKK</a>
+                        <a href="{{ route('admin.pemerhati-konstruksi') }}">Pemerhati Konstruksi</a>
+                        <a href="{{ route('admin.pemanfaat-produk') }}">Pemanfaat Produk</a>
+                        <a href="{{ route('admin.rantai-pasok') }}">Rantai Pasok</a>
+                        <a href="{{ route('admin.bujk') }}">BUJK</a>
                         <a href="{{ route('admin.paket-konstruksi') }}" class="block rounded-lg px-2.5 py-2 text-xs text-slate-300 hover:bg-slate-800/60">Paket Konstruksi</a>
                         <a href="{{ route('admin.kotak-saran') }}" class="block rounded-lg px-2.5 py-2 text-xs text-slate-300 hover:bg-slate-800/60">Kotak Saran</a>
                         <a href="{{ route('admin.file-upload') }}" class="block rounded-lg px-2.5 py-2 text-xs text-slate-300 hover:bg-slate-800/60">File Upload</a>
