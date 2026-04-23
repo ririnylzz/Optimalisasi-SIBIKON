@@ -8,8 +8,12 @@ use App\Http\Requests\Admin\Bujk\BujkImportRequest;
 use App\Models\Bujk;
 use App\Services\Bujk\BujkImportService;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -25,7 +29,7 @@ class BujkController extends Controller
         $jenisFilter = trim((string) $request->string('jenis'));
 
         $baseQuery = Bujk::query()->active();
-        $filteredQuery = (clone $baseQuery);
+        $filteredQuery = clone $baseQuery;
 
         if ($search !== '') {
             $filteredQuery->where(function (Builder $query) use ($search): void {
@@ -64,7 +68,6 @@ class BujkController extends Controller
         return view('admin.bujk.index', [
             'bujks' => $bujks,
             'editingBujk' => $editingBujk,
-            'regions' => config('bujk.regions', []),
             'jenisOptions' => config('bujk.jenis_usaha', []),
             'stats' => $stats,
             'search' => $search,
@@ -130,6 +133,104 @@ class BujkController extends Controller
             ->with('import_summary', $summary);
     }
 
+    public function provinceOptions(): JsonResponse
+    {
+        try {
+            $data = Cache::remember('bujk:regions:provinces:v1', now()->addDays(30), function () {
+                $response = Http::acceptJson()
+                    ->timeout(20)
+                    ->retry(2, 500)
+                    ->get('https://wilayah.id/api/provinces.json')
+                    ->throw()
+                    ->json();
+
+                return collect($response['data'] ?? [])
+                    ->map(function (array $item) {
+                        $label = $this->squish((string) ($item['name'] ?? ''));
+                        $code = $this->squish((string) ($item['code'] ?? ''));
+
+                        if ($label === '' || $code === '') {
+                            return null;
+                        }
+
+                        return [
+                            'code' => $code,
+                            'label' => $label,
+                            'value' => $this->normalizeRegionValue($label),
+                        ];
+                    })
+                    ->filter()
+                    ->sortBy('label', SORT_NATURAL | SORT_FLAG_CASE)
+                    ->values()
+                    ->all();
+            });
+
+            return response()->json([
+                'data' => $data,
+            ]);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return response()->json([
+                'message' => 'Gagal memuat daftar provinsi.',
+            ], 502);
+        }
+    }
+
+    public function regencyOptions(Request $request): JsonResponse
+    {
+        $provinceCode = $this->squish((string) $request->query('province_code'));
+
+        if (!preg_match('/^\d{2}$/', $provinceCode)) {
+            return response()->json([
+                'message' => 'province_code tidak valid.',
+            ], 422);
+        }
+
+        try {
+            $cacheKey = 'bujk:regions:regencies:' . $provinceCode . ':v1';
+
+            $data = Cache::remember($cacheKey, now()->addDays(30), function () use ($provinceCode) {
+                $response = Http::acceptJson()
+                    ->timeout(20)
+                    ->retry(2, 500)
+                    ->get("https://wilayah.id/api/regencies/{$provinceCode}.json")
+                    ->throw()
+                    ->json();
+
+                return collect($response['data'] ?? [])
+                    ->map(function (array $item) {
+                        $label = $this->squish((string) ($item['name'] ?? ''));
+                        $code = $this->squish((string) ($item['code'] ?? ''));
+
+                        if ($label === '' || $code === '') {
+                            return null;
+                        }
+
+                        return [
+                            'code' => $code,
+                            'label' => $label,
+                            'value' => $this->normalizeRegionValue($label),
+                        ];
+                    })
+                    ->filter()
+                    ->sortBy('label', SORT_NATURAL | SORT_FLAG_CASE)
+                    ->values()
+                    ->all();
+            });
+
+            return response()->json([
+                'data' => $data,
+            ]);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return response()->json([
+                'message' => 'Gagal memuat daftar kabupaten/kota.',
+            ], 502);
+        }
+    }
+
     protected function applyJenisFilter(Builder $query, string $jenis): void
     {
         $normalized = str_replace(', ', ',', trim($jenis));
@@ -141,5 +242,15 @@ class BujkController extends Controller
                 ->orWhereRaw($expression . ' LIKE ?', ['%,' . $normalized])
                 ->orWhereRaw($expression . ' LIKE ?', ['%,' . $normalized . ',%']);
         });
+    }
+
+    protected function squish(?string $value): string
+    {
+        return trim(preg_replace('/\s+/u', ' ', (string) $value) ?? '');
+    }
+
+    protected function normalizeRegionValue(?string $value): string
+    {
+        return Str::upper($this->squish($value));
     }
 }

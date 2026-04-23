@@ -32,6 +32,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::put('/bujk/{bujk}', [BujkController::class, 'update'])->name('bujk.update');
     Route::delete('/bujk/{bujk}', [BujkController::class, 'destroy'])->name('bujk.destroy');
     Route::post('/bujk/import', [BujkController::class, 'import'])->name('bujk.import');
+    Route::get('/bujk/regions/provinces', [BujkController::class, 'provinceOptions'])->name('bujk.regions.provinces');
+    Route::get('/bujk/regions/regencies', [BujkController::class, 'regencyOptions'])->name('bujk.regions.regencies');
 
     Route::view('/paket-konstruksi', 'admin.placeholder', ['title' => 'Paket Konstruksi'])->name('paket-konstruksi');
     Route::view('/kotak-saran', 'admin.placeholder', ['title' => 'Kotak Saran'])->name('kotak-saran');
