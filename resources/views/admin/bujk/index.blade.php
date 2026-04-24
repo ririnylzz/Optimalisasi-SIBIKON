@@ -37,102 +37,59 @@
         } elseif ($errors->has('file_import')) {
             $initialModal = 'upload';
         }
+
+        $toastTitle = null;
+        $toastMessage = null;
+
+        if ($importSummary) {
+            $toastTitle = 'Import selesai';
+            $toastMessage =
+                'Baris terbaca ' .
+                ($importSummary['total_rows'] ?? 0) .
+                ', siap simpan ' .
+                ($importSummary['prepared_rows'] ?? 0) .
+                ', data baru ' .
+                ($importSummary['created'] ?? 0) .
+                ', data update ' .
+                ($importSummary['updated'] ?? 0) .
+                ', merge internal ' .
+                ($importSummary['merged_rows'] ?? 0) .
+                ', baris skip ' .
+                ($importSummary['skipped'] ?? 0) .
+                '.';
+        } elseif (session('success')) {
+            $toastTitle = 'Berhasil';
+            $toastMessage = session('success');
+        }
     @endphp
 
-    <div class="space-y-4">
-        <div>
-            <div class="flex items-center gap-2 text-sm text-slate-400">
-                <a href="{{ route('admin.dashboard') }}" class="hover:text-white">Home</a>
-                <span>/</span>
-                <span class="font-medium text-slate-200">Masyarakat Jasa Konstruksi</span>
-                <span>/</span>
-                <span class="font-medium text-slate-200">BUJK</span>
-            </div>
-            <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
-                Upload CSV/XLSX, input manual, dan tampilkan data BUJK sesuai kebutuhan admin.
-            </p>
-        </div>
-
-        @if(session('success'))
-            <div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        @if($importSummary)
-            <div class="rounded-2xl border border-sky-500/30 bg-sky-500/10 p-4 text-sm text-sky-100">
-                <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                    <div>
-                        <h3 class="text-base font-semibold text-white">Ringkasan Import File</h3>
-                        <p class="mt-1 text-slate-200">
-                            File: <span class="font-semibold">{{ $importSummary['filename'] ?? '-' }}</span>
-                        </p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 text-xs md:grid-cols-3 xl:grid-cols-6">
-                        <div class="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2">
-                            <p class="text-slate-400">Baris terbaca</p>
-                            <p class="mt-1 text-lg font-bold text-white">{{ $importSummary['total_rows'] ?? 0 }}</p>
-                        </div>
-                        <div class="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2">
-                            <p class="text-slate-400">Siap simpan</p>
-                            <p class="mt-1 text-lg font-bold text-white">{{ $importSummary['prepared_rows'] ?? 0 }}</p>
-                        </div>
-                        <div class="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2">
-                            <p class="text-slate-400">Data baru</p>
-                            <p class="mt-1 text-lg font-bold text-emerald-300">{{ $importSummary['created'] ?? 0 }}</p>
-                        </div>
-                        <div class="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2">
-                            <p class="text-slate-400">Data update</p>
-                            <p class="mt-1 text-lg font-bold text-amber-300">{{ $importSummary['updated'] ?? 0 }}</p>
-                        </div>
-                        <div class="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2">
-                            <p class="text-slate-400">Merge internal</p>
-                            <p class="mt-1 text-lg font-bold text-sky-300">{{ $importSummary['merged_rows'] ?? 0 }}</p>
-                        </div>
-                        <div class="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2">
-                            <p class="text-slate-400">Baris skip</p>
-                            <p class="mt-1 text-lg font-bold text-rose-300">{{ $importSummary['skipped'] ?? 0 }}</p>
-                        </div>
-                    </div>
+    @if($toastTitle && $toastMessage)
+        <div
+            data-auto-toast
+            class="fixed right-4 top-4 z-[70] w-full max-w-md rounded-2xl border border-emerald-500/30 bg-slate-900/95 p-4 shadow-2xl shadow-slate-950/40 transition duration-300">
+            <div class="flex items-start gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
                 </div>
 
-                @if(!empty($importSummary['errors']))
-                    <div class="mt-4 rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-100">
-                        <p class="font-semibold">Contoh error validasi saat import:</p>
-                        <ul class="mt-2 space-y-1">
-                            @foreach($importSummary['errors'] as $error)
-                                <li>• {{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-            </div>
-        @endif
+                <div class="min-w-0 flex-1">
+                    <p class="text-sm font-semibold text-white">{{ $toastTitle }}</p>
+                    <p class="mt-1 text-sm leading-6 text-slate-300">{{ $toastMessage }}</p>
+                </div>
 
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <div class="rounded-2xl border border-slate-800 bg-slate-900 p-4">
-                <p class="text-sm text-slate-400">Total Data Aktif</p>
-                <p class="mt-2 text-3xl font-bold text-white">{{ number_format($stats['total_data']) }}</p>
-                <p class="mt-2 text-xs text-slate-500">Data BUJK yang tampil di tabel aktif</p>
-            </div>
-            <div class="rounded-2xl border border-slate-800 bg-slate-900 p-4">
-                <p class="text-sm text-slate-400">Data dengan Email</p>
-                <p class="mt-2 text-3xl font-bold text-white">{{ number_format($stats['total_email']) }}</p>
-                <p class="mt-2 text-xs text-slate-500">Siap dipakai untuk kontak lanjutan</p>
-            </div>
-            <div class="rounded-2xl border border-slate-800 bg-slate-900 p-4">
-                <p class="text-sm text-slate-400">Data dengan Website</p>
-                <p class="mt-2 text-3xl font-bold text-white">{{ number_format($stats['total_website']) }}</p>
-                <p class="mt-2 text-xs text-slate-500">Menunjukkan BUJK yang punya situs web</p>
-            </div>
-            <div class="rounded-2xl border border-slate-800 bg-slate-900 p-4">
-                <p class="text-sm text-slate-400">Hasil Filter Saat Ini</p>
-                <p class="mt-2 text-3xl font-bold text-white">{{ number_format($stats['hasil_filter']) }}</p>
-                <p class="mt-2 text-xs text-slate-500">Mengikuti keyword, jenis usaha, dan pagination</p>
+                <button
+                    type="button"
+                    data-toast-close
+                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700 text-slate-400 transition hover:border-slate-500 hover:text-white">
+                    <span class="text-lg leading-none">&times;</span>
+                </button>
             </div>
         </div>
+    @endif
 
+    <div class="space-y-4">
         <div class="rounded-2xl border border-slate-800 bg-slate-900 p-4">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>
@@ -152,7 +109,7 @@
                     <button
                         type="button"
                         data-modal-open="upload"
-                        class="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-indigo-500 hover:text-white">
+                        class="rounded-xl bg-indigo-500/90 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-400">
                         Upload File
                     </button>
                 </div>
@@ -161,14 +118,20 @@
             <form method="GET" action="{{ route('admin.bujk') }}" class="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-4">
                 <div class="lg:col-span-2">
                     <label for="search" class="mb-2 block text-sm font-medium text-slate-300">Filter / keyword</label>
-                    <input id="search" type="text" name="search" value="{{ $search }}"
+                    <input
+                        id="search"
+                        type="text"
+                        name="search"
+                        value="{{ $search }}"
                         placeholder="Cari NIB, nama BUJK, alamat, NPWP, email, atau kontak"
                         class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500" />
                 </div>
 
                 <div>
                     <label for="jenis" class="mb-2 block text-sm font-medium text-slate-300">Jenis usaha</label>
-                    <select id="jenis" name="jenis"
+                    <select
+                        id="jenis"
+                        name="jenis"
                         class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500">
                         <option value="">Semua jenis</option>
                         @foreach($jenisOptions as $jenis)
@@ -179,7 +142,9 @@
 
                 <div>
                     <label for="per_page" class="mb-2 block text-sm font-medium text-slate-300">Show</label>
-                    <select id="per_page" name="per_page"
+                    <select
+                        id="per_page"
+                        name="per_page"
                         class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500">
                         @foreach([10, 25, 50, 100] as $size)
                             <option value="{{ $size }}" @selected($perPage === $size)>{{ $size }}</option>
@@ -188,11 +153,13 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 lg:col-span-4">
-                    <button type="submit"
+                    <button
+                        type="submit"
                         class="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500">
                         Terapkan Filter
                     </button>
-                    <a href="{{ route('admin.bujk') }}"
+                    <a
+                        href="{{ route('admin.bujk') }}"
                         class="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-slate-500 hover:text-white">
                         Reset
                     </a>
@@ -254,15 +221,19 @@
                                     </td>
                                     <td class="px-4 py-4">
                                         <div class="flex items-center justify-center gap-2">
-                                            <a href="{{ route('admin.bujk', array_merge(request()->query(), ['edit' => $item->id, 'modal' => 'manual'])) }}"
+                                            <a
+                                                href="{{ route('admin.bujk', array_merge(request()->query(), ['edit' => $item->id, 'modal' => 'manual'])) }}"
                                                 class="inline-flex items-center justify-center rounded-lg border border-amber-400/40 px-3 py-2 text-xs font-semibold text-amber-300 transition hover:bg-amber-500/10">
                                                 Edit
                                             </a>
-                                            <form action="{{ route('admin.bujk.destroy', $item) }}" method="POST"
+                                            <form
+                                                action="{{ route('admin.bujk.destroy', $item) }}"
+                                                method="POST"
                                                 onsubmit="return confirm('Hapus data BUJK ini dari daftar aktif?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit"
+                                                <button
+                                                    type="submit"
                                                     class="inline-flex items-center justify-center rounded-lg border border-rose-400/40 px-3 py-2 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/10">
                                                     Hapus
                                                 </button>
@@ -294,8 +265,8 @@
 
     <div id="modal-backdrop" class="fixed inset-0 z-40 hidden bg-slate-950/70 backdrop-blur-[2px]"></div>
 
-    <div id="upload-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-6">
-        <div class="w-full max-w-4xl overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl">
+    <div id="upload-modal" class="fixed inset-0 z-50 hidden items-center justify-center overflow-y-auto px-4 py-6">
+        <div class="mx-auto w-full max-w-4xl rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl">
             <div class="flex items-start justify-between gap-4 border-b border-slate-800 px-6 py-5">
                 <div>
                     <h3 class="text-xl font-bold text-white">Import CSV / XLSX</h3>
@@ -326,7 +297,11 @@
 
                     <div>
                         <label for="file_import" class="mb-2 block text-sm font-medium text-slate-200">File upload</label>
-                        <input id="file_import" type="file" name="file_import" accept=".csv,.txt,.xlsx"
+                        <input
+                            id="file_import"
+                            type="file"
+                            name="file_import"
+                            accept=".csv,.txt,.xlsx"
                             class="block w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-200 file:mr-3 file:rounded-md file:border-0 file:bg-indigo-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-indigo-500" />
                         @error('file_import')
                             <p class="mt-2 text-xs text-rose-400">{{ $message }}</p>
@@ -334,7 +309,8 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2">
-                        <button type="submit"
+                        <button
+                            type="submit"
                             class="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500">
                             Proses Import
                         </button>
@@ -351,8 +327,8 @@
         </div>
     </div>
 
-    <div id="manual-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-4">
-        <div class="w-full max-w-7xl overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl">
+    <div id="manual-modal" class="fixed inset-0 z-50 hidden items-center justify-center overflow-y-auto px-4 py-6">
+        <div class="mx-auto w-full max-w-6xl rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl">
             <div class="flex items-start justify-between gap-4 border-b border-slate-800 px-6 py-5">
                 <div>
                     <h3 class="text-xl font-bold text-white">{{ $isEditing ? 'Ubah Data BUJK' : 'Form BUJK' }}</h3>
@@ -395,7 +371,11 @@
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
                             <label for="nib" class="mb-2 block text-sm font-medium text-slate-200">NIB</label>
-                            <input id="nib" type="text" name="nib" value="{{ old('nib', $editingBujk?->nib) }}"
+                            <input
+                                id="nib"
+                                type="text"
+                                name="nib"
+                                value="{{ old('nib', $editingBujk?->nib) }}"
                                 placeholder="NIB Perusahaan"
                                 class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500" />
                             @error('nib')
@@ -405,7 +385,11 @@
 
                         <div>
                             <label for="nama_bujk" class="mb-2 block text-sm font-medium text-slate-200">Nama BUJK</label>
-                            <input id="nama_bujk" type="text" name="nama_bujk" value="{{ old('nama_bujk', $editingBujk?->nama_bujk) }}"
+                            <input
+                                id="nama_bujk"
+                                type="text"
+                                name="nama_bujk"
+                                value="{{ old('nama_bujk', $editingBujk?->nama_bujk) }}"
                                 placeholder="Nama BUJK"
                                 class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500" />
                             @error('nama_bujk')
@@ -419,7 +403,10 @@
                         <div class="grid gap-3 sm:grid-cols-2">
                             @foreach($jenisOptions as $jenis)
                                 <label class="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-200">
-                                    <input type="checkbox" name="jenis_bujk[]" value="{{ $jenis }}"
+                                    <input
+                                        type="checkbox"
+                                        name="jenis_bujk[]"
+                                        value="{{ $jenis }}"
                                         {{ in_array($jenis, $selectedJenis, true) ? 'checked' : '' }}
                                         class="h-4 w-4 rounded border-slate-600 bg-slate-900 text-indigo-500 focus:ring-indigo-500" />
                                     <span>{{ $jenis }}</span>
@@ -433,7 +420,11 @@
 
                     <div>
                         <label for="alamat_bujk" class="mb-2 block text-sm font-medium text-slate-200">Alamat</label>
-                        <textarea id="alamat_bujk" name="alamat_bujk" rows="2" placeholder="Alamat BUJK"
+                        <textarea
+                            id="alamat_bujk"
+                            name="alamat_bujk"
+                            rows="2"
+                            placeholder="Alamat BUJK"
                             class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500">{{ old('alamat_bujk', $editingBujk?->alamat_bujk) }}</textarea>
                         @error('alamat_bujk')
                             <p class="mt-1 text-xs text-rose-400">{{ $message }}</p>
@@ -443,7 +434,9 @@
                     <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
                         <div>
                             <label for="provinsi_bujk" class="mb-2 block text-sm font-medium text-slate-200">Provinsi</label>
-                            <select id="provinsi_bujk" name="provinsi_bujk"
+                            <select
+                                id="provinsi_bujk"
+                                name="provinsi_bujk"
                                 class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500">
                                 <option value="">Pilih...</option>
                                 @if($selectedProvince)
@@ -457,7 +450,9 @@
 
                         <div>
                             <label for="kab_kota_bujk" class="mb-2 block text-sm font-medium text-slate-200">Kabupaten / Kota</label>
-                            <select id="kab_kota_bujk" name="kab_kota_bujk"
+                            <select
+                                id="kab_kota_bujk"
+                                name="kab_kota_bujk"
                                 class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500">
                                 <option value="">{{ $selectedProvince ? 'Pilih...' : 'Pilih provinsi dulu...' }}</option>
                                 @foreach($availableKabupaten as $kabupaten)
@@ -471,7 +466,11 @@
 
                         <div>
                             <label for="npwp_bujk" class="mb-2 block text-sm font-medium text-slate-200">NPWP</label>
-                            <input id="npwp_bujk" type="text" name="npwp_bujk" value="{{ old('npwp_bujk', $editingBujk?->npwp_bujk) }}"
+                            <input
+                                id="npwp_bujk"
+                                type="text"
+                                name="npwp_bujk"
+                                value="{{ old('npwp_bujk', $editingBujk?->npwp_bujk) }}"
                                 placeholder="NPWP BUJK"
                                 class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500" />
                             @error('npwp_bujk')
@@ -483,7 +482,11 @@
                     <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
                         <div>
                             <label for="email_bujk" class="mb-2 block text-sm font-medium text-slate-200">Email</label>
-                            <input id="email_bujk" type="email" name="email_bujk" value="{{ old('email_bujk', $editingBujk?->email_bujk) }}"
+                            <input
+                                id="email_bujk"
+                                type="email"
+                                name="email_bujk"
+                                value="{{ old('email_bujk', $editingBujk?->email_bujk) }}"
                                 placeholder="Email BUJK"
                                 class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500" />
                             @error('email_bujk')
@@ -493,7 +496,11 @@
 
                         <div>
                             <label for="telp_bujk" class="mb-2 block text-sm font-medium text-slate-200">No. Telp</label>
-                            <input id="telp_bujk" type="text" name="telp_bujk" value="{{ old('telp_bujk', $editingBujk?->telp_bujk) }}"
+                            <input
+                                id="telp_bujk"
+                                type="text"
+                                name="telp_bujk"
+                                value="{{ old('telp_bujk', $editingBujk?->telp_bujk) }}"
                                 placeholder="Nomor Telepon"
                                 class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500" />
                             @error('telp_bujk')
@@ -503,7 +510,11 @@
 
                         <div>
                             <label for="website_bujk" class="mb-2 block text-sm font-medium text-slate-200">Website</label>
-                            <input id="website_bujk" type="text" name="website_bujk" value="{{ old('website_bujk', $editingBujk?->website_bujk) }}"
+                            <input
+                                id="website_bujk"
+                                type="text"
+                                name="website_bujk"
+                                value="{{ old('website_bujk', $editingBujk?->website_bujk) }}"
                                 placeholder="Website"
                                 class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500" />
                             @error('website_bujk')
@@ -513,7 +524,8 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2 pt-1">
-                        <button type="submit"
+                        <button
+                            type="submit"
                             class="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500">
                             {{ $isEditing ? 'Update Data' : 'Simpan Data' }}
                         </button>
@@ -556,6 +568,8 @@
             const manualModal = document.getElementById('manual-modal');
             const openButtons = document.querySelectorAll('[data-modal-open]');
             const closeButtons = document.querySelectorAll('[data-modal-close]');
+            const autoToast = document.querySelector('[data-auto-toast]');
+            const toastCloseButton = document.querySelector('[data-toast-close]');
 
             if (!scriptData) {
                 return;
@@ -568,19 +582,13 @@
             const initialModal = scriptData.dataset.initialModal || '';
 
             const hideModal = (modal) => {
-                if (!modal) {
-                    return;
-                }
-
+                if (!modal) return;
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
             };
 
             const showModal = (modal) => {
-                if (!modal || !backdrop) {
-                    return;
-                }
-
+                if (!modal || !backdrop) return;
                 backdrop.classList.remove('hidden');
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
@@ -611,6 +619,16 @@
                 }
             };
 
+            const hideToast = () => {
+                if (!autoToast) return;
+
+                autoToast.classList.add('translate-y-2', 'opacity-0');
+
+                setTimeout(() => {
+                    autoToast.remove();
+                }, 300);
+            };
+
             openButtons.forEach((button) => {
                 button.addEventListener('click', function () {
                     openModalByName(this.dataset.modalOpen || '');
@@ -637,6 +655,14 @@
 
             if (initialModal === 'upload' || initialModal === 'manual') {
                 openModalByName(initialModal);
+            }
+
+            if (autoToast) {
+                setTimeout(hideToast, 4000);
+            }
+
+            if (toastCloseButton) {
+                toastCloseButton.addEventListener('click', hideToast);
             }
 
             if (!provinceSelect || !kabupatenSelect) {
