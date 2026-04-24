@@ -85,7 +85,7 @@
             </div>
 
             <!-- dark overlay -->
-            <div class="absolute inset-0 bg-gradient-to-r from-[#0E224A]/gi90 via-[#1A3568]/72 to-[#243B78]/35"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-[#0E224A]/90 via-[#1A3568]/72 to-[#243B78]/35"></div>
 
             <!-- soft white mist -->
             <div class="absolute inset-0 bg-white/10 backdrop-blur-[2px]"></div>
@@ -112,6 +112,7 @@
 
         </section>
 
+        <!-- tentang kami -->
         <section id="tentang-kami" class="bg-white py-20 lg:py-28">
             <div class="max-w-7xl mx-auto px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-stretch">
@@ -176,7 +177,6 @@
             </div>
         </section>
 
-        <!-- cards -->
         <!-- FUNGSI BIKON -->
         <section id="fungsi-bikon" class="bg-white pt-10 pb-20 lg:pt-12 lg:pb-24">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
@@ -328,6 +328,125 @@
         </section>
     </div>
 
+    <!-- LAYANAN -->
+    <section id="layanan" class="bg-[#F3F5FC] py-20 lg:py-24">
+        <div class="mx-auto max-w-7xl px-6 lg:px-8">
+
+            <!-- Heading -->
+            <div class="mb-14 text-center">
+                <h2 class="text-4xl font-extrabold text-[#111827] sm:text-5xl">
+                    Layanan
+                </h2>
+                <div class="mx-auto mt-4 h-1.5 w-44 rounded-full bg-[#0B5CAD]"></div>
+            </div>
+
+            <!-- Cards -->
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+
+                <!-- 1 -->
+                <div class="rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-1.png') }}" alt="Pengguna Jasa"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Pengguna Jasa
+                    </h3>
+                </div>
+
+                <!-- 2 -->
+                <div class="rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-2.png') }}" alt="Perguruan Tinggi / Pakar"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Perguruan Tinggi / Pakar
+                    </h3>
+                </div>
+
+                <!-- 3 -->
+                <div class="rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-3.png') }}" alt="Lembaga Pendidikan dan Pelatihan Kerja Konstruksi"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Lembaga Pendidikan dan Pelatihan Kerja Konstruksi
+                    </h3>
+                </div>
+
+                <!-- 4 -->
+                <div class="rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-4.png') }}" alt="Pemerhati Konstruksi"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Pemerhati Konstruksi
+                    </h3>
+                </div>
+
+                <!-- hidden items -->
+                <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-5.png') }}" alt="Asosiasi Perusahaan"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Asosiasi Perusahaan
+                    </h3>
+                </div>
+
+                <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-6.png') }}" alt="Asosiasi Profesi"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Asosiasi Profesi
+                    </h3>
+                </div>
+
+                <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-7.png') }}" alt="Lembaga Sertifikasi Jasa Konstruksi"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Lembaga Sertifikasi Jasa Konstruksi
+                    </h3>
+                </div>
+
+                <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-8.png') }}" alt="Pemanfaat Produk Jasa Konstruksi"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Pemanfaat Produk Jasa Konstruksi
+                    </h3>
+                </div>
+
+                <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-9.png') }}" alt="Penyedia Jasa"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Penyedia Jasa
+                    </h3>
+                </div>
+
+                <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-10.png') }}" alt="Tenaga Kerja Konstruksi"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Tenaga Kerja Konstruksi
+                    </h3>
+                </div>
+
+                <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-11.png') }}" alt="Pelaku Rantai Pasok"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Pelaku Rantai Pasok
+                    </h3>
+                </div>
+            </div>
+
+            <!-- Button -->
+            <div class="mt-12 text-center">
+                <button id="toggle-layanan" type="button"
+                    class="inline-flex items-center justify-center rounded-full bg-[#143B5D] px-8 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-[#0F2E49]">
+                    Lihat Selengkapnya
+                </button>
+            </div>
+        </div>
+    </section>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const toggles = document.querySelectorAll('#fungsi-bikon .accordion-toggle');
@@ -352,6 +471,27 @@
                     }
                 });
             });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleBtn = document.getElementById('toggle-layanan');
+            const hiddenItems = document.querySelectorAll('.layanan-hidden');
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    const isHidden = Array.from(hiddenItems).some(item => item.classList.contains('hidden'));
+
+                    if (isHidden) {
+                        hiddenItems.forEach(item => item.classList.remove('hidden'));
+                        toggleBtn.textContent = 'Tampilkan Lebih Sedikit';
+                    } else {
+                        hiddenItems.forEach(item => item.classList.add('hidden'));
+                        toggleBtn.textContent = 'Lihat Selengkapnya';
+                    }
+                });
+            }
         });
     </script>
 </body>
