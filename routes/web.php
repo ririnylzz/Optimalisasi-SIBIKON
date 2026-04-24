@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\BujkController;
 use App\Http\Controllers\Admin\DashboardController;
 
 Route::get('/', function () {
@@ -14,7 +15,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::view('/jabatan-kerja', 'admin.placeholder', ['title' => 'Jabatan Kerja'])->name('jabatan-kerja');
     Route::view('/prodi-pendidikan', 'admin.placeholder', ['title' => 'Prodi Pendidikan'])->name('prodi-pendidikan');
     Route::view('/pegawai', 'admin.placeholder', ['title' => 'Pegawai'])->name('pegawai');
-    Route::view('/masyarakat-jasa-konstruksi', 'admin.placeholder', ['title' => 'Masyarakat Jasa Konstruksi'])->name('masyarakat-jasa-konstruksi');
+    // Route::view('/masyarakat-jasa-konstruksi', 'admin.placeholder', ['title' => 'Masyarakat Jasa Konstruksi'])->name('masyarakat-jasa-konstruksi');
     // Submenu Masyarakat Jasa Konstruksi
     Route::view('/pengguna-jasa', 'admin.placeholder', ['title' => 'Pengguna Jasa'])->name('pengguna-jasa');
     Route::view('/asosiasi-perusahaan', 'admin.placeholder', ['title' => 'Asosiasi Perusahaan'])->name('asosiasi-perusahaan');
@@ -25,7 +26,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::view('/pemerhati-konstruksi', 'admin.placeholder', ['title' => 'Pemerhati Konstruksi'])->name('pemerhati-konstruksi');
     Route::view('/pemanfaat-produk', 'admin.placeholder', ['title' => 'Pemanfaat Produk'])->name('pemanfaat-produk');
     Route::view('/rantai-pasok', 'admin.placeholder', ['title' => 'Rantai Pasok'])->name('rantai-pasok');
-    Route::view('/bujk', 'admin.placeholder', ['title' => 'BUJK'])->name('bujk');
+
+    // BUJK - pertahankan versi fitur lengkap
+    Route::get('/bujk', [BujkController::class, 'index'])->name('bujk');
+    Route::post('/bujk', [BujkController::class, 'store'])->name('bujk.store');
+    Route::put('/bujk/{bujk}', [BujkController::class, 'update'])->name('bujk.update');
+    Route::delete('/bujk/{bujk}', [BujkController::class, 'destroy'])->name('bujk.destroy');
+    Route::post('/bujk/import', [BujkController::class, 'import'])->name('bujk.import');
+    Route::get('/bujk/regions/provinces', [BujkController::class, 'provinceOptions'])->name('bujk.regions.provinces');
+    Route::get('/bujk/regions/regencies', [BujkController::class, 'regencyOptions'])->name('bujk.regions.regencies');
 
     Route::view('/paket-konstruksi', 'admin.placeholder', ['title' => 'Paket Konstruksi'])->name('paket-konstruksi');
     Route::view('/kotak-saran', 'admin.placeholder', ['title' => 'Kotak Saran'])->name('kotak-saran');
