@@ -1,209 +1,831 @@
 @extends('layouts.admin')
 
-@section('page-title', 'Beranda - Dashboard')
-@section('page-subtitle', 'Ringkasan sistem SIBIKON setelah login admin')
+@section('page-title', 'Daftar Badan Usaha Jasa Konstruksi')
+@section('page-subtitle', 'Upload CSV/XLSX, input manual, dan tampilkan data BUJK sesuai kebutuhan admin')
 
 @section('content')
+    @php
+        $isEditing = $editingBujk !== null;
+        $selectedJenis = old('jenis_bujk');
+
+        if (is_string($selectedJenis)) {
+            $selectedJenis = collect(explode(',', $selectedJenis))
+                ->map(fn ($item) => trim($item))
+                ->filter()
+                ->values()
+                ->all();
+        }
+
+        $selectedJenis = $selectedJenis ?? ($editingBujk?->jenis_bujk_list ?? []);
+
+        $selectedProvince = old('provinsi_bujk', $editingBujk?->provinsi_bujk);
+        $selectedKabupaten = old('kab_kota_bujk', $editingBujk?->kab_kota_bujk);
+        $availableKabupaten = collect();
+
+        if ($selectedKabupaten) {
+            $availableKabupaten->push($selectedKabupaten);
+        }
+
+        $importSummary = session('import_summary');
+        $requestedPanel = request('panel');
+        $initialPanel = 'closed';
+
+        if (in_array($requestedPanel, ['upload', 'manual'], true)) {
+            $initialPanel = $requestedPanel;
+        } elseif ($isEditing || ($errors->any() && !$errors->has('file_import'))) {
+            $initialPanel = 'manual';
+        } elseif ($importSummary || $errors->has('file_import')) {
+            $initialPanel = 'upload';
+        }
+    @endphp
+
     <div class="space-y-4">
-        <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-                <div class="flex items-center gap-2 text-sm text-slate-400">
-                    <a href="{{ route('admin.dashboard') }}" class="hover:text-white">Home</a>
-                    <span>/</span>
-                    <span class="font-medium text-slate-200">Dashboard</span>
-                </div>
-                <p class="mt-1 text-sm text-slate-500">
-                    © 2026 <span class="font-medium text-rose-400">SIBIKON DPUPRPERA Prov. Kaltim</span>
-                </p>
+        <div>
+            <div class="flex items-center gap-2 text-sm text-slate-400">
+                <a href="{{ route('admin.dashboard') }}" class="hover:text-white">Home</a>
+                <span>/</span>
+                <span class="font-medium text-slate-200">Masyarakat Jasa Konstruksi</span>
+                <span>/</span>
+                <span class="font-medium text-slate-200">BUJK</span>
             </div>
+            <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
+                Halaman ini dipakai untuk upload file CSV/XLSX dan input manual data BUJK. Struktur data mengikuti
+                tampilan tabel dan form seperti contoh desain SIBIKON, dengan fokus utama pada fungsi import yang jalan.
+            </p>
+        </div>
 
-            <div class="flex flex-wrap items-center gap-2">
-                <select class="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200 outline-none focus:border-indigo-500">
-                    <option>2026</option>
-                    <option>2025</option>
-                    <option>2024</option>
-                </select>
+        @if(session('success'))
+            <div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+                {{ session('success') }}
+            </div>
+        @endif
 
-                <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500">
-                    Refresh Dashboard
-                </button>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="rounded-2xl border border-slate-800 bg-slate-900 p-4">
+                <p class="text-sm text-slate-400">Total Data Aktif</p>
+                <p class="mt-2 text-3xl font-bold text-white">{{ number_format($stats['total_data']) }}</p>
+                <p class="mt-2 text-xs text-slate-500">Data BUJK yang tampil di tabel aktif</p>
+            </div>
+            <div class="rounded-2xl border border-slate-800 bg-slate-900 p-4">
+                <p class="text-sm text-slate-400">Data dengan Email</p>
+                <p class="mt-2 text-3xl font-bold text-white">{{ number_format($stats['total_email']) }}</p>
+                <p class="mt-2 text-xs text-slate-500">Siap dipakai untuk kontak lanjutan</p>
+            </div>
+            <div class="rounded-2xl border border-slate-800 bg-slate-900 p-4">
+                <p class="text-sm text-slate-400">Data dengan Website</p>
+                <p class="mt-2 text-3xl font-bold text-white">{{ number_format($stats['total_website']) }}</p>
+                <p class="mt-2 text-xs text-slate-500">Menunjukkan BUJK yang punya situs web</p>
+            </div>
+            <div class="rounded-2xl border border-slate-800 bg-slate-900 p-4">
+                <p class="text-sm text-slate-400">Hasil Filter Saat Ini</p>
+                <p class="mt-2 text-3xl font-bold text-white">{{ number_format($stats['hasil_filter']) }}</p>
+                <p class="mt-2 text-xs text-slate-500">Mengikuti keyword, jenis usaha, dan pagination</p>
             </div>
         </div>
 
-        <div class="rounded-2xl border border-slate-800 bg-gradient-to-r from-slate-900 to-slate-800 p-4 md:p-5">
-            <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-                <div class="max-w-3xl">
-                    <h3 class="text-xl font-bold md:text-2xl">
-                        Selamat datang, {{ auth()->check() ? auth()->user()->name : 'Admin' }} 👋
-                    </h3>
-                    <p class="mt-2 text-sm leading-7 text-slate-400 md:text-base">
-                        Halaman ini adalah pusat kontrol admin untuk memantau statistik, upload data,
-                        validasi, deteksi duplikat, dan integrasi fitur utama project optimalisasi SIBIKON.
+        <div class="rounded-2xl border border-slate-800 bg-slate-900 p-4">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-white">Aksi Data BUJK</h3>
+                    <p class="mt-1 text-sm text-slate-400">
+                        Klik tombol di bawah untuk membuka form upload file atau input manual data BUJK.
                     </p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 xl:shrink-0">
-                    <div class="min-w-[140px] rounded-xl border border-slate-700 bg-slate-900/70 p-4">
-                        <p class="text-[11px] uppercase tracking-wider text-slate-500">Duplicate NIB</p>
-                        <p class="mt-1 text-2xl font-bold text-amber-400">{{ $summary['duplicate_nib'] }}</p>
-                    </div>
-
-                    <div class="min-w-[140px] rounded-xl border border-slate-700 bg-slate-900/70 p-4">
-                        <p class="text-[11px] uppercase tracking-wider text-slate-500">Pending Validasi</p>
-                        <p class="mt-1 text-2xl font-bold text-sky-400">{{ $summary['pending_verification'] }}</p>
-                    </div>
+                <div class="flex flex-wrap gap-2">
+                    <button
+                        type="button"
+                        data-panel-toggle="upload"
+                        class="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-indigo-500 hover:text-white"
+                    >
+                        Upload File
+                    </button>
+                    <button
+                        type="button"
+                        data-panel-toggle="manual"
+                        class="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
+                    >
+                        Input Manual
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            @foreach($stats as $item)
-                <div class="rounded-2xl border border-slate-800 bg-slate-900 p-4 shadow-lg shadow-black/10">
-                    <div class="flex items-start justify-between gap-3">
-                        <div>
-                            <p class="text-sm text-slate-400">{{ $item['title'] }}</p>
-                            <h3 class="mt-1 text-2xl font-bold">{{ $item['value'] }}</h3>
-                            <p class="mt-2 text-sm text-slate-500">{{ $item['description'] }}</p>
-                        </div>
-
-                        <div class="rounded-xl bg-slate-800 p-3 text-indigo-300">
-                            @if($item['icon'] === 'users')
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                          d="M17 20h5V18a4 4 0 00-5-3.87M17 20H7m10 0v-2c0-.653-.126-1.277-.356-1.848M7 20H2V18a4 4 0 015-3.87M7 20v-2c0-.653.126-1.277.356-1.848m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                </svg>
-                            @elseif($item['icon'] === 'briefcase')
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                          d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2m-6 0h6m-6 0H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V8a2 2 0 00-2-2h-3"/>
-                                </svg>
-                            @elseif($item['icon'] === 'folder')
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                          d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
-                                </svg>
-                            @else
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 8l-4-4m0 0L8 8m4-4v12"/>
-                                </svg>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="mt-4 border-t border-slate-800 pt-3">
-                        <span class="inline-flex rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400">
-                            {{ $item['trend'] }}
-                        </span>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-
-        <div class="grid grid-cols-1 gap-4 xl:grid-cols-3">
-            <div class="xl:col-span-2 rounded-2xl border border-slate-800 bg-slate-900 p-4 md:p-5">
-                <div class="mb-4 flex items-center justify-between gap-3">
+        <div id="bujk-panels" class="space-y-4 {{ $initialPanel === 'closed' ? 'hidden' : '' }}">
+            <div
+                id="panel-upload"
+                class="{{ $initialPanel === 'upload' ? '' : 'hidden' }} rounded-2xl border border-slate-800 bg-slate-900 p-4"
+            >
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                        <h3 class="text-xl font-bold">Statistik Aktivitas Sistem</h3>
-                        <p class="text-sm text-slate-400">Monitoring upload dan pertumbuhan data</p>
+                        <h3 class="text-lg font-bold text-white">Import CSV / XLSX</h3>
+                        <p class="mt-1 text-sm text-slate-400">
+                            Mendukung template sederhana BUJK maupun file XLSX sumber data yang punya kolom seperti
+                            <span class="font-medium text-slate-200">nib</span>,
+                            <span class="font-medium text-slate-200">nama_bu</span>,
+                            <span class="font-medium text-slate-200">alamat</span>,
+                            <span class="font-medium text-slate-200">telepon</span>,
+                            <span class="font-medium text-slate-200">email</span>,
+                            <span class="font-medium text-slate-200">propinsi</span>,
+                            <span class="font-medium text-slate-200">kabupaten</span>, dan
+                            <span class="font-medium text-slate-200">jenis_usaha</span>.
+                        </p>
                     </div>
-                    <span class="rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-400">6 bulan terakhir</span>
+
+                    <div class="flex flex-wrap gap-2">
+                        <a href="{{ asset('templates/bujk-template.csv') }}"
+                           class="rounded-lg border border-slate-700 px-3 py-2 text-xs font-medium text-slate-200 transition hover:border-indigo-500 hover:text-white">
+                            Download Template
+                        </a>
+                        <button
+                            type="button"
+                            data-panel-close
+                            class="rounded-lg border border-rose-500/40 px-3 py-2 text-xs font-medium text-rose-200 transition hover:bg-rose-500/10"
+                        >
+                            Tutup
+                        </button>
+                    </div>
                 </div>
 
-                <div class="h-[300px] md:h-[320px]">
-                    <canvas id="dashboardChart"></canvas>
-                </div>
+                @if($importSummary)
+                    <div class="mt-4 rounded-2xl border border-sky-500/30 bg-sky-500/10 p-4 text-sm text-sky-100">
+                        <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                            <div>
+                                <h3 class="text-base font-semibold text-white">Ringkasan Import File</h3>
+                                <p class="mt-1 text-slate-200">
+                                    File: <span class="font-semibold">{{ $importSummary['filename'] ?? '-' }}</span>
+                                </p>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 text-xs md:grid-cols-3 xl:grid-cols-6">
+                                <div class="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2">
+                                    <p class="text-slate-400">Baris terbaca</p>
+                                    <p class="mt-1 text-lg font-bold text-white">{{ $importSummary['total_rows'] ?? 0 }}</p>
+                                </div>
+                                <div class="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2">
+                                    <p class="text-slate-400">Siap simpan</p>
+                                    <p class="mt-1 text-lg font-bold text-white">{{ $importSummary['prepared_rows'] ?? 0 }}</p>
+                                </div>
+                                <div class="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2">
+                                    <p class="text-slate-400">Data baru</p>
+                                    <p class="mt-1 text-lg font-bold text-emerald-300">{{ $importSummary['created'] ?? 0 }}</p>
+                                </div>
+                                <div class="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2">
+                                    <p class="text-slate-400">Data update</p>
+                                    <p class="mt-1 text-lg font-bold text-amber-300">{{ $importSummary['updated'] ?? 0 }}</p>
+                                </div>
+                                <div class="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2">
+                                    <p class="text-slate-400">Merge internal</p>
+                                    <p class="mt-1 text-lg font-bold text-sky-300">{{ $importSummary['merged_rows'] ?? 0 }}</p>
+                                </div>
+                                <div class="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2">
+                                    <p class="text-slate-400">Baris skip</p>
+                                    <p class="mt-1 text-lg font-bold text-rose-300">{{ $importSummary['skipped'] ?? 0 }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if(!empty($importSummary['errors']))
+                            <div class="mt-4 rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-100">
+                                <p class="font-semibold">Contoh error validasi saat import:</p>
+                                <ul class="mt-2 space-y-1">
+                                    @foreach($importSummary['errors'] as $error)
+                                        <li>• {{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                    </div>
+                @endif
+
+                <form action="{{ route('admin.bujk.import') }}" method="POST" enctype="multipart/form-data" class="mt-4 space-y-4">
+                    @csrf
+
+                    <div>
+                        <label for="file_import" class="mb-2 block text-sm font-medium text-slate-200">File upload</label>
+                        <input id="file_import" type="file" name="file_import" accept=".csv,.txt,.xlsx"
+                               class="block w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-200 file:mr-3 file:rounded-md file:border-0 file:bg-indigo-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-indigo-500" />
+                        @error('file_import')
+                            <p class="mt-2 text-xs text-rose-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="rounded-xl border border-slate-800 bg-slate-950/70 p-3 text-xs leading-6 text-slate-400">
+                        <p class="font-semibold text-slate-200">Aturan import:</p>
+                        <p>1. File yang didukung: <span class="text-white">CSV</span> dan <span class="text-white">XLSX</span>.</p>
+                        <p>2. Header bisa dari template sederhana atau dari file sumber mentah yang punya alias kolom BUJK.</p>
+                        <p>3. Data dengan NIB sama akan digabung dan di-update, bukan ditambahkan duplikat baru.</p>
+                        <p>4. Jika satu BUJK muncul berkali-kali di file karena subklasifikasi berbeda, service akan merge menjadi satu record BUJK.</p>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button type="submit"
+                                class="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500">
+                            Proses Import
+                        </button>
+                        <span class="text-xs text-slate-500">Maksimal 20 MB per file</span>
+                    </div>
+                </form>
             </div>
 
-            <div class="rounded-2xl border border-slate-800 bg-slate-900 p-4 md:p-5">
-                <div class="mb-4">
-                    <h3 class="text-xl font-bold">Ringkasan Data</h3>
-                    <p class="text-sm text-slate-400">Informasi prioritas untuk admin</p>
+            <div
+                id="panel-manual"
+                class="{{ $initialPanel === 'manual' ? '' : 'hidden' }} rounded-2xl border border-slate-800 bg-slate-900 p-4"
+            >
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">{{ $isEditing ? 'Ubah Data BUJK' : 'Form BUJK' }}</h3>
+                        <p class="mt-1 text-sm text-slate-400">
+                            Field disesuaikan dengan form pada desain: NIB, nama BUJK, jenis usaha, alamat, provinsi,
+                            kabupaten/kota, NPWP, email, nomor telepon, dan website.
+                        </p>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <a href="{{ route('admin.bujk', ['panel' => 'manual']) }}#panel-manual"
+                           class="rounded-xl border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-indigo-500 hover:text-white">
+                            Tambah Baru
+                        </a>
+                        @if($isEditing)
+                            <a href="{{ route('admin.bujk', ['panel' => 'manual']) }}#panel-manual"
+                               class="rounded-xl border border-rose-500/40 px-4 py-2 text-sm font-medium text-rose-200 transition hover:bg-rose-500/10">
+                                Batal Edit
+                            </a>
+                        @endif
+                        <button
+                            type="button"
+                            data-panel-close
+                            class="rounded-xl border border-rose-500/40 px-4 py-2 text-sm font-medium text-rose-200 transition hover:bg-rose-500/10"
+                        >
+                            Tutup
+                        </button>
+                    </div>
                 </div>
 
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">
-                        <span class="text-sm text-slate-300">Duplicate NIB</span>
-                        <span class="font-bold text-amber-400">{{ $summary['duplicate_nib'] }}</span>
+                @if($errors->any() && !$errors->has('file_import'))
+                    <div class="mt-4 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">
+                        <p class="font-semibold">Masih ada input yang perlu diperbaiki:</p>
+                        <ul class="mt-2 space-y-1 text-xs">
+                            @foreach($errors->all() as $error)
+                                @if($error !== $errors->first('file_import'))
+                                    <li>• {{ $error }}</li>
+                                @endif
+                            @endforeach
+                        </ul>
                     </div>
-                    <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">
-                        <span class="text-sm text-slate-300">Duplicate Alamat</span>
-                        <span class="font-bold text-rose-400">{{ $summary['duplicate_alamat'] }}</span>
+                @endif
+
+                <form action="{{ $isEditing ? route('admin.bujk.update', $editingBujk) : route('admin.bujk.store') }}"
+                      method="POST"
+                      class="mt-5 space-y-5">
+                    @csrf
+                    @if($isEditing)
+                        @method('PUT')
+                    @endif
+
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div>
+                            <label for="nib" class="mb-2 block text-sm font-medium text-slate-200">NIB</label>
+                            <input id="nib" type="text" name="nib" value="{{ old('nib', $editingBujk?->nib) }}"
+                                   placeholder="NIB Perusahaan"
+                                   class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500" />
+                            @error('nib')
+                                <p class="mt-1 text-xs text-rose-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="nama_bujk" class="mb-2 block text-sm font-medium text-slate-200">Nama BUJK</label>
+                            <input id="nama_bujk" type="text" name="nama_bujk" value="{{ old('nama_bujk', $editingBujk?->nama_bujk) }}"
+                                   placeholder="Nama BUJK"
+                                   class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500" />
+                            @error('nama_bujk')
+                                <p class="mt-1 text-xs text-rose-400">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
-                    <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">
-                        <span class="text-sm text-slate-300">Pending Verification</span>
-                        <span class="font-bold text-sky-400">{{ $summary['pending_verification'] }}</span>
+
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-200">Jenis Usaha</label>
+                        <div class="grid gap-2 sm:grid-cols-2">
+                            @foreach($jenisOptions as $jenis)
+                                <label class="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-200">
+                                    <input type="checkbox" name="jenis_bujk[]" value="{{ $jenis }}"
+                                           {{ in_array($jenis, $selectedJenis, true) ? 'checked' : '' }}
+                                           class="h-4 w-4 rounded border-slate-600 bg-slate-900 text-indigo-500 focus:ring-indigo-500" />
+                                    <span>{{ $jenis }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                        @error('jenis_bujk')
+                            <p class="mt-1 text-xs text-rose-400">{{ $message }}</p>
+                        @enderror
                     </div>
-                    <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">
-                        <span class="text-sm text-slate-300">Total Berita</span>
-                        <span class="font-bold text-indigo-400">{{ $summary['total_berita'] }}</span>
+
+                    <div>
+                        <label for="alamat_bujk" class="mb-2 block text-sm font-medium text-slate-200">Alamat</label>
+                        <textarea id="alamat_bujk" name="alamat_bujk" rows="3" placeholder="Alamat BUJK"
+                                  class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500">{{ old('alamat_bujk', $editingBujk?->alamat_bujk) }}</textarea>
+                        @error('alamat_bujk')
+                            <p class="mt-1 text-xs text-rose-400">{{ $message }}</p>
+                        @enderror
                     </div>
-                    <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">
-                        <span class="text-sm text-slate-300">Kategori Berita</span>
-                        <span class="font-bold text-emerald-400">{{ $summary['total_kategori'] }}</span>
+
+                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                        <div>
+                            <label for="provinsi_bujk" class="mb-2 block text-sm font-medium text-slate-200">Provinsi</label>
+                            <select id="provinsi_bujk" name="provinsi_bujk"
+                                    class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500">
+                                <option value="">Pilih...</option>
+                                @if($selectedProvince)
+                                    <option value="{{ $selectedProvince }}" selected>{{ $selectedProvince }}</option>
+                                @endif
+                            </select>
+                            @error('provinsi_bujk')
+                                <p class="mt-1 text-xs text-rose-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="kab_kota_bujk" class="mb-2 block text-sm font-medium text-slate-200">Kabupaten / Kota</label>
+                            <select id="kab_kota_bujk" name="kab_kota_bujk"
+                                    class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500">
+                                <option value="">{{ $selectedProvince ? 'Pilih...' : 'Pilih provinsi dulu...' }}</option>
+                                @foreach($availableKabupaten as $kabupaten)
+                                    <option value="{{ $kabupaten }}" selected>{{ $kabupaten }}</option>
+                                @endforeach
+                            </select>
+                            @error('kab_kota_bujk')
+                                <p class="mt-1 text-xs text-rose-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="npwp_bujk" class="mb-2 block text-sm font-medium text-slate-200">NPWP</label>
+                            <input id="npwp_bujk" type="text" name="npwp_bujk" value="{{ old('npwp_bujk', $editingBujk?->npwp_bujk) }}"
+                                   placeholder="NPWP BUJK"
+                                   class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500" />
+                            @error('npwp_bujk')
+                                <p class="mt-1 text-xs text-rose-400">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
-                    <div class="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">
-                        <span class="text-sm text-slate-300">Buku Tamu</span>
-                        <span class="font-bold text-fuchsia-400">{{ $summary['total_buku_tamu'] }}</span>
+
+                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                        <div>
+                            <label for="email_bujk" class="mb-2 block text-sm font-medium text-slate-200">Email</label>
+                            <input id="email_bujk" type="email" name="email_bujk" value="{{ old('email_bujk', $editingBujk?->email_bujk) }}"
+                                   placeholder="Email BUJK"
+                                   class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500" />
+                            @error('email_bujk')
+                                <p class="mt-1 text-xs text-rose-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="telp_bujk" class="mb-2 block text-sm font-medium text-slate-200">No. Telp</label>
+                            <input id="telp_bujk" type="text" name="telp_bujk" value="{{ old('telp_bujk', $editingBujk?->telp_bujk) }}"
+                                   placeholder="Nomor Telepon"
+                                   class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500" />
+                            @error('telp_bujk')
+                                <p class="mt-1 text-xs text-rose-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="website_bujk" class="mb-2 block text-sm font-medium text-slate-200">Website</label>
+                            <input id="website_bujk" type="text" name="website_bujk" value="{{ old('website_bujk', $editingBujk?->website_bujk) }}"
+                                   placeholder="Website"
+                                   class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500" />
+                            @error('website_bujk')
+                                <p class="mt-1 text-xs text-rose-400">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
-                </div>
+
+                    <div class="flex flex-wrap items-center gap-2 pt-2">
+                        <button type="submit"
+                                class="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500">
+                            {{ $isEditing ? 'Update Data' : 'Simpan Data' }}
+                        </button>
+                        @if($isEditing)
+                            <span class="text-xs text-slate-500">Sedang mengubah data: {{ $editingBujk->nama_bujk }}</span>
+                        @else
+                            <span class="text-xs text-slate-500">Data manual akan langsung masuk ke tabel BUJK aktif.</span>
+                        @endif
+                    </div>
+                </form>
             </div>
         </div>
+
+        <div class="rounded-2xl border border-slate-800 bg-slate-900 p-4">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-white">Tabel Data BUJK</h3>
+                    <p class="mt-1 text-sm text-slate-400">
+                        Format kolom menyesuaikan desain: NIB, nama BUJK, jenis usaha, alamat, NPWP, kontak, dan aksi.
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <button
+                        type="button"
+                        data-panel-toggle="manual"
+                        class="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
+                    >
+                        Tambah Data
+                    </button>
+                    <button
+                        type="button"
+                        data-panel-toggle="upload"
+                        class="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-indigo-500 hover:text-white"
+                    >
+                        Upload File
+                    </button>
+                </div>
+            </div>
+
+            <form method="GET" action="{{ route('admin.bujk') }}" class="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-4">
+                <div class="lg:col-span-2">
+                    <label for="search" class="mb-2 block text-sm font-medium text-slate-300">Filter / keyword</label>
+                    <input id="search" type="text" name="search" value="{{ $search }}"
+                           placeholder="Cari NIB, nama BUJK, alamat, NPWP, email, atau kontak"
+                           class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500" />
+                </div>
+
+                <div>
+                    <label for="jenis" class="mb-2 block text-sm font-medium text-slate-300">Jenis usaha</label>
+                    <select id="jenis" name="jenis"
+                            class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500">
+                        <option value="">Semua jenis</option>
+                        @foreach($jenisOptions as $jenis)
+                            <option value="{{ $jenis }}" @selected($jenisFilter === $jenis)>{{ $jenis }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label for="per_page" class="mb-2 block text-sm font-medium text-slate-300">Show</label>
+                    <select id="per_page" name="per_page"
+                            class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500">
+                        @foreach([10, 25, 50, 100] as $size)
+                            <option value="{{ $size }}" @selected($perPage === $size)>{{ $size }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 lg:col-span-4">
+                    <button type="submit"
+                            class="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500">
+                        Terapkan Filter
+                    </button>
+                    <a href="{{ route('admin.bujk') }}"
+                       class="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-slate-500 hover:text-white">
+                        Reset
+                    </a>
+                </div>
+            </form>
+
+            <div class="mt-4 overflow-hidden rounded-2xl border border-slate-800">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-800 text-sm">
+                        <thead class="bg-slate-950/80 text-left text-xs uppercase tracking-wider text-slate-400">
+                            <tr>
+                                <th class="px-4 py-3">No.</th>
+                                <th class="px-4 py-3">NIB</th>
+                                <th class="px-4 py-3">Nama BUJK</th>
+                                <th class="px-4 py-3">Jenis Usaha</th>
+                                <th class="px-4 py-3">Alamat</th>
+                                <th class="px-4 py-3">NPWP</th>
+                                <th class="px-4 py-3">Kontak</th>
+                                <th class="px-4 py-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800 bg-slate-900/60">
+                            @forelse($bujks as $item)
+                                <tr class="align-top text-slate-200">
+                                    <td class="whitespace-nowrap px-4 py-4">{{ $bujks->firstItem() + $loop->index }}.</td>
+                                    <td class="whitespace-nowrap px-4 py-4 font-medium">{{ $item->nib }}</td>
+                                    <td class="px-4 py-4">
+                                        <p class="font-semibold text-white">{{ $item->nama_bujk }}</p>
+                                        <p class="mt-1 text-xs text-slate-500">
+                                            {{ $item->provinsi_bujk ?: '-' }}
+                                            @if($item->kab_kota_bujk)
+                                                • {{ $item->kab_kota_bujk }}
+                                            @endif
+                                        </p>
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        <div class="flex flex-wrap gap-2">
+                                            @foreach($item->jenis_bujk_list as $jenis)
+                                                <span class="rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-300">{{ $jenis }}</span>
+                                            @endforeach
+                                        </div>
+                                    </td>
+                                    <td class="max-w-xs px-4 py-4 text-slate-300">{{ $item->alamat_bujk ?: '-' }}</td>
+                                    <td class="whitespace-nowrap px-4 py-4">{{ $item->npwp_bujk ?: '-' }}</td>
+                                    <td class="px-4 py-4">
+                                        <div class="space-y-1 text-xs text-slate-300">
+                                            <p>{{ $item->telp_bujk ?: '-' }}</p>
+                                            @if($item->email_bujk)
+                                                <p>{{ $item->email_bujk }}</p>
+                                            @endif
+                                            @if($item->website_bujk)
+                                                <p>
+                                                    <a href="{{ $item->website_url }}" target="_blank" class="text-sky-300 hover:text-sky-200">
+                                                        {{ $item->website_bujk }}
+                                                    </a>
+                                                </p>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <a href="{{ route('admin.bujk', array_merge(request()->query(), ['edit' => $item->id, 'panel' => 'manual'])) }}#panel-manual"
+                                               class="inline-flex items-center justify-center rounded-lg border border-amber-400/40 px-3 py-2 text-xs font-semibold text-amber-300 transition hover:bg-amber-500/10">
+                                                Edit
+                                            </a>
+                                            <form action="{{ route('admin.bujk.destroy', $item) }}" method="POST"
+                                                  onsubmit="return confirm('Hapus data BUJK ini dari daftar aktif?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                        class="inline-flex items-center justify-center rounded-lg border border-rose-400/40 px-3 py-2 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/10">
+                                                    Hapus
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="px-4 py-8 text-center text-sm text-slate-500">
+                                        Belum ada data BUJK yang tampil. Coba upload file atau tambahkan data manual.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <p class="text-sm text-slate-500">
+                    Menampilkan {{ $bujks->firstItem() ?? 0 }} - {{ $bujks->lastItem() ?? 0 }} dari {{ $bujks->total() }} data.
+                </p>
+
+                {{ $bujks->onEachSide(1)->links() }}
+            </div>
+        </div>
+    </div>
+
+    <div
+        id="bujk-script-data"
+        class="hidden"
+        data-selected-province="{{ e((string) $selectedProvince) }}"
+        data-selected-kabupaten="{{ e((string) $selectedKabupaten) }}"
+        data-provinces-endpoint="{{ route('admin.bujk.regions.provinces') }}"
+        data-regencies-endpoint="{{ route('admin.bujk.regions.regencies') }}"
+        data-initial-panel="{{ $initialPanel }}">
     </div>
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const ctx = document.getElementById('dashboardChart');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const provinceSelect = document.getElementById('provinsi_bujk');
+            const kabupatenSelect = document.getElementById('kab_kota_bujk');
+            const scriptData = document.getElementById('bujk-script-data');
+            const panelsWrapper = document.getElementById('bujk-panels');
+            const uploadPanel = document.getElementById('panel-upload');
+            const manualPanel = document.getElementById('panel-manual');
+            const toggleButtons = document.querySelectorAll('[data-panel-toggle]');
+            const closeButtons = document.querySelectorAll('[data-panel-close]');
 
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: @json($chartData['labels']),
-            datasets: [
-                {
-                    label: 'File Upload',
-                    data: @json($chartData['uploads']),
-                    borderColor: '#6366f1',
-                    backgroundColor: 'rgba(99,102,241,0.15)',
-                    tension: 0.35,
-                    fill: true,
-                    borderWidth: 2
-                },
-                {
-                    label: 'Pengguna Baru',
-                    data: @json($chartData['users']),
-                    borderColor: '#22c55e',
-                    backgroundColor: 'rgba(34,197,94,0.15)',
-                    tension: 0.35,
-                    fill: true,
-                    borderWidth: 2
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    labels: {
-                        color: '#cbd5e1',
-                        boxWidth: 28
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    ticks: { color: '#94a3b8', font: { size: 11 } },
-                    grid: { color: 'rgba(148,163,184,0.08)' }
-                },
-                y: {
-                    ticks: { color: '#94a3b8', font: { size: 11 } },
-                    grid: { color: 'rgba(148,163,184,0.08)' }
-                }
+            if (!scriptData) {
+                return;
             }
-        }
-    });
-</script>
+
+            const selectedProvince = String(scriptData.dataset.selectedProvince || '').trim();
+            const selectedKabupaten = String(scriptData.dataset.selectedKabupaten || '').trim();
+            const provincesEndpoint = scriptData.dataset.provincesEndpoint || '';
+            const regenciesEndpoint = scriptData.dataset.regenciesEndpoint || '';
+            const initialPanel = scriptData.dataset.initialPanel || 'closed';
+
+            const setActiveButton = (panelName) => {
+                toggleButtons.forEach((button) => {
+                    const isActive = button.dataset.panelToggle === panelName;
+
+                    button.classList.toggle('bg-indigo-600', isActive);
+                    button.classList.toggle('text-white', isActive);
+                    button.classList.toggle('hover:bg-indigo-500', isActive);
+                    button.classList.toggle('border-slate-700', !isActive);
+                    button.classList.toggle('text-slate-200', !isActive);
+                    button.classList.toggle('hover:border-indigo-500', !isActive);
+                    button.classList.toggle('hover:text-white', !isActive);
+                    button.classList.toggle('bg-transparent', !isActive);
+                });
+            };
+
+            const openPanel = (panelName, shouldScroll = true) => {
+                if (!panelsWrapper || !uploadPanel || !manualPanel) {
+                    return;
+                }
+
+                panelsWrapper.classList.remove('hidden');
+                uploadPanel.classList.toggle('hidden', panelName !== 'upload');
+                manualPanel.classList.toggle('hidden', panelName !== 'manual');
+                setActiveButton(panelName);
+
+                if (shouldScroll) {
+                    const target = panelName === 'upload' ? uploadPanel : manualPanel;
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            };
+
+            const closePanels = () => {
+                if (!panelsWrapper || !uploadPanel || !manualPanel) {
+                    return;
+                }
+
+                panelsWrapper.classList.add('hidden');
+                uploadPanel.classList.add('hidden');
+                manualPanel.classList.add('hidden');
+                setActiveButton('');
+            };
+
+            toggleButtons.forEach((button) => {
+                button.addEventListener('click', function () {
+                    openPanel(this.dataset.panelToggle, true);
+                });
+            });
+
+            closeButtons.forEach((button) => {
+                button.addEventListener('click', function () {
+                    closePanels();
+                });
+            });
+
+            if (initialPanel === 'upload' || initialPanel === 'manual') {
+                openPanel(initialPanel, false);
+            } else {
+                setActiveButton('');
+            }
+
+            if (!provinceSelect || !kabupatenSelect) {
+                return;
+            }
+
+            const normalizeText = (value = '') => {
+                return String(value).trim().replace(/\s+/g, ' ').toUpperCase();
+            };
+
+            const createOption = (value, text, selected = false, dataCode = '') => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = text;
+                option.selected = selected;
+
+                if (dataCode) {
+                    option.dataset.code = dataCode;
+                }
+
+                return option;
+            };
+
+            const resetKabupaten = (placeholder = 'Pilih provinsi dulu...') => {
+                kabupatenSelect.innerHTML = '';
+                kabupatenSelect.appendChild(createOption('', placeholder, true));
+                kabupatenSelect.disabled = true;
+            };
+
+            const renderProvinces = (items) => {
+                provinceSelect.innerHTML = '';
+                provinceSelect.appendChild(createOption('', 'Pilih...'));
+
+                let matched = false;
+
+                items.forEach((item) => {
+                    const value = normalizeText(item.value || item.label || '');
+                    const label = item.label || item.value || '';
+                    const code = item.code || '';
+                    const isSelected = selectedProvince !== '' && normalizeText(selectedProvince) === value;
+
+                    if (isSelected) {
+                        matched = true;
+                    }
+
+                    provinceSelect.appendChild(createOption(value, label, isSelected, code));
+                });
+
+                if (selectedProvince && !matched) {
+                    provinceSelect.appendChild(createOption(selectedProvince, selectedProvince, true));
+                }
+            };
+
+            const renderRegencies = (items, selectedValue = '') => {
+                kabupatenSelect.innerHTML = '';
+                kabupatenSelect.appendChild(createOption('', 'Pilih...'));
+
+                let matched = false;
+
+                items.forEach((item) => {
+                    const value = normalizeText(item.value || item.label || '');
+                    const label = item.label || item.value || '';
+                    const isSelected = selectedValue !== '' && normalizeText(selectedValue) === value;
+
+                    if (isSelected) {
+                        matched = true;
+                    }
+
+                    kabupatenSelect.appendChild(createOption(value, label, isSelected, item.code || ''));
+                });
+
+                if (selectedValue && !matched) {
+                    kabupatenSelect.appendChild(createOption(selectedValue, selectedValue, true));
+                }
+
+                kabupatenSelect.disabled = false;
+            };
+
+            const fetchJson = async (url) => {
+                const response = await fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                });
+
+                let payload = {};
+
+                try {
+                    payload = await response.json();
+                } catch (error) {
+                    payload = {};
+                }
+
+                if (!response.ok) {
+                    throw new Error(payload.message || 'Gagal memuat data wilayah.');
+                }
+
+                return payload;
+            };
+
+            const loadRegencies = async (provinceCode, selectedRegency = '') => {
+                if (!provinceCode) {
+                    resetKabupaten('Pilih provinsi dulu...');
+                    return;
+                }
+
+                kabupatenSelect.disabled = true;
+                kabupatenSelect.innerHTML = '';
+                kabupatenSelect.appendChild(createOption('', 'Memuat kabupaten/kota...', true));
+
+                try {
+                    const url = `${regenciesEndpoint}?province_code=${encodeURIComponent(provinceCode)}`;
+                    const payload = await fetchJson(url);
+                    const items = Array.isArray(payload.data) ? payload.data : [];
+
+                    renderRegencies(items, selectedRegency);
+                } catch (error) {
+                    console.error(error);
+                    resetKabupaten('Gagal memuat kabupaten/kota');
+                }
+            };
+
+            const loadProvinces = async () => {
+                provinceSelect.disabled = true;
+                provinceSelect.innerHTML = '';
+                provinceSelect.appendChild(createOption('', 'Memuat provinsi...', true));
+                resetKabupaten('Pilih provinsi dulu...');
+
+                try {
+                    const payload = await fetchJson(provincesEndpoint);
+                    const items = Array.isArray(payload.data) ? payload.data : [];
+
+                    renderProvinces(items);
+                    provinceSelect.disabled = false;
+
+                    const selectedOption = provinceSelect.selectedOptions[0];
+                    const provinceCode = selectedOption ? (selectedOption.dataset.code || '') : '';
+
+                    await loadRegencies(provinceCode, selectedKabupaten);
+                } catch (error) {
+                    console.error(error);
+                    provinceSelect.innerHTML = '';
+                    provinceSelect.appendChild(createOption('', 'Gagal memuat provinsi', true));
+                    provinceSelect.disabled = true;
+                    resetKabupaten('Pilih provinsi dulu...');
+                }
+            };
+
+            provinceSelect.addEventListener('change', function () {
+                const selectedOption = this.selectedOptions[0];
+                const provinceCode = selectedOption ? (selectedOption.dataset.code || '') : '';
+                loadRegencies(provinceCode, '');
+            });
+
+            loadProvinces();
+        });
+    </script>
 @endpush

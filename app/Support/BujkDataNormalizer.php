@@ -2,210 +2,256 @@
 
 namespace App\Support;
 
-use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class BujkDataNormalizer
 {
     public function normalizeFormInput(array $input): array
     {
+        $jenisList = $this->normalizeJenisList($input['jenis_bujk'] ?? null);
+
         return [
-            'nib' => $this->sanitizeIdentifier(Arr::get($input, 'nib')),
-            'nama_bujk' => $this->sanitizeText(Arr::get($input, 'nama_bujk')),
-            'npwp_bujk' => $this->sanitizeText(Arr::get($input, 'npwp_bujk')),
-            'jenis_bujk' => $this->implodeJenisBujk(Arr::get($input, 'jenis_bujk')),
-            'alamat_bujk' => $this->sanitizeText(Arr::get($input, 'alamat_bujk')),
-            'kab_kota_bujk' => $this->normalizeKabupatenKota(Arr::get($input, 'kab_kota_bujk')),
-            'provinsi_bujk' => $this->normalizeProvince(Arr::get($input, 'provinsi_bujk')),
-            'telp_bujk' => $this->sanitizePhone(Arr::get($input, 'telp_bujk')),
-            'email_bujk' => $this->sanitizeEmail(Arr::get($input, 'email_bujk')),
-            'website_bujk' => $this->sanitizeWebsite(Arr::get($input, 'website_bujk')),
-            'jumlah_tenaga_kerja' => $this->sanitizeInteger(Arr::get($input, 'jumlah_tenaga_kerja')),
+            'nib' => $this->normalizeNib($input['nib'] ?? null),
+            'nama_bujk' => $this->normalizeText($input['nama_bujk'] ?? null, true),
+            'jenis_bujk' => $this->serializeJenisList($jenisList),
+            'alamat_bujk' => $this->normalizeText($input['alamat_bujk'] ?? null, false),
+            'provinsi_bujk' => $this->normalizeText($input['provinsi_bujk'] ?? null, true),
+            'kab_kota_bujk' => $this->normalizeText($input['kab_kota_bujk'] ?? null, true),
+            'npwp_bujk' => $this->normalizeNpwp($input['npwp_bujk'] ?? null),
+            'email_bujk' => $this->normalizeEmail($input['email_bujk'] ?? null),
+            'telp_bujk' => $this->normalizePhone($input['telp_bujk'] ?? null),
+            'website_bujk' => $this->normalizeWebsite($input['website_bujk'] ?? null),
         ];
     }
 
-    public function normalizeImportedRow(array $row): array
+    public function normalizeImportRow(array $row): ?array
     {
-        return $this->normalizeFormInput([
-            'nib' => $row['nib'] ?? null,
-            'nama_bujk' => $row['nama_bujk'] ?? null,
-            'npwp_bujk' => $row['npwp_bujk'] ?? null,
-            'jenis_bujk' => $row['jenis_bujk'] ?? null,
-            'alamat_bujk' => $row['alamat_bujk'] ?? null,
-            'kab_kota_bujk' => $row['kab_kota_bujk'] ?? null,
-            'provinsi_bujk' => $row['provinsi_bujk'] ?? null,
-            'telp_bujk' => $row['telp_bujk'] ?? null,
-            'email_bujk' => $row['email_bujk'] ?? null,
-            'website_bujk' => $row['website_bujk'] ?? null,
-            'jumlah_tenaga_kerja' => $row['jumlah_tenaga_kerja'] ?? null,
-        ]);
+        $nib = $this->normalizeNib($row['nib'] ?? null);
+
+        if ($nib === null) {
+            return null;
+        }
+
+        $jenisList = $this->normalizeJenisList($row['jenis_usaha'] ?? $row['jenis_bujk'] ?? null);
+
+        return [
+            'nib' => $nib,
+            'nama_bujk' => $this->normalizeText($row['nama_bujk'] ?? null, true),
+            'jenis_bujk' => $this->serializeJenisList($jenisList),
+            'alamat_bujk' => $this->normalizeText($row['alamat'] ?? $row['alamat_bujk'] ?? null, false),
+            'provinsi_bujk' => $this->normalizeText($row['provinsi'] ?? $row['provinsi_bujk'] ?? null, true),
+            'kab_kota_bujk' => $this->normalizeText($row['kabupaten'] ?? $row['kab_kota_bujk'] ?? null, true),
+            'npwp_bujk' => $this->normalizeNpwp($row['npwp'] ?? $row['npwp_bujk'] ?? null),
+            'email_bujk' => $this->normalizeEmail($row['email'] ?? $row['email_bujk'] ?? null),
+            'telp_bujk' => $this->normalizePhone($row['no_telp'] ?? $row['telp_bujk'] ?? null),
+            'website_bujk' => $this->normalizeWebsite($row['website'] ?? $row['website_bujk'] ?? null),
+        ];
     }
 
-    public function implodeJenisBujk(mixed $value): ?string
+    public function mergeDuplicateImportRows(array $base, array $incoming): array
     {
-        $jenisList = $this->normalizeJenisBujk($value);
-
-        return empty($jenisList) ? null : implode(', ', $jenisList);
+        return [
+            'nib' => $incoming['nib'] ?? $base['nib'],
+            'nama_bujk' => $this->preferIncoming($base['nama_bujk'] ?? null, $incoming['nama_bujk'] ?? null),
+            'jenis_bujk' => $this->mergeJenisSerialized($base['jenis_bujk'] ?? null, $incoming['jenis_bujk'] ?? null),
+            'alamat_bujk' => $this->preferIncoming($base['alamat_bujk'] ?? null, $incoming['alamat_bujk'] ?? null),
+            'provinsi_bujk' => $this->preferIncoming($base['provinsi_bujk'] ?? null, $incoming['provinsi_bujk'] ?? null),
+            'kab_kota_bujk' => $this->preferIncoming($base['kab_kota_bujk'] ?? null, $incoming['kab_kota_bujk'] ?? null),
+            'npwp_bujk' => $this->preferIncoming($base['npwp_bujk'] ?? null, $incoming['npwp_bujk'] ?? null),
+            'email_bujk' => $this->preferIncoming($base['email_bujk'] ?? null, $incoming['email_bujk'] ?? null),
+            'telp_bujk' => $this->preferIncoming($base['telp_bujk'] ?? null, $incoming['telp_bujk'] ?? null),
+            'website_bujk' => $this->preferIncoming($base['website_bujk'] ?? null, $incoming['website_bujk'] ?? null),
+        ];
     }
 
-    public function normalizeJenisBujk(mixed $value): array
+    public function mergeImportedWithExisting(object $existing, array $incoming): array
     {
-        $values = is_array($value)
-            ? $value
-            : preg_split('/[;,|\/]+/', (string) $value, -1, PREG_SPLIT_NO_EMPTY);
+        return [
+            'nib' => $incoming['nib'] ?? (string) $existing->nib,
+            'nama_bujk' => $this->preferIncoming($existing->nama_bujk ?? null, $incoming['nama_bujk'] ?? null),
+            'jenis_bujk' => $this->preferIncomingJenis($existing->jenis_bujk ?? null, $incoming['jenis_bujk'] ?? null),
+            'alamat_bujk' => $this->preferIncoming($existing->alamat_bujk ?? null, $incoming['alamat_bujk'] ?? null),
+            'provinsi_bujk' => $this->preferIncoming($existing->provinsi_bujk ?? null, $incoming['provinsi_bujk'] ?? null),
+            'kab_kota_bujk' => $this->preferIncoming($existing->kab_kota_bujk ?? null, $incoming['kab_kota_bujk'] ?? null),
+            'npwp_bujk' => $this->preferIncoming($existing->npwp_bujk ?? null, $incoming['npwp_bujk'] ?? null),
+            'email_bujk' => $this->preferIncoming($existing->email_bujk ?? null, $incoming['email_bujk'] ?? null),
+            'telp_bujk' => $this->preferIncoming($existing->telp_bujk ?? null, $incoming['telp_bujk'] ?? null),
+            'website_bujk' => $this->preferIncoming($existing->website_bujk ?? null, $incoming['website_bujk'] ?? null),
+            'is_deleted' => false,
+        ];
+    }
 
-        $normalized = collect($values)
-            ->map(function ($item) {
-                $item = $this->normalizeLookupKey($item);
+    protected function preferIncoming(mixed $old, mixed $incoming): ?string
+    {
+        $incoming = $this->emptyToNull($incoming);
 
-                return match (true) {
-                    str_contains($item, 'konsultan') || str_contains($item, 'jasa konsultasi') => 'Konsultan Konstruksi',
-                    str_contains($item, 'terintegrasi') => 'Konstruksi',
-                    str_contains($item, 'pekerjaan konstruksi') || $item === 'konstruksi' => 'Konstruksi',
-                    default => null,
-                };
-            })
+        if ($incoming !== null) {
+            return $incoming;
+        }
+
+        return $this->emptyToNull($old);
+    }
+
+    protected function preferIncomingJenis(mixed $old, mixed $incoming): ?string
+    {
+        $incoming = $this->emptyToNull($incoming);
+
+        if ($incoming !== null) {
+            return $incoming;
+        }
+
+        return $this->emptyToNull($old);
+    }
+
+    protected function normalizeNib(mixed $value): ?string
+    {
+        $value = $this->emptyToNull($value);
+
+        if ($value === null) {
+            return null;
+        }
+
+        $digits = preg_replace('/\D+/', '', (string) $value);
+
+        return $digits !== '' ? $digits : null;
+    }
+
+    protected function normalizeNpwp(mixed $value): ?string
+    {
+        $value = $this->emptyToNull($value);
+
+        if ($value === null) {
+            return null;
+        }
+
+        return trim((string) $value);
+    }
+
+    protected function normalizeEmail(mixed $value): ?string
+    {
+        $value = $this->emptyToNull($value);
+
+        if ($value === null) {
+            return null;
+        }
+
+        return Str::lower(trim((string) $value));
+    }
+
+    protected function normalizePhone(mixed $value): ?string
+    {
+        $value = $this->emptyToNull($value);
+
+        if ($value === null) {
+            return null;
+        }
+
+        return preg_replace('/\s+/', '', (string) $value);
+    }
+
+    protected function normalizeWebsite(mixed $value): ?string
+    {
+        $value = $this->emptyToNull($value);
+
+        if ($value === null) {
+            return null;
+        }
+
+        return trim((string) $value);
+    }
+
+    protected function normalizeText(mixed $value, bool $uppercase = false): ?string
+    {
+        $value = $this->emptyToNull($value);
+
+        if ($value === null) {
+            return null;
+        }
+
+        $value = preg_replace('/\s+/u', ' ', trim((string) $value));
+
+        if ($uppercase) {
+            $value = Str::upper($value);
+        }
+
+        return $value;
+    }
+
+    protected function normalizeJenisList(mixed $value): array
+    {
+        if (is_array($value)) {
+            $items = $value;
+        } else {
+            $raw = $this->emptyToNull($value);
+
+            if ($raw === null) {
+                return [];
+            }
+
+            $items = preg_split('/[,;\/|\n\r]+/u', (string) $raw) ?: [];
+        }
+
+        return collect($items)
+            ->map(fn ($item) => $this->mapJenisLabel($item))
             ->filter()
-            ->unique();
+            ->unique()
+            ->values()
+            ->all();
+    }
 
-        $ordered = collect(config('bujk.jenis_usaha', []))
-            ->filter(static fn ($label) => $normalized->contains($label))
+    protected function mapJenisLabel(mixed $value): ?string
+    {
+        $value = Str::lower(trim((string) $value));
+
+        if ($value === '') {
+            return null;
+        }
+
+        if (str_contains($value, 'konsultan')) {
+            return 'Konsultan Konstruksi';
+        }
+
+        if (str_contains($value, 'konstruksi')) {
+            return 'Konstruksi';
+        }
+
+        return null;
+    }
+
+    protected function serializeJenisList(array $items): ?string
+    {
+        $items = collect($items)
+            ->filter()
+            ->unique()
             ->values()
             ->all();
 
-        return empty($ordered) ? $normalized->values()->all() : $ordered;
+        return empty($items) ? null : implode(', ', $items);
     }
 
-    public function normalizeProvince(?string $value): ?string
+    protected function mergeJenisSerialized(mixed $base, mixed $incoming): ?string
     {
-        $lookup = $this->normalizeLookupKey($value);
+        $baseItems = $this->normalizeJenisList($base);
+        $incomingItems = $this->normalizeJenisList($incoming);
 
-        if ($lookup === '') {
-            return null;
-        }
+        $merged = collect([...$baseItems, ...$incomingItems])
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
 
-        foreach (array_keys(config('bujk.regions', [])) as $province) {
-            $provinceLookup = $this->normalizeLookupKey($province);
-            $provinceShort = $this->normalizeLookupKey(str_replace('KALIMANTAN ', '', $province));
-
-            if ($lookup === $provinceLookup || $lookup === $provinceShort) {
-                return $province;
-            }
-        }
-
-        return $this->sanitizeUpperText($value);
+        return $this->serializeJenisList($merged);
     }
 
-    public function normalizeKabupatenKota(?string $value): ?string
-    {
-        $lookup = $this->normalizeLookupKey($value);
-
-        if ($lookup === '') {
-            return null;
-        }
-
-        foreach (config('bujk.regions', []) as $province => $regions) {
-            foreach ($regions as $region) {
-                $canonicalLookup = $this->normalizeLookupKey($region);
-                $withoutPrefixLookup = $this->normalizeLookupKey(
-                    str_replace(['KABUPATEN ', 'KOTA '], '', $region)
-                );
-
-                if (in_array($lookup, [$canonicalLookup, $withoutPrefixLookup], true)) {
-                    return $region;
-                }
-            }
-        }
-
-        if (Str::startsWith($lookup, 'kab ')) {
-            return 'KABUPATEN ' . $this->sanitizeUpperText(Str::after($lookup, 'kab '));
-        }
-
-        if (Str::startsWith($lookup, 'kabupaten ')) {
-            return 'KABUPATEN ' . $this->sanitizeUpperText(Str::after($lookup, 'kabupaten '));
-        }
-
-        if (Str::startsWith($lookup, 'kota ')) {
-            return 'KOTA ' . $this->sanitizeUpperText(Str::after($lookup, 'kota '));
-        }
-
-        return $this->sanitizeUpperText($value);
-    }
-
-    public function sanitizeIdentifier(mixed $value): ?string
+    protected function emptyToNull(mixed $value): ?string
     {
         if ($value === null) {
             return null;
         }
 
-        $normalized = preg_replace('/\s+/', '', trim((string) $value));
+        $value = trim((string) $value);
 
-        return $normalized === '' ? null : $normalized;
-    }
-
-    public function sanitizePhone(mixed $value): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        $normalized = preg_replace('/\s+/', '', trim((string) $value));
-
-        return $normalized === '' ? null : $normalized;
-    }
-
-    public function sanitizeEmail(mixed $value): ?string
-    {
-        $normalized = $this->sanitizeText($value);
-
-        return $normalized === null ? null : Str::lower($normalized);
-    }
-
-    public function sanitizeWebsite(mixed $value): ?string
-    {
-        $normalized = $this->sanitizeText($value);
-
-        return $normalized === null ? null : Str::replace(' ', '', $normalized);
-    }
-
-    public function sanitizeInteger(mixed $value): ?int
-    {
-        if ($value === null || $value === '') {
-            return null;
-        }
-
-        $numeric = preg_replace('/[^0-9]/', '', (string) $value);
-
-        return $numeric === '' ? null : (int) $numeric;
-    }
-
-    public function sanitizeText(mixed $value): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        $normalized = preg_replace('/\s+/', ' ', trim((string) $value));
-
-        return $normalized === '' ? null : $normalized;
-    }
-
-    public function sanitizeUpperText(mixed $value): ?string
-    {
-        $normalized = $this->sanitizeText($value);
-
-        return $normalized === null ? null : strtoupper($normalized);
-    }
-
-    protected function normalizeLookupKey(mixed $value): string
-    {
-        if ($value === null) {
-            return '';
-        }
-
-        return (string) Str::of((string) $value)
-            ->lower()
-            ->replaceMatches('/[^a-z0-9]+/i', ' ')
-            ->squish();
+        return $value === '' ? null : $value;
     }
 }
