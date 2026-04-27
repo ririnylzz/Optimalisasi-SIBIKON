@@ -24,12 +24,69 @@
                 </div>
 
                 <!-- menu desktop -->
-                <nav class="hidden md:flex items-center gap-10 font-semibold text-white/90">
-                    <a href="#" class="hover:text-yellow-300 transition">Beranda</a>
-                    <a href="#" class="hover:text-yellow-300 transition">Profil</a>
-                    <a href="#" class="hover:text-yellow-300 transition">Berita</a>
-                    <a href="#" class="hover:text-yellow-300 transition">Fungsi</a>
-                    <a href="#" class="hover:text-yellow-300 transition">Kontak</a>
+                <nav class="hidden md:flex items-center gap-10 font-semibold text-white">
+
+                    <a href="{{ route('beranda') }}"
+                        class="{{ request()->routeIs('beranda') ? 'text-yellow-400' : 'text-white' }} hover:text-yellow-400 transition">
+                        Beranda
+                    </a>
+
+                    <div class="relative group">
+                        <button type="button"
+                            class="{{ request()->routeIs('profil') ? 'text-yellow-400' : 'text-white' }} flex items-center gap-1 hover:text-yellow-400 transition">
+                            Profil
+                            <svg class="w-4 h-4 transition group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+
+                        <div class="absolute left-0 top-full z-50 mt-4 hidden w-72 border-t-4 border-yellow-400 bg-white shadow-xl group-hover:block">
+                            <a href="{{ route('profil') }}" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
+                                Tentang Kami
+                            </a>
+                            <a href="#" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
+                                Struktur Organisasi
+                            </a>
+                            <a href="#" class="block px-6 py-4 font-bold text-slate-800 hover:bg-slate-100">
+                                SOP & Renja
+                            </a>
+                        </div>
+                    </div>
+
+                    <a href="#"
+                        class="{{ request()->routeIs('berita') ? 'text-yellow-400' : 'text-white' }} hover:text-yellow-400 transition">
+                        Berita
+                    </a>
+
+                    <div class="relative group">
+                        <button type="button"
+                            class="{{ request()->routeIs('fungsi') ? 'text-yellow-400' : 'text-white' }} flex items-center gap-1 hover:text-yellow-400 transition">
+                            Fungsi
+                            <svg class="w-4 h-4 transition group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+
+                        <div class="absolute left-0 top-full z-50 mt-4 hidden w-64 border-t-4 border-yellow-400 bg-white shadow-xl group-hover:block">
+                            <a href="#" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
+                                Pengaturan
+                            </a>
+                            <a href="#" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
+                                Pemberdayaan
+                            </a>
+                            <a href="#" class="block px-6 py-4 font-bold text-slate-800 hover:bg-slate-100">
+                                Pengawasan
+                            </a>
+                        </div>
+                    </div>
+
+                    <a href="#"
+                        class="{{ request()->routeIs('kontak') ? 'text-yellow-400' : 'text-white' }} hover:text-yellow-400 transition">
+                        Kontak
+                    </a>
+
                 </nav>
 
                 <!-- login button -->
@@ -50,8 +107,8 @@
             <!-- mobile menu -->
             <div id="mobile-menu" class="hidden md:hidden pb-5">
                 <div class="flex flex-col gap-4 font-medium text-white/90">
-                    <a href="#">Beranda</a>
-                    <a href="#">Profil</a>
+                    <a href="{{ route('beranda') }}">Beranda</a>
+                    <a href="{{ route('profil') }}">Profil</a>
                     <a href="#">Berita</a>
                     <a href="#">Fungsi</a>
                     <a href="#">Kontak</a>
@@ -93,345 +150,128 @@
                         Platform digital terpadu untuk pengelolaan, pembinaan, dan pengawasan jasa konstruksi
                         di seluruh Indonesia secara lebih modern, terstruktur, dan profesional.
                     </p>
-
-
-
     </section>
 
-    <!-- tentang kami -->
-    <section id="tentang-kami" class="bg-white py-20 lg:py-28">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-stretch">
-
-                <!-- LEFT CONTENT -->
-                <div class="bg-[#F8F8F6] rounded-[28px] p-8 sm:p-10 lg:p-12 flex flex-col justify-between min-h-[520px]">
-                    <div>
-                        <p class="text-sm font-semibold text-slate-500">
-                            Tentang Kami
-                        </p>
-
-                        <h2 class="mt-4 text-4xl sm:text-5xl font-bold leading-tight text-[#143B5D] max-w-xl">
-                            BIKON
-                        </h2>
-
-                        <p class="mt-6 text-base sm:text-lg leading-8 text-slate-600 max-w-2xl">
-                            Bina Konstruksi adalah salah satu bidang pada Dinas Pekerjaan Umum Penataan Ruang dan Perumahan Rakyat Provinsi Kalimantan Timur yang memiliki tugas, melaksanakan penyiapan bahan perumusan kebijakan, koordinasi, pembinaan, bimbingan, pengendalian, serta pengembangan teknis di bina konstruksi. Sesuai Peraturan Menteri Dalam Negeri Nomor 106 Tahun2017, Bidang Bina Konstruksi dibagi menjadi 3 (tiga) Seksi.
-                        </p>
-                    </div>
-
-                    <div class="mt-10 grid grid-cols-1 sm:grid-cols-[180px_minmax(0,1fr)] gap-6 sm:gap-8 items-start">
-                        <div>
-                            <div class="mt-8">
-                                <a href="#"
-                                    class="inline-flex items-center justify-center rounded-xl bg-yellow-400 px-6 py-3 text-sm font-bold uppercase tracking-wide text-slate-900 hover:bg-yellow-300 transition">
-                                    Baca Selengkapnya
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- RIGHT VISUAL -->
-                <div class="relative min-h-[520px] rounded-[28px] overflow-hidden">
-
-                    <img
-                        src="{{ asset('images/gedung-dinas-PUPR.jpg') }}"
-                        alt="Gedung Dinas PUPR"
-                        class="absolute inset-0 h-full w-full object-cover">
-
-                    <!-- overlay biar teks tetap jelas -->
-                    <div class="absolute inset-0 bg-[#143B5D]/30"></div>
-
-                    <!-- tombol play kuning -->
-                    <div class="absolute top-6 right-6 w-16 h-16 bg-yellow-400 flex items-center justify-center shadow-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-slate-900" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M8 5v14l11-7z" />
-                        </svg>
-                    </div>
-
-                    <!-- label bawah -->
-                    <div class="absolute bottom-6 left-6 right-6 text-white">
-                        <p class="text-lg font-semibold">
-                            Dinas PUPR Provinsi Kalimantan Timur
-                        </p>
-                        <p class="text-sm text-white/80">
-                            Bidang Bina Konstruksi
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FUNGSI BIKON -->
-    <section id="fungsi-bikon" class="bg-white pt-10 pb-20 lg:pt-12 lg:pb-24">
+    <!-- LAYANAN -->
+    <section id="layanan" class="bg-[#F3F5FC] py-20 lg:py-24">
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
 
             <!-- Heading -->
-            <div class="mb-12 text-center">
-                <div class="mx-auto mb-3 h-1 w-10 rounded-full bg-yellow-400"></div>
-                <h2 class="text-4xl font-extrabold text-[#143B5D] sm:text-5xl">
-                    Fungsi BIKON
+            <div class="mb-14 text-center">
+                <h2 class="text-4xl font-extrabold text-[#111827] sm:text-5xl">
+                    Layanan
                 </h2>
+                <div class="mx-auto mt-4 h-1.5 w-44 rounded-full bg-[#0B5CAD]"></div>
             </div>
 
             <!-- Cards -->
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
 
-                <!-- CARD 1 -->
-                <div class="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm">
-                    <button type="button" class="accordion-toggle w-full text-left" data-target="fungsi-card-1">
-                        <div class="flex items-start justify-between gap-4">
-                            <div class="flex items-start gap-4">
-                                <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-slate-100">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#1E2E5A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 3.75h7.5L19.5 8.75V20.25a.75.75 0 0 1-.75.75H7a2.25 2.25 0 0 1-2.25-2.25V6A2.25 2.25 0 0 1 7 3.75Z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 3.75v4.5h4.5" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 10.5h6" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 14.25h6" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18h3.75" />
-                                    </svg>
-                                </div>
-
-                                <div class="pt-2">
-                                    <h3 class="text-2xl font-bold leading-none text-[#143B5D]">
-                                        Pengaturan
-                                    </h3>
-                                    <p class="mt-4 max-w-[220px] text-base leading-8 text-slate-600">
-                                        Penetapan kebijakan dan standar dalam bina konstruksi.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <span class="mt-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#143B5D]">
-                                <svg class="arrow h-4 w-4 rotate-180 text-white transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 15l-7-7-7 7" />
-                                </svg>
-                            </span>
-                        </div>
-
-                    </button>
-
-                    <div id="fungsi-card-1" class="accordion-content pt-5">
-                        <ul class="list-disc space-y-2 pl-5 text-slate-600 leading-8">
-                            <li>Penyiapan bahan perumusan kebijakan.</li>
-                            <li>Penyusunan norma, standar, prosedur, dan kriteria.</li>
-                            <li>Penyebarluasan peraturan serta penjaminan mutu pelaksanaan pembinaan jasa konstruksi.</li>
-                        </ul>
-                    </div>
+                <!-- 1 -->
+                <div class="rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-1.png') }}" alt="Pengguna Jasa"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Pengguna Jasa
+                    </h3>
                 </div>
 
-                <!-- CARD 2 -->
-                <div class="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm">
-                    <button type="button" class="accordion-toggle w-full text-left" data-target="fungsi-card-2">
-                        <div class="flex items-start justify-between gap-4">
-                            <div class="flex items-start gap-4">
-                                <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-slate-100">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#1E2E5A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 4.5h3A2.25 2.25 0 0 1 15.75 6.75v1.5h-7.5v-1.5A2.25 2.25 0 0 1 10.5 4.5Z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 8.25h9A2.25 2.25 0 0 1 18 10.5v7.5a2.25 2.25 0 0 1-2.25 2.25h-9A2.25 2.25 0 0 1 4.5 18v-7.5a2.25 2.25 0 0 1 2.25-2.25Z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 12h3.75" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15.75h2.25" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l4.5 4.5" />
-                                        <circle cx="15" cy="15" r="3.25" />
-                                    </svg>
-                                </div>
-
-                                <div class="pt-2">
-                                    <h3 class="text-2xl font-bold leading-none text-[#143B5D]">
-                                        Pengawasan
-                                    </h3>
-                                    <p class="mt-4 max-w-[220px] text-base leading-8 text-slate-600">
-                                        Pengendalian dan evaluasi pelaksanaan konstruksi.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <span class="mt-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#143B5D]">
-                                <svg class="arrow h-4 w-4 text-white transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 15l-7-7-7 7" />
-                                </svg>
-                            </span>
-                        </div>
-
-                    </button>
-
-                    <div id="fungsi-card-2" class="accordion-content hidden pt-5">
-                        <ul class="list-disc space-y-2 pl-5 text-slate-600 leading-8">
-                            <li>Monitoring pelaksanaan kegiatan konstruksi.</li>
-                            <li>Evaluasi penerapan kebijakan dan program bina konstruksi.</li>
-                            <li>Pengendalian mutu pekerjaan dan penyelenggaraan jasa konstruksi.</li>
-                        </ul>
-                    </div>
+                <!-- 2 -->
+                <div class="rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-2.png') }}" alt="Perguruan Tinggi / Pakar"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Perguruan Tinggi / Pakar
+                    </h3>
                 </div>
 
-                <!-- CARD 3 -->
-                <div class="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm">
-                    <button type="button" class="accordion-toggle w-full text-left" data-target="fungsi-card-3">
-                        <div class="flex items-start justify-between gap-4">
-                            <div class="flex items-start gap-4">
-                                <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-slate-100">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#1E2E5A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75a5.25 5.25 0 0 0-9 0" />
-                                        <circle cx="12" cy="11.25" r="3.75" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 18.75a4.5 4.5 0 0 1 3.188-4.299" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 18.75a4.5 4.5 0 0 0-3.188-4.299" />
-                                        <circle cx="6.75" cy="12" r="2.25" />
-                                        <circle cx="17.25" cy="12" r="2.25" />
-                                    </svg>
-                                </div>
-
-                                <div class="pt-2">
-                                    <h3 class="text-2xl font-bold leading-none text-[#143B5D]">
-                                        Pemberdayaan
-                                    </h3>
-                                    <p class="mt-4 max-w-[220px] text-base leading-8 text-slate-600">
-                                        Penguatan kapasitas dan kualitas SDM konstruksi.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <span class="mt-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#143B5D]">
-                                <svg class="arrow h-4 w-4 text-white transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 15l-7-7-7 7" />
-                                </svg>
-                            </span>
-                        </div>
-
-                    </button>
-
-                    <div id="fungsi-card-3" class="accordion-content hidden pt-5">
-                        <ul class="list-disc space-y-2 pl-5 text-slate-600 leading-8">
-                            <li>Peningkatan kapasitas sumber daya manusia jasa konstruksi.</li>
-                            <li>Pembinaan pelaku usaha dan tenaga kerja konstruksi.</li>
-                            <li>Pengembangan sektor konstruksi yang profesional dan berkelanjutan.</li>
-                        </ul>
-                    </div>
+                <!-- 3 -->
+                <div class="rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-3.png') }}" alt="Lembaga Pendidikan dan Pelatihan Kerja Konstruksi"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Lembaga Pendidikan dan Pelatihan Kerja Konstruksi
+                    </h3>
                 </div>
 
+                <!-- 4 -->
+                <div class="layanan-hidden hidden xrounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-4.png') }}" alt="Pemerhati Konstruksi"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Pemerhati Konstruksi
+                    </h3>
+                </div>
+
+                <!-- hidden items -->
+                <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-5.png') }}" alt="Asosiasi Perusahaan"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Asosiasi Perusahaan
+                    </h3>
+                </div>
+
+                <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-6.png') }}" alt="Asosiasi Profesi"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Asosiasi Profesi
+                    </h3>
+                </div>
+
+                <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-7.png') }}" alt="Lembaga Sertifikasi Jasa Konstruksi"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Lembaga Sertifikasi Jasa Konstruksi
+                    </h3>
+                </div>
+
+                <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-8.png') }}" alt="Pemanfaat Produk Jasa Konstruksi"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Pemanfaat Produk Jasa Konstruksi
+                    </h3>
+                </div>
+
+                <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-9.png') }}" alt="Penyedia Jasa"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Penyedia Jasa
+                    </h3>
+                </div>
+
+                <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-10.png') }}" alt="Tenaga Kerja Konstruksi"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Tenaga Kerja Konstruksi
+                    </h3>
+                </div>
+
+                <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
+                    <img src="{{ asset('images/layanan-11.png') }}" alt="Pelaku Rantai Pasok"
+                        class="mx-auto h-44 w-44 object-contain">
+                    <h3 class="mt-6 text-xl font-medium text-slate-900">
+                        Pelaku Rantai Pasok
+                    </h3>
+                </div>
+            </div>
+
+            <!-- Button -->
+            <div class="mt-12 text-center">
+                <button id="toggle-layanan" type="button"
+                    class="inline-flex items-center justify-center rounded-full bg-[#143B5D] px-8 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-[#0F2E49]">
+                    Lihat Selengkapnya
+                </button>
             </div>
         </div>
     </section>
 </div>
 
-<!-- LAYANAN -->
-<section id="layanan" class="bg-[#F3F5FC] py-20 lg:py-24">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-
-        <!-- Heading -->
-        <div class="mb-14 text-center">
-            <h2 class="text-4xl font-extrabold text-[#111827] sm:text-5xl">
-                Layanan
-            </h2>
-            <div class="mx-auto mt-4 h-1.5 w-44 rounded-full bg-[#0B5CAD]"></div>
-        </div>
-
-        <!-- Cards -->
-        <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-
-            <!-- 1 -->
-            <div class="rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
-                <img src="{{ asset('images/layanan-1.png') }}" alt="Pengguna Jasa"
-                    class="mx-auto h-44 w-44 object-contain">
-                <h3 class="mt-6 text-xl font-medium text-slate-900">
-                    Pengguna Jasa
-                </h3>
-            </div>
-
-            <!-- 2 -->
-            <div class="rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
-                <img src="{{ asset('images/layanan-2.png') }}" alt="Perguruan Tinggi / Pakar"
-                    class="mx-auto h-44 w-44 object-contain">
-                <h3 class="mt-6 text-xl font-medium text-slate-900">
-                    Perguruan Tinggi / Pakar
-                </h3>
-            </div>
-
-            <!-- 3 -->
-            <div class="rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
-                <img src="{{ asset('images/layanan-3.png') }}" alt="Lembaga Pendidikan dan Pelatihan Kerja Konstruksi"
-                    class="mx-auto h-44 w-44 object-contain">
-                <h3 class="mt-6 text-xl font-medium text-slate-900">
-                    Lembaga Pendidikan dan Pelatihan Kerja Konstruksi
-                </h3>
-            </div>
-
-            <!-- 4 -->
-            <div class="rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
-                <img src="{{ asset('images/layanan-4.png') }}" alt="Pemerhati Konstruksi"
-                    class="mx-auto h-44 w-44 object-contain">
-                <h3 class="mt-6 text-xl font-medium text-slate-900">
-                    Pemerhati Konstruksi
-                </h3>
-            </div>
-
-            <!-- hidden items -->
-            <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
-                <img src="{{ asset('images/layanan-5.png') }}" alt="Asosiasi Perusahaan"
-                    class="mx-auto h-44 w-44 object-contain">
-                <h3 class="mt-6 text-xl font-medium text-slate-900">
-                    Asosiasi Perusahaan
-                </h3>
-            </div>
-
-            <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
-                <img src="{{ asset('images/layanan-6.png') }}" alt="Asosiasi Profesi"
-                    class="mx-auto h-44 w-44 object-contain">
-                <h3 class="mt-6 text-xl font-medium text-slate-900">
-                    Asosiasi Profesi
-                </h3>
-            </div>
-
-            <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
-                <img src="{{ asset('images/layanan-7.png') }}" alt="Lembaga Sertifikasi Jasa Konstruksi"
-                    class="mx-auto h-44 w-44 object-contain">
-                <h3 class="mt-6 text-xl font-medium text-slate-900">
-                    Lembaga Sertifikasi Jasa Konstruksi
-                </h3>
-            </div>
-
-            <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
-                <img src="{{ asset('images/layanan-8.png') }}" alt="Pemanfaat Produk Jasa Konstruksi"
-                    class="mx-auto h-44 w-44 object-contain">
-                <h3 class="mt-6 text-xl font-medium text-slate-900">
-                    Pemanfaat Produk Jasa Konstruksi
-                </h3>
-            </div>
-
-            <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
-                <img src="{{ asset('images/layanan-9.png') }}" alt="Penyedia Jasa"
-                    class="mx-auto h-44 w-44 object-contain">
-                <h3 class="mt-6 text-xl font-medium text-slate-900">
-                    Penyedia Jasa
-                </h3>
-            </div>
-
-            <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
-                <img src="{{ asset('images/layanan-10.png') }}" alt="Tenaga Kerja Konstruksi"
-                    class="mx-auto h-44 w-44 object-contain">
-                <h3 class="mt-6 text-xl font-medium text-slate-900">
-                    Tenaga Kerja Konstruksi
-                </h3>
-            </div>
-
-            <div class="layanan-hidden hidden rounded-[32px] bg-white p-5 text-center shadow-xl shadow-slate-300/40">
-                <img src="{{ asset('images/layanan-11.png') }}" alt="Pelaku Rantai Pasok"
-                    class="mx-auto h-44 w-44 object-contain">
-                <h3 class="mt-6 text-xl font-medium text-slate-900">
-                    Pelaku Rantai Pasok
-                </h3>
-            </div>
-        </div>
-
-        <!-- Button -->
-        <div class="mt-12 text-center">
-            <button id="toggle-layanan" type="button"
-                class="inline-flex items-center justify-center rounded-full bg-[#143B5D] px-8 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-[#0F2E49]">
-                Lihat Selengkapnya
-            </button>
-        </div>
-    </div>
-</section>
 <footer class="bg-[#223B78] text-white">
     <div class="mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <div class="grid grid-cols-1 gap-12 lg:grid-cols-4">
@@ -552,33 +392,6 @@
         </div>
     </div>
 </footer>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggles = document.querySelectorAll('#fungsi-bikon .accordion-toggle');
-
-        toggles.forEach((btn) => {
-            btn.addEventListener('click', function() {
-                const target = document.getElementById(this.dataset.target);
-                const arrow = this.querySelector('.arrow');
-                const isHidden = target.classList.contains('hidden');
-
-                document.querySelectorAll('#fungsi-bikon .accordion-content').forEach((item) => {
-                    item.classList.add('hidden');
-                });
-
-                document.querySelectorAll('#fungsi-bikon .arrow').forEach((item) => {
-                    item.classList.remove('rotate-180');
-                });
-
-                if (isHidden) {
-                    target.classList.remove('hidden');
-                    arrow.classList.add('rotate-180');
-                }
-            });
-        });
-    });
-</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
