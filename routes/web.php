@@ -15,9 +15,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::view('/jabatan-kerja', 'admin.placeholder', ['title' => 'Jabatan Kerja'])->name('jabatan-kerja');
     Route::view('/prodi-pendidikan', 'admin.placeholder', ['title' => 'Prodi Pendidikan'])->name('prodi-pendidikan');
     Route::view('/pegawai', 'admin.placeholder', ['title' => 'Pegawai'])->name('pegawai');
-
-    Route::view('/masyarakat-jasa-konstruksi', 'admin.placeholder', ['title' => 'Masyarakat Jasa Konstruksi'])->name('masyarakat-jasa-konstruksi');
-
+    // Route::view('/masyarakat-jasa-konstruksi', 'admin.placeholder', ['title' => 'Masyarakat Jasa Konstruksi'])->name('masyarakat-jasa-konstruksi');
     // Submenu Masyarakat Jasa Konstruksi
     Route::view('/pengguna-jasa', 'admin.placeholder', ['title' => 'Pengguna Jasa'])->name('pengguna-jasa');
     Route::view('/asosiasi-perusahaan', 'admin.placeholder', ['title' => 'Asosiasi Perusahaan'])->name('asosiasi-perusahaan');
@@ -48,4 +46,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::view('/acara-kegiatan', 'admin.placeholder', ['title' => 'Acara / Kegiatan'])->name('acara-kegiatan');
     Route::view('/peraturan', 'admin.placeholder', ['title' => 'Peraturan'])->name('peraturan');
+
+    Route::view('/tenaga-kerja-konstruksi', 'admin.placeholder', ['title' => 'Tenaga Kerja Konstruksi'])->name('tenaga-kerja-konstruksi');
+    Route::view('/pelatihan-sertifikasi', 'admin.placeholder', ['title' => 'Pelatihan / Sertifikasi'])->name('pelatihan-sertifikasi');
+
+    Route::view('/tertib-usaha', 'admin.placeholder', ['title' => 'Tertib Usaha'])->name('tertib-usaha');
+    Route::view('/tertib-penyelenggaraan', 'admin.placeholder', ['title' => 'Tertib Penyelenggaraan'])->name('tertib-penyelenggaraan');
+    Route::view('/tertib-pemanfaatan', 'admin.placeholder', ['title' => 'Tertib Pemanfaatan'])->name('tertib-pemanfaatan');
+
+    Route::view('/surat-menyurat', 'admin.placeholder', ['title' => 'Surat Menyurat'])->name('surat-menyurat');
+    Route::view('/arsip', 'admin.placeholder', ['title' => 'Arsip'])->name('arsip');
+
+    Route::view('/penandatangan-dokumen', 'admin.placeholder', ['title' => 'Penandatangan Dokumen'])->name('penandatangan-dokumen');
+    Route::view('/anggaran-perjadin', 'admin.placeholder', ['title' => 'Anggaran Perjadin'])->name('anggaran-perjadin');
+    Route::view('/perjadin', 'admin.placeholder', ['title' => 'Perjadin'])->name('perjadin');
 });

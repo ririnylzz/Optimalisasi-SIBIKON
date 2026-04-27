@@ -5,6 +5,7 @@
 
 @section('content')
     <div class="space-y-6">
+        {{-- top row --}}
         <div class="grid grid-cols-1 gap-5 xl:grid-cols-4">
             @foreach($stats as $index => $item)
                 @php
@@ -58,6 +59,7 @@
             @endforeach
         </div>
 
+        {{-- chart + summary --}}
         <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
             <div class="sibikon-card rounded-[28px] p-6 xl:col-span-2">
                 <div class="mb-5 flex items-center justify-between gap-3">
@@ -108,6 +110,7 @@
             </div>
         </div>
 
+        {{-- activity --}}
         <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
             <div class="sibikon-card rounded-[28px] p-6 xl:col-span-2">
                 <div class="mb-5">
@@ -165,61 +168,59 @@
 <script>
     const ctx = document.getElementById('dashboardChart');
 
-    if (ctx) {
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: @json($chartData['labels']),
-                datasets: [
-                    {
-                        label: 'File Upload',
-                        data: @json($chartData['uploads']),
-                        borderColor: '#3A4FAC',
-                        backgroundColor: 'rgba(58,79,172,0.10)',
-                        tension: 0.4,
-                        fill: true,
-                        borderWidth: 3,
-                        pointBackgroundColor: '#3A4FAC',
-                        pointRadius: 4
-                    },
-                    {
-                        label: 'Pengguna Baru',
-                        data: @json($chartData['users']),
-                        borderColor: '#F1D00A',
-                        backgroundColor: 'rgba(241,208,10,0.08)',
-                        tension: 0.4,
-                        fill: true,
-                        borderWidth: 3,
-                        pointBackgroundColor: '#F1D00A',
-                        pointRadius: 4
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: '#475569',
-                            boxWidth: 26,
-                            usePointStyle: true,
-                            pointStyle: 'circle'
-                        }
-                    }
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: @json($chartData['labels']),
+            datasets: [
+                {
+                    label: 'File Upload',
+                    data: @json($chartData['uploads']),
+                    borderColor: '#3A4FAC',
+                    backgroundColor: 'rgba(58,79,172,0.10)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#3A4FAC',
+                    pointRadius: 4
                 },
-                scales: {
-                    x: {
-                        ticks: { color: '#64748B', font: { size: 11 } },
-                        grid: { color: 'rgba(148, 163, 184, 0.15)' }
-                    },
-                    y: {
-                        ticks: { color: '#64748B', font: { size: 11 } },
-                        grid: { color: 'rgba(148, 163, 184, 0.15)' }
+                {
+                    label: 'Pengguna Baru',
+                    data: @json($chartData['users']),
+                    borderColor: '#F1D00A',
+                    backgroundColor: 'rgba(241,208,10,0.08)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#F1D00A',
+                    pointRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#475569',
+                        boxWidth: 26,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
                     }
                 }
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#64748B', font: { size: 11 } },
+                    grid: { color: 'rgba(148, 163, 184, 0.15)' }
+                },
+                y: {
+                    ticks: { color: '#64748B', font: { size: 11 } },
+                    grid: { color: 'rgba(148, 163, 184, 0.15)' }
+                }
             }
-        });
-    }
+        }
+    });
 </script>
 @endpush
