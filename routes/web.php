@@ -8,6 +8,18 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/', function () {
+    return view('welcome', [
+        'page' => 'beranda'
+    ]);
+})->name('beranda');
+
+Route::get('/profil', function () {
+    return view('welcome', [
+        'page' => 'profil'
+    ]);
+})->name('profil');
+
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
