@@ -109,9 +109,71 @@ class BujkController extends Controller
 
     public function destroy(Bujk $bujk): RedirectResponse
     {
-        $bujk->update(['is_deleted' => true]);
+        $bujk->update([
+            'is_deleted' => true,
+            'updated_at' => now(),
+        ]);
 
-        return redirect()->back()->with('success', 'Data BUJK berhasil dihapus dari daftar aktif.');
+        return redirect()
+            ->route('admin.bujk')
+            ->with('success', 'Data BUJK berhasil dihapus dari daftar aktif.');
+    }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['required', 'integer', 'exists:bujk,id'],
+        ], [
+            'ids.required' => 'Pilih minimal satu data BUJK.',
+            'ids.array' => 'Format data yang dipilih tidak valid.',
+            'ids.min' => 'Pilih minimal satu data BUJK.',
+            'ids.*.integer' => 'ID data BUJK tidak valid.',
+            'ids.*.exists' => 'Ada data BUJK yang tidak ditemukan.',
+        ]);
+
+        $ids = collect($validated['ids'])
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $affected = Bujk::query()
+            ->whereIn('id', $ids)
+            ->where('is_deleted', false)
+            ->update([
+                'is_deleted' => true,
+                'updated_at' => now(),
+            ]);
+
+        return redirect()
+            ->route('admin.bujk')
+            ->with(
+                $affected > 0 ? 'success' : 'error',
+                $affected > 0
+                    ? $affected . ' data BUJK berhasil dihapus.'
+                    : 'Tidak ada data BUJK yang dihapus.'
+            );
+    }
+
+    public function destroyAll(): RedirectResponse
+    {
+        $affected = Bujk::query()
+            ->where('is_deleted', false)
+            ->update([
+                'is_deleted' => true,
+                'updated_at' => now(),
+            ]);
+
+        return redirect()
+            ->route('admin.bujk')
+            ->with(
+                $affected > 0 ? 'success' : 'error',
+                $affected > 0
+                    ? 'Semua data BUJK berhasil dihapus (' . $affected . ' data).'
+                    : 'Tidak ada data BUJK aktif untuk dihapus.'
+            );
     }
 
     public function import(BujkImportRequest $request, BujkImportService $importService): RedirectResponse
