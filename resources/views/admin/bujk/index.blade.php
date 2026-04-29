@@ -131,50 +131,22 @@
                     </p>
                 </div>
 
-                <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
-                    <div class="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-800 bg-slate-950/50 px-3 py-3">
-                        <span class="w-full text-xs font-semibold uppercase tracking-wider text-slate-500 sm:w-auto">Aksi Data</span>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button
+                        type="button"
+                        data-modal-open="manual"
+                        class="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
+                    >
+                        Tambah Data
+                    </button>
 
-                        <button
-                            type="button"
-                            data-modal-open="manual"
-                            class="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
-                        >
-                            Tambah Data
-                        </button>
-
-                        <button
-                            type="button"
-                            data-modal-open="upload"
-                            class="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-indigo-500 hover:text-white"
-                        >
-                            Upload File
-                        </button>
-                    </div>
-
-                    <div class="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-800 bg-slate-950/50 px-3 py-3">
-                        <span class="w-full text-xs font-semibold uppercase tracking-wider text-slate-500 sm:w-auto">Aksi Hapus</span>
-
-                        <button
-                            type="button"
-                            id="bulk-delete-trigger"
-                            disabled
-                            class="cursor-not-allowed rounded-xl border border-rose-500/30 px-4 py-2.5 text-sm font-semibold text-rose-300/60 transition"
-                        >
-                            Hapus Terpilih
-                        </button>
-
-                        <button
-                            type="button"
-                            id="delete-all-trigger"
-                            {{ ($bujks->total() ?? 0) < 1 ? 'disabled' : '' }}
-                            class="{{ ($bujks->total() ?? 0) < 1
-                                ? 'cursor-not-allowed border border-rose-500/20 text-rose-300/40'
-                                : 'border border-rose-500/40 text-rose-300 hover:bg-rose-500/10' }} rounded-xl px-4 py-2.5 text-sm font-semibold transition"
-                        >
-                            Hapus Semua
-                        </button>
-                    </div>
+                    <button
+                        type="button"
+                        data-modal-open="upload"
+                        class="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-indigo-500 hover:text-white"
+                    >
+                        Upload File
+                    </button>
                 </div>
             </div>
 
@@ -186,7 +158,7 @@
                         type="text"
                         name="search"
                         value="{{ $search }}"
-                        placeholder="Cari NIB, nama BUJK, alamat, NPWP, email, atau kontak"
+                        placeholder="Cari NIB atau nama BUJK"
                         autocomplete="off"
                         class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500"
                     />
@@ -220,133 +192,13 @@
                 </div>
             </form>
 
-            <div class="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-950/40 px-4 py-3">
-                <label class="inline-flex items-center gap-3 text-sm text-slate-300">
-                    <input
-                        type="checkbox"
-                        id="select-all-rows"
-                        class="h-4 w-4 rounded border-slate-600 bg-slate-950 text-indigo-600 focus:ring-indigo-500"
-                    >
-                    <span>Pilih semua data di halaman ini</span>
-                </label>
-
-                <div class="text-sm text-slate-400">
-                    <span id="selected-count">0</span> data dipilih
-                </div>
-            </div>
-
-            <div class="mt-5 overflow-hidden rounded-2xl border border-slate-800">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-slate-800 text-sm">
-                        <thead class="bg-slate-950/80 text-left text-xs uppercase tracking-wider text-slate-400">
-                            <tr>
-                                <th class="w-12 px-4 py-3">
-                                    <span class="sr-only">Pilih</span>
-                                </th>
-                                <th class="px-4 py-3">No.</th>
-                                <th class="px-4 py-3">NIB</th>
-                                <th class="px-4 py-3">Nama BUJK</th>
-                                <th class="px-4 py-3">Jenis Usaha</th>
-                                <th class="px-4 py-3">Alamat</th>
-                                <th class="px-4 py-3">NPWP</th>
-                                <th class="px-4 py-3">Kontak</th>
-                                <th class="px-4 py-3 text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-800 bg-slate-900/60">
-                            @forelse($bujks as $item)
-                                <tr class="align-top text-slate-200">
-                                    <td class="px-4 py-4">
-                                        <input
-                                            type="checkbox"
-                                            value="{{ $item->id }}"
-                                            data-row-checkbox
-                                            class="h-4 w-4 rounded border-slate-600 bg-slate-950 text-indigo-600 focus:ring-indigo-500"
-                                        >
-                                    </td>
-                                    <td class="whitespace-nowrap px-4 py-4">{{ $bujks->firstItem() + $loop->index }}.</td>
-                                    <td class="whitespace-nowrap px-4 py-4 font-medium">{{ $item->nib }}</td>
-                                    <td class="px-4 py-4">
-                                        <p class="font-semibold text-white">{{ $item->nama_bujk }}</p>
-                                        <p class="mt-1 text-xs text-slate-500">
-                                            {{ $item->provinsi_bujk ?: '-' }}
-                                            @if($item->kab_kota_bujk)
-                                                • {{ $item->kab_kota_bujk }}
-                                            @endif
-                                        </p>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <div class="flex flex-wrap gap-2">
-                                            @foreach($item->jenis_bujk_list as $jenis)
-                                                <span class="rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-300">
-                                                    {{ $jenis }}
-                                                </span>
-                                            @endforeach
-                                        </div>
-                                    </td>
-                                    <td class="max-w-xs px-4 py-4 text-slate-300">{{ $item->alamat_bujk ?: '-' }}</td>
-                                    <td class="whitespace-nowrap px-4 py-4">{{ $item->npwp_bujk ?: '-' }}</td>
-                                    <td class="px-4 py-4">
-                                        <div class="space-y-1 text-xs text-slate-300">
-                                            <p>{{ $item->telp_bujk ?: '-' }}</p>
-                                            @if($item->email_bujk)
-                                                <p>{{ $item->email_bujk }}</p>
-                                            @endif
-                                            @if($item->website_bujk)
-                                                <p>
-                                                    <a
-                                                        href="{{ $item->website_url }}"
-                                                        target="_blank"
-                                                        class="text-sky-300 hover:text-sky-200"
-                                                    >
-                                                        {{ $item->website_bujk }}
-                                                    </a>
-                                                </p>
-                                            @endif
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        <div class="flex items-center justify-center gap-2">
-                                            <a
-                                                href="{{ route('admin.bujk', array_merge(request()->query(), ['edit' => $item->id, 'panel' => 'manual'])) }}"
-                                                class="inline-flex items-center justify-center rounded-lg border border-amber-400/40 px-3 py-2 text-xs font-semibold text-amber-300 transition hover:bg-amber-500/10"
-                                            >
-                                                Edit
-                                            </a>
-
-                                            <form action="{{ route('admin.bujk.destroy', $item) }}" method="POST" class="single-delete-form">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button
-                                                    type="button"
-                                                    data-delete-single
-                                                    data-delete-name="{{ $item->nama_bujk }}"
-                                                    class="inline-flex items-center justify-center rounded-lg border border-rose-400/40 px-3 py-2 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/10"
-                                                >
-                                                    Hapus
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="9" class="px-4 py-8 text-center text-sm text-slate-500">
-                                        Belum ada data BUJK yang tampil. Klik tombol tambah data atau upload file untuk mulai mengisi data.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <p class="text-sm text-slate-500">
-                    Menampilkan {{ $bujks->firstItem() ?? 0 }} - {{ $bujks->lastItem() ?? 0 }} dari {{ $bujks->total() }} data.
-                </p>
-
-                {{ $bujks->onEachSide(1)->links() }}
+            <div id="bujk-table-container">
+                @include('admin.bujk.partials.table', [
+                    'bujks' => $bujks,
+                    'search' => $search,
+                    'jenisFilter' => $jenisFilter,
+                    'perPage' => $perPage,
+                ])
             </div>
         </div>
     </div>
@@ -729,7 +581,7 @@
             >
                 <div class="px-5 py-5">
                     <div class="flex items-start gap-4">
-                        <div id="delete-modal-icon-box" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 text-rose-600">
+                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 text-rose-600">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16" />
                             </svg>
@@ -781,7 +633,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const body = document.body;
     const scriptData = document.getElementById('bujk-script-data');
-
     if (!scriptData) return;
 
     const modalElements = {
@@ -790,6 +641,7 @@ document.addEventListener('DOMContentLoaded', function () {
         delete: document.getElementById('delete-confirm-modal'),
     };
 
+    const tableContainer = document.getElementById('bujk-table-container');
     const openButtons = document.querySelectorAll('[data-modal-open]');
     const toastCloseButtons = document.querySelectorAll('[data-toast-close]');
     const provinceSelect = document.getElementById('provinsi_bujk');
@@ -800,13 +652,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const jenisSelect = document.getElementById('jenis');
     const perPageSelect = document.getElementById('per_page');
 
-    const selectAllRows = document.getElementById('select-all-rows');
-    const rowCheckboxes = document.querySelectorAll('[data-row-checkbox]');
-    const selectedCountEl = document.getElementById('selected-count');
-    const bulkDeleteTrigger = document.getElementById('bulk-delete-trigger');
-    const deleteAllTrigger = document.getElementById('delete-all-trigger');
-
-    const deleteSingleTriggers = document.querySelectorAll('[data-delete-single]');
     const confirmDeleteButton = document.getElementById('confirm-delete-button');
     const deleteModalTitle = document.getElementById('delete-modal-title');
     const deleteModalText = document.getElementById('delete-modal-text');
@@ -828,7 +673,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     let filterDebounce = null;
-    let filterSubmitting = false;
+    let activeFilterController = null;
 
     const hasOpenModal = () => {
         return Object.values(modalElements).some((modal) => modal && modal.dataset.state === 'open');
@@ -923,7 +768,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!form) return;
 
         const hiddenSubmit = form.querySelector('[data-hidden-submit]');
-
         if (hiddenSubmit) {
             hiddenSubmit.click();
             return;
@@ -932,26 +776,135 @@ document.addEventListener('DOMContentLoaded', function () {
         HTMLFormElement.prototype.submit.call(form);
     };
 
-    const submitFilterForm = () => {
-        if (!filterForm || filterSubmitting) return;
+    const getRowCheckboxes = () => Array.from(tableContainer.querySelectorAll('[data-row-checkbox]'));
+    const getSelectAllRows = () => tableContainer.querySelector('#select-all-rows');
+    const getBulkDeleteTrigger = () => tableContainer.querySelector('#bulk-delete-trigger');
+    const getDeleteAllTrigger = () => tableContainer.querySelector('#delete-all-trigger');
 
-        filterSubmitting = true;
-        filterForm.submit();
+    const getSelectedIds = () => {
+        return getRowCheckboxes()
+            .filter((checkbox) => checkbox.checked)
+            .map((checkbox) => checkbox.value);
+    };
+
+    const updateBulkDeleteButton = (count) => {
+        const bulkDeleteTrigger = getBulkDeleteTrigger();
+        if (!bulkDeleteTrigger) return;
+
+        if (count > 0) {
+            bulkDeleteTrigger.disabled = false;
+            bulkDeleteTrigger.classList.remove('cursor-not-allowed', 'border-rose-500/30', 'text-rose-300/60');
+            bulkDeleteTrigger.classList.add('border-rose-500/40', 'text-rose-300', 'hover:bg-rose-500/10');
+            bulkDeleteTrigger.textContent = `Hapus Terpilih (${count})`;
+        } else {
+            bulkDeleteTrigger.disabled = true;
+            bulkDeleteTrigger.classList.add('cursor-not-allowed', 'border-rose-500/30', 'text-rose-300/60');
+            bulkDeleteTrigger.classList.remove('border-rose-500/40', 'text-rose-300', 'hover:bg-rose-500/10');
+            bulkDeleteTrigger.textContent = 'Hapus Terpilih';
+        }
+    };
+
+    const refreshSelectionState = () => {
+        const rowCheckboxes = getRowCheckboxes();
+        const selectAllRows = getSelectAllRows();
+        const count = getSelectedIds().length;
+
+        if (selectAllRows) {
+            selectAllRows.checked = count > 0 && count === rowCheckboxes.length && rowCheckboxes.length > 0;
+            selectAllRows.indeterminate = count > 0 && count < rowCheckboxes.length;
+        }
+
+        updateBulkDeleteButton(count);
+    };
+
+    const buildFilterUrl = (pageUrl = null) => {
+        const url = pageUrl
+            ? new URL(pageUrl, window.location.origin)
+            : new URL(filterForm.action, window.location.origin);
+
+        if (!pageUrl) {
+            url.searchParams.delete('page');
+        }
+
+        const keyword = searchInput ? searchInput.value.trim() : '';
+        const jenis = jenisSelect ? jenisSelect.value : '';
+        const perPage = perPageSelect ? perPageSelect.value : '';
+
+        if (keyword !== '') {
+            url.searchParams.set('search', keyword);
+        } else {
+            url.searchParams.delete('search');
+        }
+
+        if (jenis !== '') {
+            url.searchParams.set('jenis', jenis);
+        } else {
+            url.searchParams.delete('jenis');
+        }
+
+        if (perPage !== '') {
+            url.searchParams.set('per_page', perPage);
+        } else {
+            url.searchParams.delete('per_page');
+        }
+
+        return url;
+    };
+
+    const fetchFilteredTable = async (pageUrl = null) => {
+        if (!filterForm || !tableContainer) return;
+
+        const url = buildFilterUrl(pageUrl);
+
+        if (activeFilterController) {
+            activeFilterController.abort();
+        }
+
+        activeFilterController = new AbortController();
+
+        try {
+            const response = await fetch(url.toString(), {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+                signal: activeFilterController.signal,
+            });
+
+            if (!response.ok) {
+                throw new Error('Gagal memuat data BUJK.');
+            }
+
+            const payload = await response.json();
+            tableContainer.innerHTML = payload.html;
+            refreshSelectionState();
+            window.history.replaceState({}, '', url.toString());
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                return;
+            }
+
+            console.error(error);
+            window.location.href = url.toString();
+        }
+    };
+
+    const triggerRealtimeFilter = () => {
+        clearTimeout(filterDebounce);
+        filterDebounce = setTimeout(() => {
+            fetchFilteredTable();
+        }, 120);
     };
 
     if (searchInput) {
-        searchInput.addEventListener('input', function () {
-            clearTimeout(filterDebounce);
-            filterDebounce = setTimeout(() => {
-                submitFilterForm();
-            }, 450);
-        });
+        searchInput.addEventListener('input', triggerRealtimeFilter);
 
         searchInput.addEventListener('keydown', function (event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 clearTimeout(filterDebounce);
-                submitFilterForm();
+                fetchFilteredTable();
             }
         });
     }
@@ -959,14 +912,22 @@ document.addEventListener('DOMContentLoaded', function () {
     if (jenisSelect) {
         jenisSelect.addEventListener('change', function () {
             clearTimeout(filterDebounce);
-            submitFilterForm();
+            fetchFilteredTable();
         });
     }
 
     if (perPageSelect) {
         perPageSelect.addEventListener('change', function () {
             clearTimeout(filterDebounce);
-            submitFilterForm();
+            fetchFilteredTable();
+        });
+    }
+
+    if (filterForm) {
+        filterForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            clearTimeout(filterDebounce);
+            fetchFilteredTable();
         });
     }
 
@@ -1033,110 +994,85 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    const getSelectedIds = () => {
-        return Array.from(rowCheckboxes)
-            .filter((checkbox) => checkbox.checked)
-            .map((checkbox) => checkbox.value);
-    };
+    if (tableContainer) {
+        tableContainer.addEventListener('change', function (event) {
+            if (event.target.matches('#select-all-rows')) {
+                const checked = event.target.checked;
+                getRowCheckboxes().forEach((checkbox) => {
+                    checkbox.checked = checked;
+                });
+                refreshSelectionState();
+            }
 
-    const updateBulkDeleteButton = (count) => {
-        if (!bulkDeleteTrigger) return;
-
-        if (count > 0) {
-            bulkDeleteTrigger.disabled = false;
-            bulkDeleteTrigger.classList.remove('cursor-not-allowed', 'border-rose-500/30', 'text-rose-300/60');
-            bulkDeleteTrigger.classList.add('border-rose-500/40', 'text-rose-300', 'hover:bg-rose-500/10');
-            bulkDeleteTrigger.textContent = `Hapus Terpilih (${count})`;
-        } else {
-            bulkDeleteTrigger.disabled = true;
-            bulkDeleteTrigger.classList.add('cursor-not-allowed', 'border-rose-500/30', 'text-rose-300/60');
-            bulkDeleteTrigger.classList.remove('border-rose-500/40', 'text-rose-300', 'hover:bg-rose-500/10');
-            bulkDeleteTrigger.textContent = 'Hapus Terpilih';
-        }
-    };
-
-    const refreshSelectionState = () => {
-        const ids = getSelectedIds();
-        const count = ids.length;
-
-        if (selectedCountEl) {
-            selectedCountEl.textContent = count;
-        }
-
-        if (selectAllRows) {
-            selectAllRows.checked = count > 0 && count === rowCheckboxes.length;
-            selectAllRows.indeterminate = count > 0 && count < rowCheckboxes.length;
-        }
-
-        updateBulkDeleteButton(count);
-    };
-
-    if (selectAllRows) {
-        selectAllRows.addEventListener('change', function () {
-            rowCheckboxes.forEach((checkbox) => {
-                checkbox.checked = this.checked;
-            });
-            refreshSelectionState();
+            if (event.target.matches('[data-row-checkbox]')) {
+                refreshSelectionState();
+            }
         });
-    }
 
-    rowCheckboxes.forEach((checkbox) => {
-        checkbox.addEventListener('change', refreshSelectionState);
-    });
+        tableContainer.addEventListener('click', function (event) {
+            const paginationLink = event.target.closest('.bujk-pagination a');
+            if (paginationLink) {
+                event.preventDefault();
+                clearTimeout(filterDebounce);
+                fetchFilteredTable(paginationLink.href);
+                return;
+            }
 
-    const openDeleteModal = ({ mode, form = null, name = '', ids = [] }) => {
-        deleteState = { mode, form, name, ids };
+            const singleDeleteButton = event.target.closest('[data-delete-single]');
+            if (singleDeleteButton) {
+                deleteState = {
+                    mode: 'single',
+                    form: singleDeleteButton.closest('form'),
+                    name: singleDeleteButton.dataset.deleteName || 'data ini',
+                    ids: [],
+                };
 
-        if (mode === 'single') {
-            deleteModalTitle.textContent = 'Hapus data BUJK?';
-            deleteModalText.innerHTML = `Data <span class="font-semibold text-slate-700">${name}</span> akan dihapus dari daftar aktif. Tindakan ini tidak bisa dibatalkan.`;
-        }
+                deleteModalTitle.textContent = 'Hapus data BUJK?';
+                deleteModalText.innerHTML = `Data <span class="font-semibold text-slate-700">${deleteState.name}</span> akan dihapus dari daftar aktif. Tindakan ini tidak bisa dibatalkan.`;
+                confirmDeleteButton.disabled = false;
+                confirmDeleteButton.textContent = 'Ya, Hapus';
 
-        if (mode === 'bulk') {
-            deleteModalTitle.textContent = 'Hapus beberapa data BUJK?';
-            deleteModalText.innerHTML = `Sebanyak <span class="font-semibold text-slate-700">${ids.length} data</span> terpilih akan dihapus dari daftar aktif. Tindakan ini tidak bisa dibatalkan.`;
-        }
+                showModal(modalElements.delete, null, false);
+                return;
+            }
 
-        if (mode === 'all') {
-            deleteModalTitle.textContent = 'Hapus semua data BUJK?';
-            deleteModalText.innerHTML = `Semua <span class="font-semibold text-slate-700">data BUJK aktif</span> akan dihapus. Pastikan kamu benar-benar yakin karena tindakan ini tidak bisa dibatalkan.`;
-        }
+            const bulkDeleteTrigger = event.target.closest('#bulk-delete-trigger');
+            if (bulkDeleteTrigger) {
+                const ids = getSelectedIds();
+                if (!ids.length) return;
 
-        confirmDeleteButton.disabled = false;
-        confirmDeleteButton.textContent = 'Ya, Hapus';
+                deleteState = {
+                    mode: 'bulk',
+                    form: null,
+                    name: null,
+                    ids,
+                };
 
-        showModal(modalElements.delete, null, false);
-    };
+                deleteModalTitle.textContent = 'Hapus beberapa data BUJK?';
+                deleteModalText.innerHTML = `Sebanyak <span class="font-semibold text-slate-700">${ids.length} data</span> terpilih akan dihapus dari daftar aktif. Tindakan ini tidak bisa dibatalkan.`;
+                confirmDeleteButton.disabled = false;
+                confirmDeleteButton.textContent = 'Ya, Hapus';
 
-    deleteSingleTriggers.forEach((button) => {
-        button.addEventListener('click', function () {
-            openDeleteModal({
-                mode: 'single',
-                form: this.closest('form'),
-                name: this.dataset.deleteName || 'data ini',
-            });
-        });
-    });
+                showModal(modalElements.delete, null, false);
+                return;
+            }
 
-    if (bulkDeleteTrigger) {
-        bulkDeleteTrigger.addEventListener('click', function () {
-            const ids = getSelectedIds();
-            if (!ids.length) return;
+            const deleteAllTrigger = event.target.closest('#delete-all-trigger');
+            if (deleteAllTrigger && !deleteAllTrigger.disabled) {
+                deleteState = {
+                    mode: 'all',
+                    form: null,
+                    name: null,
+                    ids: [],
+                };
 
-            openDeleteModal({
-                mode: 'bulk',
-                ids,
-            });
-        });
-    }
+                deleteModalTitle.textContent = 'Hapus semua data BUJK?';
+                deleteModalText.innerHTML = 'Semua <span class="font-semibold text-slate-700">data BUJK aktif</span> akan dihapus. Pastikan kamu benar-benar yakin karena tindakan ini tidak bisa dibatalkan.';
+                confirmDeleteButton.disabled = false;
+                confirmDeleteButton.textContent = 'Ya, Hapus';
 
-    if (deleteAllTrigger) {
-        deleteAllTrigger.addEventListener('click', function () {
-            if (this.disabled) return;
-
-            openDeleteModal({
-                mode: 'all',
-            });
+                showModal(modalElements.delete, null, false);
+            }
         });
     }
 
@@ -1167,10 +1103,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (deleteState.mode === 'all') {
                 submitHiddenForm(deleteAllForm);
-                return;
             }
         });
     }
+
+    window.addEventListener('popstate', function () {
+        const url = new URL(window.location.href);
+
+        if (searchInput) {
+            searchInput.value = url.searchParams.get('search') || '';
+        }
+
+        if (jenisSelect) {
+            jenisSelect.value = url.searchParams.get('jenis') || '';
+        }
+
+        if (perPageSelect) {
+            perPageSelect.value = url.searchParams.get('per_page') || '{{ $perPage }}';
+        }
+
+        fetchFilteredTable(url.toString());
+    });
 
     refreshSelectionState();
 

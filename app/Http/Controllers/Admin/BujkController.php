@@ -25,7 +25,7 @@ class BujkController extends Controller
             ? (int) $request->integer('per_page')
             : 10;
 
-        $search = trim((string) $request->string('search'));
+        $search = $this->squish((string) $request->string('search'));
         $jenisFilter = trim((string) $request->string('jenis'));
 
         $baseQuery = Bujk::query()->active();
@@ -34,13 +34,7 @@ class BujkController extends Controller
         if ($search !== '') {
             $filteredQuery->where(function (Builder $query) use ($search): void {
                 $query->where('nib', 'like', '%' . $search . '%')
-                    ->orWhere('nama_bujk', 'like', '%' . $search . '%')
-                    ->orWhere('npwp_bujk', 'like', '%' . $search . '%')
-                    ->orWhere('alamat_bujk', 'like', '%' . $search . '%')
-                    ->orWhere('kab_kota_bujk', 'like', '%' . $search . '%')
-                    ->orWhere('provinsi_bujk', 'like', '%' . $search . '%')
-                    ->orWhere('telp_bujk', 'like', '%' . $search . '%')
-                    ->orWhere('email_bujk', 'like', '%' . $search . '%');
+                    ->orWhere('nama_bujk', 'like', '%' . $search . '%');
             });
         }
 
@@ -58,22 +52,22 @@ class BujkController extends Controller
             ? Bujk::query()->active()->findOrFail((int) $request->query('edit'))
             : null;
 
-        $stats = [
-            'total_data' => (clone $baseQuery)->count(),
-            'total_email' => (clone $baseQuery)->whereNotNull('email_bujk')->where('email_bujk', '!=', '')->count(),
-            'total_website' => (clone $baseQuery)->whereNotNull('website_bujk')->where('website_bujk', '!=', '')->count(),
-            'hasil_filter' => $bujks->total(),
-        ];
-
-        return view('admin.bujk.index', [
+        $viewData = [
             'bujks' => $bujks,
             'editingBujk' => $editingBujk,
             'jenisOptions' => config('bujk.jenis_usaha', []),
-            'stats' => $stats,
             'search' => $search,
             'jenisFilter' => $jenisFilter,
             'perPage' => $perPage,
-        ]);
+        ];
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('admin.bujk.partials.table', $viewData)->render(),
+            ]);
+        }
+
+        return view('admin.bujk.index', $viewData);
     }
 
     public function store(BujkFormRequest $request): RedirectResponse
@@ -84,6 +78,7 @@ class BujkController extends Controller
         if ($existing) {
             $existing->fill($payload);
             $existing->is_deleted = false;
+            $existing->updated_at = now();
             $existing->save();
 
             return redirect()
@@ -100,7 +95,10 @@ class BujkController extends Controller
 
     public function update(BujkFormRequest $request, Bujk $bujk): RedirectResponse
     {
-        $bujk->update($request->validated() + ['is_deleted' => false]);
+        $bujk->update($request->validated() + [
+            'is_deleted' => false,
+            'updated_at' => now(),
+        ]);
 
         return redirect()
             ->route('admin.bujk')
