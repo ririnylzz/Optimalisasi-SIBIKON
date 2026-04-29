@@ -1,10 +1,17 @@
 <div class="relative z-10">
     <div class="space-y-1.5">
-        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 rounded-xl {{ request()->routeIs('admin.dashboard') ? 'bg-[#28428B] text-[#F7E578]' : 'text-blue-100/85 hover:bg-white/7' }} px-3 py-2.5 text-sm font-semibold">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 12l9-9 9 9M4.5 10.5V20a1 1 0 001 1h4.5v-6h4v6H18.5a1 1 0 001-1v-9.5"/>
-            </svg>
+        <div class="pt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-100/45">
             Dashboard
+        </div>
+
+        <a href="{{ route('admin.dashboard') }}"
+        class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.dashboard') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">
+            Dashboard Badan Usaha Jasa Konstruksi
+        </a>
+
+        <a href="#"
+        class="block cursor-not-allowed rounded-xl px-3 py-2.5 text-sm text-blue-100/35">
+            Dashboard Tenaga Kerja Konstruksi
         </a>
 
         <div class="pt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-100/45">Data Master</div>
