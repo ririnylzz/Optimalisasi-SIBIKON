@@ -31,18 +31,26 @@
                         Beranda
                     </a>
 
-                    <div class="relative">
+                    <div class="relative group">
                         <button type="button"
-                            class="nav-dropdown-btn flex items-center gap-1 text-white hover:text-yellow-400 transition"
-                            data-dropdown="dropdown-profil">
+                            class="{{ request()->routeIs('profil') ? 'text-yellow-400' : 'text-white' }} flex items-center gap-1 hover:text-yellow-400 transition">
                             Profil
+                            <svg class="w-4 h-4 transition group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7"></path>
+                            </svg>
                         </button>
 
-                        <div id="dropdown-fungsi"
-                            class="nav-dropdown hidden absolute left-0 top-full z-50 mt-4 w-64 border-t-4 border-yellow-400 bg-white shadow-xl">
-                            <a href="#" class="block px-6 py-4 border-b hover:bg-gray-100">Pengaturan</a>
-                            <a href="#" class="block px-6 py-4 border-b hover:bg-gray-100">Pemberdayaan</a>
-                            <a href="#" class="block px-6 py-4 hover:bg-gray-100">Pengawasan</a>
+                        <div class="absolute left-0 top-full z-50 mt-4 hidden w-72 border-t-4 border-yellow-400 bg-white shadow-xl group-hover:block">
+                            <a href="{{ route('profil') }}" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
+                                Tentang Kami
+                            </a>
+                            <a href="{{ route('struktur') }}" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
+                                Struktur Organisasi
+                            </a>
+                            <a href="#" class="block px-6 py-4 font-bold text-slate-800 hover:bg-slate-100">
+                                SOP & Renja
+                            </a>
                         </div>
                     </div>
 
@@ -51,18 +59,26 @@
                         Berita
                     </a>
 
-                    <div class="relative">
+                    <div class="relative group">
                         <button type="button"
-                            class="nav-dropdown-btn flex items-center gap-1 text-white hover:text-yellow-400 transition"
-                            data-dropdown="dropdown-fungsi">
+                            class="{{ request()->routeIs('fungsi') ? 'text-yellow-400' : 'text-white' }} flex items-center gap-1 hover:text-yellow-400 transition">
                             Fungsi
+                            <svg class="w-4 h-4 transition group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7"></path>
+                            </svg>
                         </button>
 
-                        <div id="dropdown-fungsi"
-                            class="nav-dropdown hidden absolute left-0 top-full z-50 mt-4 w-64 border-t-4 border-yellow-400 bg-white shadow-xl">
-                            <a href="#" class="block px-6 py-4 border-b hover:bg-gray-100">Pengaturan</a>
-                            <a href="#" class="block px-6 py-4 border-b hover:bg-gray-100">Pemberdayaan</a>
-                            <a href="#" class="block px-6 py-4 hover:bg-gray-100">Pengawasan</a>
+                        <div class="absolute left-0 top-full z-50 mt-4 hidden w-64 border-t-4 border-yellow-400 bg-white shadow-xl group-hover:block">
+                            <a href="#" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
+                                Pengaturan
+                            </a>
+                            <a href="#" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
+                                Pemberdayaan
+                            </a>
+                            <a href="#" class="block px-6 py-4 font-bold text-slate-800 hover:bg-slate-100">
+                                Pengawasan
+                            </a>
                         </div>
                     </div>
 
@@ -75,7 +91,7 @@
 
                 <!-- login button -->
                 <div class="hidden md:block">
-                    <a href="#" class="inline-flex items-center rounded-2xl bg-yellow-400 px-7 py-3 font-bold text-slate-900 hover:bg-yellow-300 transition shadow-lg shadow-yellow-400/20">
+                    <a href="{{ route('login') }}" class="inline-flex items-center rounded-2xl bg-yellow-400 px-7 py-3 font-bold text-slate-900 hover:bg-yellow-300 transition shadow-lg shadow-yellow-400/20">
                         Login
                     </a>
                 </div>
@@ -96,7 +112,7 @@
                     <a href="#">Berita</a>
                     <a href="#">Fungsi</a>
                     <a href="#">Kontak</a>
-                    <a href="#" class="inline-flex w-fit items-center rounded-xl bg-yellow-400 px-6 py-3 font-bold text-slate-900">
+                    <a href="{{ route('login') }}" class="inline-flex w-fit items-center rounded-xl bg-yellow-400 px-6 py-3 font-bold text-slate-900">
                         Login
                     </a>
                 </div>

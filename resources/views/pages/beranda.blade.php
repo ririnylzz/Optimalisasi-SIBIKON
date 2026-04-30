@@ -91,7 +91,7 @@
 
                 <!-- login button -->
                 <div class="hidden md:block">
-                    <a href="#" class="inline-flex items-center rounded-2xl bg-yellow-400 px-7 py-3 font-bold text-slate-900 hover:bg-yellow-300 transition shadow-lg shadow-yellow-400/20">
+                    <a href="{{ route('login') }}" class="inline-flex items-center rounded-2xl bg-yellow-400 px-7 py-3 font-bold text-slate-900 hover:bg-yellow-300 transition shadow-lg shadow-yellow-400/20">
                         Login
                     </a>
                 </div>
@@ -112,7 +112,7 @@
                     <a href="#">Berita</a>
                     <a href="#">Fungsi</a>
                     <a href="#">Kontak</a>
-                    <a href="#" class="inline-flex w-fit items-center rounded-xl bg-yellow-400 px-6 py-3 font-bold text-slate-900">
+                    <a href="{{ route('login') }}" class="inline-flex w-fit items-center rounded-xl bg-yellow-400 px-6 py-3 font-bold text-slate-900">
                         Login
                     </a>
                 </div>

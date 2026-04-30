@@ -20,6 +20,20 @@ Route::get('/profil', function () {
     ]);
 })->name('profil');
 
+Route::get('/struktur', function () {
+    return view('welcome', [
+        'page' => 'struktur'
+    ]);
+})->name('struktur');
+
+Route::get('/login', function () {
+    return view('welcome', ['page' => 'login']);
+})->name('login');
+
+Route::get('/registrasi', function () {
+    return view('welcome', ['page' => 'regist']);
+})->name('regist');
+
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
