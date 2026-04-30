@@ -27,7 +27,6 @@ class BujkController extends Controller
 
         $search = $this->squish((string) $request->string('search'));
         $jenisFilter = trim((string) $request->string('jenis'));
-        $provinceFilter = $this->normalizeRegionValue((string) $request->string('provinsi'));
         $regencyFilter = $this->normalizeRegionValue((string) $request->string('kabupaten'));
 
         $baseQuery = Bujk::query()->active();
@@ -44,13 +43,20 @@ class BujkController extends Controller
             $this->applyJenisFilter($filteredQuery, $jenisFilter);
         }
 
-        if ($provinceFilter !== '') {
-            $filteredQuery->where('provinsi_bujk', $provinceFilter);
-        }
-
         if ($regencyFilter !== '') {
             $filteredQuery->where('kab_kota_bujk', $regencyFilter);
         }
+
+        $regencyFilterOptions = Bujk::query()
+            ->active()
+            ->whereNotNull('kab_kota_bujk')
+            ->where('kab_kota_bujk', '<>', '')
+            ->orderBy('kab_kota_bujk')
+            ->pluck('kab_kota_bujk')
+            ->map(fn ($value) => $this->normalizeRegionValue((string) $value))
+            ->filter()
+            ->unique()
+            ->values();
 
         $bujks = $filteredQuery
             ->orderByDesc('updated_at')
@@ -68,8 +74,8 @@ class BujkController extends Controller
             'jenisOptions' => config('bujk.jenis_usaha', []),
             'search' => $search,
             'jenisFilter' => $jenisFilter,
-            'provinceFilter' => $provinceFilter,
             'regencyFilter' => $regencyFilter,
+            'regencyFilterOptions' => $regencyFilterOptions,
             'perPage' => $perPage,
         ];
 

@@ -20,9 +20,13 @@
 
         $selectedProvince = old('provinsi_bujk', $editingBujk?->provinsi_bujk);
         $selectedKabupaten = old('kab_kota_bujk', $editingBujk?->kab_kota_bujk);
-        $selectedFilterProvince = $provinceFilter ?? request('provinsi');
         $selectedFilterKabupaten = $regencyFilter ?? request('kabupaten');
+        $regencyFilterOptions = collect($regencyFilterOptions ?? []);
         $availableKabupaten = collect();
+
+        if ($selectedFilterKabupaten && !$regencyFilterOptions->contains($selectedFilterKabupaten)) {
+            $regencyFilterOptions->push($selectedFilterKabupaten);
+        }
 
         if ($selectedKabupaten) {
             $availableKabupaten->push($selectedKabupaten);
@@ -152,7 +156,7 @@
                 </div>
             </div>
 
-            <form id="bujk-filter-form" method="GET" action="{{ route('admin.bujk') }}" class="mt-5 grid grid-cols-1 gap-3 text-xs md:grid-cols-2 xl:grid-cols-6">
+            <form id="bujk-filter-form" method="GET" action="{{ route('admin.bujk') }}" class="mt-5 grid grid-cols-1 gap-3 text-xs md:grid-cols-2 xl:grid-cols-5">
                 <div class="xl:col-span-2">
                     <label for="search" class="mb-2 block text-xs font-semibold text-slate-600">Filter / keyword</label>
                     <input
@@ -181,30 +185,16 @@
                 </div>
 
                 <div>
-                    <label for="filter_provinsi" class="mb-2 block text-xs font-semibold text-slate-600">Provinsi</label>
-                    <select
-                        id="filter_provinsi"
-                        name="provinsi"
-                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
-                    >
-                        <option value="">Semua provinsi</option>
-                        @if($selectedFilterProvince)
-                            <option value="{{ $selectedFilterProvince }}" selected>{{ $selectedFilterProvince }}</option>
-                        @endif
-                    </select>
-                </div>
-
-                <div>
                     <label for="filter_kabupaten" class="mb-2 block text-xs font-semibold text-slate-600">Kabupaten / Kota</label>
                     <select
                         id="filter_kabupaten"
                         name="kabupaten"
                         class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
                     >
-                        <option value="">{{ $selectedFilterProvince ? 'Semua kab/kota' : 'Pilih provinsi dulu' }}</option>
-                        @if($selectedFilterKabupaten)
-                            <option value="{{ $selectedFilterKabupaten }}" selected>{{ $selectedFilterKabupaten }}</option>
-                        @endif
+                        <option value="">Semua kabupaten/kota</option>
+                        @foreach($regencyFilterOptions as $kabupatenOption)
+                            <option value="{{ $kabupatenOption }}" @selected($selectedFilterKabupaten === $kabupatenOption)>{{ $kabupatenOption }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -227,7 +217,6 @@
                     'bujks' => $bujks,
                     'search' => $search,
                     'jenisFilter' => $jenisFilter,
-                    'provinceFilter' => $provinceFilter,
                     'regencyFilter' => $regencyFilter,
                     'perPage' => $perPage,
                 ])
@@ -654,7 +643,6 @@
         class="hidden"
         data-selected-province="{{ e((string) $selectedProvince) }}"
         data-selected-kabupaten="{{ e((string) $selectedKabupaten) }}"
-        data-selected-filter-province="{{ e((string) $selectedFilterProvince) }}"
         data-selected-filter-kabupaten="{{ e((string) $selectedFilterKabupaten) }}"
         data-provinces-endpoint="{{ route('admin.bujk.regions.provinces') }}"
         data-regencies-endpoint="{{ route('admin.bujk.regions.regencies') }}"
@@ -680,7 +668,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const toastCloseButtons = document.querySelectorAll('[data-toast-close]');
     const provinceSelect = document.getElementById('provinsi_bujk');
     const kabupatenSelect = document.getElementById('kab_kota_bujk');
-    const filterProvinceSelect = document.getElementById('filter_provinsi');
     const filterKabupatenSelect = document.getElementById('filter_kabupaten');
 
     const filterForm = document.getElementById('bujk-filter-form');
@@ -697,7 +684,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const selectedProvince = String(scriptData.dataset.selectedProvince || '').trim();
     const selectedKabupaten = String(scriptData.dataset.selectedKabupaten || '').trim();
-    const selectedFilterProvince = String(scriptData.dataset.selectedFilterProvince || '').trim();
     const selectedFilterKabupaten = String(scriptData.dataset.selectedFilterKabupaten || '').trim();
     const provincesEndpoint = scriptData.dataset.provincesEndpoint || '';
     const regenciesEndpoint = scriptData.dataset.regenciesEndpoint || '';
@@ -866,7 +852,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const keyword = searchInput ? searchInput.value.trim() : '';
         const jenis = jenisSelect ? jenisSelect.value : '';
-        const province = filterProvinceSelect ? filterProvinceSelect.value : '';
         const kabupaten = filterKabupatenSelect ? filterKabupatenSelect.value : '';
         const perPage = perPageSelect ? perPageSelect.value : '';
 
@@ -880,12 +865,6 @@ document.addEventListener('DOMContentLoaded', function () {
             url.searchParams.set('jenis', jenis);
         } else {
             url.searchParams.delete('jenis');
-        }
-
-        if (province !== '') {
-            url.searchParams.set('provinsi', province);
-        } else {
-            url.searchParams.delete('provinsi');
         }
 
         if (kabupaten !== '') {
@@ -963,21 +942,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (jenisSelect) {
         jenisSelect.addEventListener('change', function () {
-            clearTimeout(filterDebounce);
-            fetchFilteredTable();
-        });
-    }
-
-    if (filterProvinceSelect) {
-        filterProvinceSelect.addEventListener('change', function () {
-            const selectedOption = this.selectedOptions[0];
-            const provinceCode = selectedOption ? (selectedOption.dataset.code || '') : '';
-
-            if (filterKabupatenSelect) {
-                filterKabupatenSelect.value = '';
-            }
-
-            loadFilterRegencies(provinceCode, '');
             clearTimeout(filterDebounce);
             fetchFilteredTable();
         });
@@ -1192,10 +1156,6 @@ document.addEventListener('DOMContentLoaded', function () {
             jenisSelect.value = url.searchParams.get('jenis') || '';
         }
 
-        if (filterProvinceSelect) {
-            filterProvinceSelect.value = url.searchParams.get('provinsi') || '';
-        }
-
         if (filterKabupatenSelect) {
             filterKabupatenSelect.value = url.searchParams.get('kabupaten') || '';
         }
@@ -1358,116 +1318,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     loadProvinces();
 
-    const resetFilterKabupaten = (placeholder = 'Pilih provinsi dulu') => {
-        if (!filterKabupatenSelect) return;
 
-        filterKabupatenSelect.innerHTML = '';
-        filterKabupatenSelect.appendChild(createOption('', placeholder, true));
-        filterKabupatenSelect.disabled = true;
-    };
-
-    const renderFilterProvinces = (items) => {
-        if (!filterProvinceSelect) return;
-
-        filterProvinceSelect.innerHTML = '';
-        filterProvinceSelect.appendChild(createOption('', 'Semua provinsi'));
-
-        let matched = false;
-
-        items.forEach((item) => {
-            const value = normalizeText(item.value || item.label || '');
-            const label = item.label || item.value || '';
-            const code = item.code || '';
-            const isSelected = selectedFilterProvince !== '' && normalizeText(selectedFilterProvince) === value;
-
-            if (isSelected) matched = true;
-
-            filterProvinceSelect.appendChild(createOption(value, label, isSelected, code));
-        });
-
-        if (selectedFilterProvince && !matched) {
-            filterProvinceSelect.appendChild(createOption(selectedFilterProvince, selectedFilterProvince, true));
-        }
-    };
-
-    const renderFilterRegencies = (items, selectedValue = '') => {
-        if (!filterKabupatenSelect) return;
-
-        filterKabupatenSelect.innerHTML = '';
-        filterKabupatenSelect.appendChild(createOption('', 'Semua kab/kota'));
-
-        let matched = false;
-
-        items.forEach((item) => {
-            const value = normalizeText(item.value || item.label || '');
-            const label = item.label || item.value || '';
-            const isSelected = selectedValue !== '' && normalizeText(selectedValue) === value;
-
-            if (isSelected) matched = true;
-
-            filterKabupatenSelect.appendChild(createOption(value, label, isSelected, item.code || ''));
-        });
-
-        if (selectedValue && !matched) {
-            filterKabupatenSelect.appendChild(createOption(selectedValue, selectedValue, true));
-        }
-
-        filterKabupatenSelect.disabled = false;
-    };
-
-    const loadFilterRegencies = async (provinceCode, selectedRegency = '') => {
-        if (!filterKabupatenSelect) return;
-
-        if (!provinceCode) {
-            resetFilterKabupaten('Pilih provinsi dulu');
-            return;
-        }
-
-        filterKabupatenSelect.disabled = true;
-        filterKabupatenSelect.innerHTML = '';
-        filterKabupatenSelect.appendChild(createOption('', 'Memuat kabupaten/kota...', true));
-
-        try {
-            const url = `${regenciesEndpoint}?province_code=${encodeURIComponent(provinceCode)}`;
-            const payload = await fetchJson(url);
-            const items = Array.isArray(payload.data) ? payload.data : [];
-
-            renderFilterRegencies(items, selectedRegency);
-        } catch (error) {
-            console.error(error);
-            resetFilterKabupaten('Gagal memuat kabupaten/kota');
-        }
-    };
-
-    const loadFilterProvinces = async () => {
-        if (!filterProvinceSelect || !filterKabupatenSelect) return;
-
-        filterProvinceSelect.disabled = true;
-        filterProvinceSelect.innerHTML = '';
-        filterProvinceSelect.appendChild(createOption('', 'Memuat provinsi...', true));
-        resetFilterKabupaten('Pilih provinsi dulu');
-
-        try {
-            const payload = await fetchJson(provincesEndpoint);
-            const items = Array.isArray(payload.data) ? payload.data : [];
-
-            renderFilterProvinces(items);
-            filterProvinceSelect.disabled = false;
-
-            const selectedOption = filterProvinceSelect.selectedOptions[0];
-            const provinceCode = selectedOption ? (selectedOption.dataset.code || '') : '';
-
-            await loadFilterRegencies(provinceCode, selectedFilterKabupaten);
-        } catch (error) {
-            console.error(error);
-            filterProvinceSelect.innerHTML = '';
-            filterProvinceSelect.appendChild(createOption('', 'Gagal memuat provinsi', true));
-            filterProvinceSelect.disabled = true;
-            resetFilterKabupaten('Pilih provinsi dulu');
-        }
-    };
-
-    loadFilterProvinces();
 });
 </script>
 @endpush
