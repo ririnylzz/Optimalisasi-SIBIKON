@@ -20,6 +20,8 @@
 
         $selectedProvince = old('provinsi_bujk', $editingBujk?->provinsi_bujk);
         $selectedKabupaten = old('kab_kota_bujk', $editingBujk?->kab_kota_bujk);
+        $selectedFilterProvince = $provinceFilter ?? request('provinsi');
+        $selectedFilterKabupaten = $regencyFilter ?? request('kabupaten');
         $availableKabupaten = collect();
 
         if ($selectedKabupaten) {
@@ -113,20 +115,20 @@
 
     <div class="space-y-4">
         <div>
-            <div class="flex items-center gap-2 text-sm text-slate-400">
-                <a href="{{ route('admin.dashboard') }}" class="hover:text-white">Home</a>
+            <div class="flex items-center gap-2 text-xs text-slate-500">
+                <a href="{{ route('admin.dashboard') }}" class="hover:text-indigo-600">Home</a>
                 <span>/</span>
-                <span class="font-medium text-slate-200">Masyarakat Jasa Konstruksi</span>
+                <span class="font-medium text-slate-500">Masyarakat Jasa Konstruksi</span>
                 <span>/</span>
-                <span class="font-medium text-slate-200">BUJK</span>
+                <span class="font-medium text-slate-700">BUJK</span>
             </div>
         </div>
 
-        <div class="rounded-2xl border border-slate-800 bg-slate-900 p-4">
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
-                    <h3 class="text-lg font-bold text-white">Tabel Data BUJK</h3>
-                    <p class="mt-1 text-sm text-slate-400">
+                    <h3 class="text-base font-bold text-slate-900">Tabel Data BUJK</h3>
+                    <p class="mt-1 text-xs text-slate-500">
                         Format kolom menyesuaikan kebutuhan data utama: NIB, nama BUJK, jenis usaha, alamat, NPWP, kontak, dan aksi.
                     </p>
                 </div>
@@ -135,7 +137,7 @@
                     <button
                         type="button"
                         data-modal-open="manual"
-                        class="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
+                        class="rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500"
                     >
                         Tambah Data
                     </button>
@@ -143,16 +145,16 @@
                     <button
                         type="button"
                         data-modal-open="upload"
-                        class="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-indigo-500 hover:text-white"
+                        class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700"
                     >
                         Upload File
                     </button>
                 </div>
             </div>
 
-            <form id="bujk-filter-form" method="GET" action="{{ route('admin.bujk') }}" class="mt-5 grid grid-cols-1 gap-3 lg:grid-cols-4">
-                <div class="lg:col-span-2">
-                    <label for="search" class="mb-2 block text-sm font-medium text-slate-300">Filter / keyword</label>
+            <form id="bujk-filter-form" method="GET" action="{{ route('admin.bujk') }}" class="mt-5 grid grid-cols-1 gap-3 text-xs md:grid-cols-2 xl:grid-cols-6">
+                <div class="xl:col-span-2">
+                    <label for="search" class="mb-2 block text-xs font-semibold text-slate-600">Filter / keyword</label>
                     <input
                         id="search"
                         type="text"
@@ -160,16 +162,16 @@
                         value="{{ $search }}"
                         placeholder="Cari NIB atau nama BUJK"
                         autocomplete="off"
-                        class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
                     />
                 </div>
 
                 <div>
-                    <label for="jenis" class="mb-2 block text-sm font-medium text-slate-300">Jenis usaha</label>
+                    <label for="jenis" class="mb-2 block text-xs font-semibold text-slate-600">Jenis usaha</label>
                     <select
                         id="jenis"
                         name="jenis"
-                        class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
                     >
                         <option value="">Semua jenis</option>
                         @foreach($jenisOptions as $jenis)
@@ -179,11 +181,39 @@
                 </div>
 
                 <div>
-                    <label for="per_page" class="mb-2 block text-sm font-medium text-slate-300">Show</label>
+                    <label for="filter_provinsi" class="mb-2 block text-xs font-semibold text-slate-600">Provinsi</label>
+                    <select
+                        id="filter_provinsi"
+                        name="provinsi"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                    >
+                        <option value="">Semua provinsi</option>
+                        @if($selectedFilterProvince)
+                            <option value="{{ $selectedFilterProvince }}" selected>{{ $selectedFilterProvince }}</option>
+                        @endif
+                    </select>
+                </div>
+
+                <div>
+                    <label for="filter_kabupaten" class="mb-2 block text-xs font-semibold text-slate-600">Kabupaten / Kota</label>
+                    <select
+                        id="filter_kabupaten"
+                        name="kabupaten"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                    >
+                        <option value="">{{ $selectedFilterProvince ? 'Semua kab/kota' : 'Pilih provinsi dulu' }}</option>
+                        @if($selectedFilterKabupaten)
+                            <option value="{{ $selectedFilterKabupaten }}" selected>{{ $selectedFilterKabupaten }}</option>
+                        @endif
+                    </select>
+                </div>
+
+                <div>
+                    <label for="per_page" class="mb-2 block text-xs font-semibold text-slate-600">Show</label>
                     <select
                         id="per_page"
                         name="per_page"
-                        class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-100 outline-none transition focus:border-indigo-500"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
                     >
                         @foreach([10, 25, 50, 100] as $size)
                             <option value="{{ $size }}" @selected($perPage === $size)>{{ $size }}</option>
@@ -197,6 +227,8 @@
                     'bujks' => $bujks,
                     'search' => $search,
                     'jenisFilter' => $jenisFilter,
+                    'provinceFilter' => $provinceFilter,
+                    'regencyFilter' => $regencyFilter,
                     'perPage' => $perPage,
                 ])
             </div>
@@ -294,7 +326,7 @@
 
                                 <button
                                     type="submit"
-                                    class="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
+                                    class="rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500"
                                 >
                                     Proses Import
                                 </button>
@@ -622,6 +654,8 @@
         class="hidden"
         data-selected-province="{{ e((string) $selectedProvince) }}"
         data-selected-kabupaten="{{ e((string) $selectedKabupaten) }}"
+        data-selected-filter-province="{{ e((string) $selectedFilterProvince) }}"
+        data-selected-filter-kabupaten="{{ e((string) $selectedFilterKabupaten) }}"
         data-provinces-endpoint="{{ route('admin.bujk.regions.provinces') }}"
         data-regencies-endpoint="{{ route('admin.bujk.regions.regencies') }}"
         data-initial-panel="{{ $initialPanel }}"
@@ -646,6 +680,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const toastCloseButtons = document.querySelectorAll('[data-toast-close]');
     const provinceSelect = document.getElementById('provinsi_bujk');
     const kabupatenSelect = document.getElementById('kab_kota_bujk');
+    const filterProvinceSelect = document.getElementById('filter_provinsi');
+    const filterKabupatenSelect = document.getElementById('filter_kabupaten');
 
     const filterForm = document.getElementById('bujk-filter-form');
     const searchInput = document.getElementById('search');
@@ -661,6 +697,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const selectedProvince = String(scriptData.dataset.selectedProvince || '').trim();
     const selectedKabupaten = String(scriptData.dataset.selectedKabupaten || '').trim();
+    const selectedFilterProvince = String(scriptData.dataset.selectedFilterProvince || '').trim();
+    const selectedFilterKabupaten = String(scriptData.dataset.selectedFilterKabupaten || '').trim();
     const provincesEndpoint = scriptData.dataset.provincesEndpoint || '';
     const regenciesEndpoint = scriptData.dataset.regenciesEndpoint || '';
     const initialPanel = scriptData.dataset.initialPanel || 'closed';
@@ -793,13 +831,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (count > 0) {
             bulkDeleteTrigger.disabled = false;
-            bulkDeleteTrigger.classList.remove('cursor-not-allowed', 'border-rose-500/30', 'text-rose-300/60');
-            bulkDeleteTrigger.classList.add('border-rose-500/40', 'text-rose-300', 'hover:bg-rose-500/10');
+            bulkDeleteTrigger.classList.remove('cursor-not-allowed', 'text-rose-300');
+            bulkDeleteTrigger.classList.add('border-rose-200', 'text-rose-600', 'hover:border-rose-300', 'hover:bg-rose-50');
             bulkDeleteTrigger.textContent = `Hapus Terpilih (${count})`;
         } else {
             bulkDeleteTrigger.disabled = true;
-            bulkDeleteTrigger.classList.add('cursor-not-allowed', 'border-rose-500/30', 'text-rose-300/60');
-            bulkDeleteTrigger.classList.remove('border-rose-500/40', 'text-rose-300', 'hover:bg-rose-500/10');
+            bulkDeleteTrigger.classList.add('cursor-not-allowed', 'text-rose-300');
+            bulkDeleteTrigger.classList.remove('text-rose-600', 'hover:border-rose-300', 'hover:bg-rose-50');
             bulkDeleteTrigger.textContent = 'Hapus Terpilih';
         }
     };
@@ -828,6 +866,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const keyword = searchInput ? searchInput.value.trim() : '';
         const jenis = jenisSelect ? jenisSelect.value : '';
+        const province = filterProvinceSelect ? filterProvinceSelect.value : '';
+        const kabupaten = filterKabupatenSelect ? filterKabupatenSelect.value : '';
         const perPage = perPageSelect ? perPageSelect.value : '';
 
         if (keyword !== '') {
@@ -840,6 +880,18 @@ document.addEventListener('DOMContentLoaded', function () {
             url.searchParams.set('jenis', jenis);
         } else {
             url.searchParams.delete('jenis');
+        }
+
+        if (province !== '') {
+            url.searchParams.set('provinsi', province);
+        } else {
+            url.searchParams.delete('provinsi');
+        }
+
+        if (kabupaten !== '') {
+            url.searchParams.set('kabupaten', kabupaten);
+        } else {
+            url.searchParams.delete('kabupaten');
         }
 
         if (perPage !== '') {
@@ -911,6 +963,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (jenisSelect) {
         jenisSelect.addEventListener('change', function () {
+            clearTimeout(filterDebounce);
+            fetchFilteredTable();
+        });
+    }
+
+    if (filterProvinceSelect) {
+        filterProvinceSelect.addEventListener('change', function () {
+            const selectedOption = this.selectedOptions[0];
+            const provinceCode = selectedOption ? (selectedOption.dataset.code || '') : '';
+
+            if (filterKabupatenSelect) {
+                filterKabupatenSelect.value = '';
+            }
+
+            loadFilterRegencies(provinceCode, '');
+            clearTimeout(filterDebounce);
+            fetchFilteredTable();
+        });
+    }
+
+    if (filterKabupatenSelect) {
+        filterKabupatenSelect.addEventListener('change', function () {
             clearTimeout(filterDebounce);
             fetchFilteredTable();
         });
@@ -1118,6 +1192,14 @@ document.addEventListener('DOMContentLoaded', function () {
             jenisSelect.value = url.searchParams.get('jenis') || '';
         }
 
+        if (filterProvinceSelect) {
+            filterProvinceSelect.value = url.searchParams.get('provinsi') || '';
+        }
+
+        if (filterKabupatenSelect) {
+            filterKabupatenSelect.value = url.searchParams.get('kabupaten') || '';
+        }
+
         if (perPageSelect) {
             perPageSelect.value = url.searchParams.get('per_page') || '{{ $perPage }}';
         }
@@ -1275,6 +1357,117 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     loadProvinces();
+
+    const resetFilterKabupaten = (placeholder = 'Pilih provinsi dulu') => {
+        if (!filterKabupatenSelect) return;
+
+        filterKabupatenSelect.innerHTML = '';
+        filterKabupatenSelect.appendChild(createOption('', placeholder, true));
+        filterKabupatenSelect.disabled = true;
+    };
+
+    const renderFilterProvinces = (items) => {
+        if (!filterProvinceSelect) return;
+
+        filterProvinceSelect.innerHTML = '';
+        filterProvinceSelect.appendChild(createOption('', 'Semua provinsi'));
+
+        let matched = false;
+
+        items.forEach((item) => {
+            const value = normalizeText(item.value || item.label || '');
+            const label = item.label || item.value || '';
+            const code = item.code || '';
+            const isSelected = selectedFilterProvince !== '' && normalizeText(selectedFilterProvince) === value;
+
+            if (isSelected) matched = true;
+
+            filterProvinceSelect.appendChild(createOption(value, label, isSelected, code));
+        });
+
+        if (selectedFilterProvince && !matched) {
+            filterProvinceSelect.appendChild(createOption(selectedFilterProvince, selectedFilterProvince, true));
+        }
+    };
+
+    const renderFilterRegencies = (items, selectedValue = '') => {
+        if (!filterKabupatenSelect) return;
+
+        filterKabupatenSelect.innerHTML = '';
+        filterKabupatenSelect.appendChild(createOption('', 'Semua kab/kota'));
+
+        let matched = false;
+
+        items.forEach((item) => {
+            const value = normalizeText(item.value || item.label || '');
+            const label = item.label || item.value || '';
+            const isSelected = selectedValue !== '' && normalizeText(selectedValue) === value;
+
+            if (isSelected) matched = true;
+
+            filterKabupatenSelect.appendChild(createOption(value, label, isSelected, item.code || ''));
+        });
+
+        if (selectedValue && !matched) {
+            filterKabupatenSelect.appendChild(createOption(selectedValue, selectedValue, true));
+        }
+
+        filterKabupatenSelect.disabled = false;
+    };
+
+    const loadFilterRegencies = async (provinceCode, selectedRegency = '') => {
+        if (!filterKabupatenSelect) return;
+
+        if (!provinceCode) {
+            resetFilterKabupaten('Pilih provinsi dulu');
+            return;
+        }
+
+        filterKabupatenSelect.disabled = true;
+        filterKabupatenSelect.innerHTML = '';
+        filterKabupatenSelect.appendChild(createOption('', 'Memuat kabupaten/kota...', true));
+
+        try {
+            const url = `${regenciesEndpoint}?province_code=${encodeURIComponent(provinceCode)}`;
+            const payload = await fetchJson(url);
+            const items = Array.isArray(payload.data) ? payload.data : [];
+
+            renderFilterRegencies(items, selectedRegency);
+        } catch (error) {
+            console.error(error);
+            resetFilterKabupaten('Gagal memuat kabupaten/kota');
+        }
+    };
+
+    const loadFilterProvinces = async () => {
+        if (!filterProvinceSelect || !filterKabupatenSelect) return;
+
+        filterProvinceSelect.disabled = true;
+        filterProvinceSelect.innerHTML = '';
+        filterProvinceSelect.appendChild(createOption('', 'Memuat provinsi...', true));
+        resetFilterKabupaten('Pilih provinsi dulu');
+
+        try {
+            const payload = await fetchJson(provincesEndpoint);
+            const items = Array.isArray(payload.data) ? payload.data : [];
+
+            renderFilterProvinces(items);
+            filterProvinceSelect.disabled = false;
+
+            const selectedOption = filterProvinceSelect.selectedOptions[0];
+            const provinceCode = selectedOption ? (selectedOption.dataset.code || '') : '';
+
+            await loadFilterRegencies(provinceCode, selectedFilterKabupaten);
+        } catch (error) {
+            console.error(error);
+            filterProvinceSelect.innerHTML = '';
+            filterProvinceSelect.appendChild(createOption('', 'Gagal memuat provinsi', true));
+            filterProvinceSelect.disabled = true;
+            resetFilterKabupaten('Pilih provinsi dulu');
+        }
+    };
+
+    loadFilterProvinces();
 });
 </script>
 @endpush

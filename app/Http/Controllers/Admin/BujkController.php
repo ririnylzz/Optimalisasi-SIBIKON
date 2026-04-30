@@ -27,6 +27,8 @@ class BujkController extends Controller
 
         $search = $this->squish((string) $request->string('search'));
         $jenisFilter = trim((string) $request->string('jenis'));
+        $provinceFilter = $this->normalizeRegionValue((string) $request->string('provinsi'));
+        $regencyFilter = $this->normalizeRegionValue((string) $request->string('kabupaten'));
 
         $baseQuery = Bujk::query()->active();
         $filteredQuery = clone $baseQuery;
@@ -40,6 +42,14 @@ class BujkController extends Controller
 
         if ($jenisFilter !== '') {
             $this->applyJenisFilter($filteredQuery, $jenisFilter);
+        }
+
+        if ($provinceFilter !== '') {
+            $filteredQuery->where('provinsi_bujk', $provinceFilter);
+        }
+
+        if ($regencyFilter !== '') {
+            $filteredQuery->where('kab_kota_bujk', $regencyFilter);
         }
 
         $bujks = $filteredQuery
@@ -58,6 +68,8 @@ class BujkController extends Controller
             'jenisOptions' => config('bujk.jenis_usaha', []),
             'search' => $search,
             'jenisFilter' => $jenisFilter,
+            'provinceFilter' => $provinceFilter,
+            'regencyFilter' => $regencyFilter,
             'perPage' => $perPage,
         ];
 
@@ -131,7 +143,7 @@ class BujkController extends Controller
         ]);
 
         $ids = collect($validated['ids'])
-            ->map(fn ($id) => (int) $id)
+            ->map(fn($id) => (int) $id)
             ->filter()
             ->unique()
             ->values()
