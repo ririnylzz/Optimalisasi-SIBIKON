@@ -68,9 +68,11 @@
                         Dashboard Badan Usaha Jasa Konstruksi
                     </a>
 
-                    <a href="#"
-                    class="{{ $subItemBase }} cursor-not-allowed text-blue-100/35">
-                        <span class="absolute left-[-12px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-white/20"></span>
+                    <a href="{{ route('admin.tenaga-kerja-konstruksi') }}"
+                        class="{{ $subItemBase }} {{ request()->routeIs('admin.tenaga-kerja-konstruksi') ? $subItemActive : $subItemIdle }}">
+                        <span class="absolute left-[-12px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full 
+                        {{ request()->routeIs('admin.tenaga-kerja-konstruksi') ? 'bg-[#F7E578]' : 'bg-white/30' }}"></span>
+
                         Dashboard Tenaga Kerja Konstruksi
                     </a>
                 </div>

@@ -158,4 +158,49 @@ class DashboardController extends Controller
             'kpi'
         ));
     }
+
+    public function tkk()
+    {
+        // KPI (dummy dulu)
+        $kpi = [
+            [
+                'label' => 'TKK',
+                'title' => 'Tenaga Kerja Konstruksi',
+                'value' => number_format(555505),
+            ],
+            [
+                'label' => 'SKK',
+                'title' => 'Sertifikat Kompetensi Kerja',
+                'value' => number_format(736921),
+            ],
+        ];
+
+        // Dummy chart (ambil dari gambar kamu)
+        $asosiasiTkk = [
+            ['label' => 'ASTEKINDO', 'value' => 147066],
+            ['label' => 'PERTAMA', 'value' => 101887],
+            ['label' => 'PERKONI', 'value' => 77828],
+            ['label' => 'NON ASOSIASI', 'value' => 65346],
+            ['label' => 'GATAKI', 'value' => 47369],
+        ];
+
+        $kualifikasiSkk = [
+            ['label' => 'Ahli', 'value' => 53661],
+            ['label' => 'Teknisi/Analis', 'value' => 113670],
+            ['label' => 'Operator', 'value' => 80711],
+        ];
+
+        $jabkerSkk = [
+            ['label' => 'Manajer Lapangan', 'value' => 44098],
+            ['label' => 'Pelaksana', 'value' => 36402],
+            ['label' => 'Pengawas', 'value' => 32113],
+        ];
+
+        return view('admin.dashboard-tkk', compact(
+            'kpi',
+            'asosiasiTkk',
+            'kualifikasiSkk',
+            'jabkerSkk'
+        ));
+    }
 }

@@ -60,7 +60,6 @@
 
                         <div x-show="sidebarPinned || sidebarHovered" x-transition class="min-w-0">
                             <h1 class="truncate text-lg font-extrabold tracking-tight text-white">SIBIKON KALTIM</h1>
-                            <p class="text-[11px] text-blue-100/70">Sistem Informasi Pembinaan Jasa Konstruksi</p>
                         </div>
                     </div>
 
@@ -101,7 +100,6 @@
                         </div>
                         <div>
                             <h1 class="text-lg font-extrabold tracking-tight">SIBIKON KALTIM</h1>
-                            <p class="text-[11px] text-blue-100/70">Sistem Informasi Pembinaan Jasa Konstruksi</p>
                         </div>
                     </div>
 
