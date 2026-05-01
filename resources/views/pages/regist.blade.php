@@ -25,18 +25,19 @@
             </div>
 
             {{-- Card Registrasi --}}
-            <div class="w-full max-w-[520px] mx-auto bg-white rounded-[26px] shadow-2xl px-8 py-7">
-                {{-- Tombol kembali kiri --}}
+            <div class="relative w-full max-w-[520px] mx-auto bg-white rounded-[26px] shadow-2xl px-8 py-7">
                 <button
+                    id="btn-back"
                     type="button"
                     onclick="showStep1()"
-                    class="absolute left-0 text-[#243966] hover:opacity-75 transition">
+                    class="hidden absolute left-8 top-7 text-[#243966] hover:opacity-75 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M15.75 19.5L8.25 12l7.5-7.5" />
                     </svg>
                 </button>
+
                 <h2 class="text-center text-[#243966] text-2xl font-extrabold mb-5">
                     Registrasi
                 </h2>
@@ -148,6 +149,13 @@
                             class="w-full h-10 rounded-lg bg-[#243966] text-white text-sm font-bold hover:bg-[#1d2f57] transition">
                             Selanjutnya
                         </button>
+
+                        <!-- <p class="text-center text-sm text-[#6B7898] pt-2">
+                            Sudah punya akun?
+                            <a href="{{ route('login') }}" class="text-[#243966] font-semibold hover:underline">
+                                Masuk
+                            </a>
+                        </p> -->
                     </div>
 
                     {{-- STEP 2 --}}
@@ -215,5 +223,12 @@
     function showStep2() {
         document.getElementById('step-1').classList.add('hidden');
         document.getElementById('step-2').classList.remove('hidden');
+        document.getElementById('btn-back').classList.remove('hidden');
+    }
+
+    function showStep1() {
+        document.getElementById('step-2').classList.add('hidden');
+        document.getElementById('step-1').classList.remove('hidden');
+        document.getElementById('btn-back').classList.add('hidden');
     }
 </script>

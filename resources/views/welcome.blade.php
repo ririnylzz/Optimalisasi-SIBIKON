@@ -17,6 +17,8 @@
         @include('pages.login')
     @elseif ($page === 'regist')
         @include('pages.regist')
+    @elseif ($page === 'kontak')
+        @include('pages.kontak')
     @endif
 
 </body>

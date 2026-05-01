@@ -121,231 +121,175 @@
     </header>
 
 
-    <!-- tentang kami -->
-    <section id="tentang-kami" class="bg-white py-20 lg:py-28">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-stretch">
-                <!-- <div class="mb-12 text-center">
-                    <h2 class="text-4xl font-extrabold text-[#143B5D] sm:text-5xl">
-                        Tentang Kami
-                    </h2>
-                    <div class="mx-auto mt-3 h-1 w-10 rounded-full bg-yellow-400"></div>
-                </div> -->
+    <section class="bg-white py-16 px-6">
+        <div class="max-w-6xl mx-auto">
 
-                <!-- LEFT CONTENT -->
-                <div class="bg-[#F8F8F6] rounded-[28px] p-8 sm:p-10 lg:p-12 flex flex-col justify-between min-h-[520px]">
-                    <div>
-                        <p class="text-sm font-semibold text-slate-500">
-                            Tentang Kami
-                        </p>
+            {{-- Header --}}
+            <div class="text-center mb-12">
+                <span class="inline-block bg-[#f1d00a]/60 text-[#21325e] text-xs font-semibold px-4 py-2 rounded-full mb-4">
+                    Hubungi Kami
+                </span>
 
-                        <h2 class="mt-4 text-4xl sm:text-5xl font-bold leading-tight text-[#143B5D] max-w-xl">
-                            BIKON
-                        </h2>
+                <h1 class="text-3xl md:text-4xl font-extrabold text-[#21325e] mb-3">
+                    Kontak & Lokasi
+                </h1>
 
-                        <p class="mt-6 text-base sm:text-lg leading-8 text-slate-600 max-w-2xl">
-                            Bina Konstruksi adalah salah satu bidang pada Dinas Pekerjaan Umum Penataan Ruang dan Perumahan Rakyat Provinsi Kalimantan Timur yang memiliki tugas, melaksanakan penyiapan bahan perumusan kebijakan, koordinasi, pembinaan, bimbingan, pengendalian, serta pengembangan teknis di bina konstruksi. Sesuai Peraturan Menteri Dalam Negeri Nomor 106 Tahun 2017, Bidang Bina Konstruksi dibagi menjadi 3 (tiga) Seksi.
-                        </p>
+                <p class="text-[#7282cc] text-sm">
+                    Silakan hubungi kami untuk informasi lebih lanjut mengenai layanan SIBIKON
+                </p>
+            </div>
 
-                        <div class="about-hidden hidden">
-                            <p class="mt-6 text-base sm:text-lg leading-8 text-slate-600 max-w-2xl">
-                                Peraturan Daerah Nomor 9 Tahun 2016 bahwa Dinas Pekerjaan Umum, Penataan Ruang dan Perumahan Rakyat Tipe A menyelenggarakan urusan pemerintahan Bidang Pekerjaan Umum, Penataan Ruang, dan urusan pemerintahan Bidang Perumahan dan Kawasan Pemukiman. Sub urusan Jasa Konstruksi adalah salah satu sub urusan pada urusan pemerintahan bidang pekerjaan umum.
-                            </p>
+            {{-- Kontak dan Peta --}}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch mb-16">
 
-                            <p class="mt-6 text-base sm:text-lg leading-8 text-slate-600 max-w-2xl">
-                                Peraturan Gubernur Nomor 43 Tahun 2023, Bidang Bina Konstruksi mempunyai tugas melaksanakan penyiapan bahan perumusan kebijakan, koordinasi, pembinaan, bimbingan, pengendalian serta pengembangan teknis di bidang bina konstruksi.
-                            </p>
-                        </div>
-
-                        <div class="mt-8">
-                            <button id="toggle-about" type="button"
-                                class="inline-flex items-center justify-center rounded-xl bg-yellow-400 px-6 py-3 text-sm font-bold uppercase tracking-wide text-slate-900 transition hover:bg-yellow-300">
-                                Baca Selengkapnya
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- RIGHT VISUAL -->
-                <div class="relative min-h-[520px] rounded-[28px] overflow-hidden">
-
-                    <img
-                        src="{{ asset('images/gedung-dinas-PUPR.jpg') }}"
-                        alt="Gedung Dinas PUPR"
-                        class="absolute inset-0 h-full w-full object-cover">
-
-                    <!-- overlay biar teks tetap jelas -->
-                    <div class="absolute inset-0 bg-[#143B5D]/30"></div>
-
-                    <!-- tombol play kuning -->
-                    <div class="absolute top-6 right-6 w-16 h-16 bg-yellow-400 flex items-center justify-center shadow-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-slate-900" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M8 5v14l11-7z" />
+                {{-- Peta --}}
+                <div class="h-96 rounded-2xl bg-[#c5cae9]/50 flex items-center justify-center">
+                    <div class="text-center text-[#21325e]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto mb-4" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 11.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M19.5 9c0 7.5-7.5 12-7.5 12S4.5 16.5 4.5 9a7.5 7.5 0 1115 0z" />
                         </svg>
-                    </div>
-
-                    <!-- label bawah -->
-                    <div class="absolute bottom-6 left-6 right-6 text-white">
-                        <p class="text-lg font-semibold">
-                            Dinas PUPR Provinsi Kalimantan Timur
-                        </p>
-                        <p class="text-sm text-white/80">
-                            Bidang Bina Konstruksi
-                        </p>
+                        <p class="text-xl font-semibold">Peta Lokasi</p>
                     </div>
                 </div>
+
+                {{-- Informasi Kontak --}}
+                <div class="h-96 flex flex-col justify-center">
+                    <h2 class="text-3xl font-extrabold text-[#21325e] mb-10">
+                        Informasi Kontak
+                    </h2>
+
+                    <div class="space-y-8">
+
+                        {{-- Alamat --}}
+                        <div class="flex gap-5 items-start">
+                            <div class="w-16 h-16 rounded-xl bg-[#21325e] text-white flex items-center justify-center shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none"
+                                    viewBox="0 0 24 24" stroke="#f1d00a" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 11.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 9c0 7.5-7.5 12-7.5 12S4.5 16.5 4.5 9a7.5 7.5 0 1115 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-[#21325e] text-2xl mb-1">Alamat</h3>
+                                <p class="text-lg text-[#21325e]/70 leading-relaxed">
+                                    Jalan. Tengkawang No.1, Samarinda
+                                </p>
+                            </div>
+                        </div>
+
+                        {{-- Telepon --}}
+                        <div class="flex gap-5 items-start">
+                            <div class="w-16 h-16 rounded-xl bg-[#21325e] text-white flex items-center justify-center shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none"
+                                    viewBox="0 0 24 24" stroke="#f1d00a" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M3 5a2 2 0 012-2h3.28a2 2 0 011.94 1.515l.57 2.28a2 2 0 01-.45 1.91l-1.27 1.27a16 16 0 006.36 6.36l1.27-1.27a2 2 0 011.91-.45l2.28.57A2 2 0 0121 15.72V19a2 2 0 01-2 2h-1C9.163 21 3 14.837 3 7V5z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-[#21325e] text-2xl mb-1">Telepon</h3>
+                                <p class="text-lg text-[#21325e]/70">(+0541) ......</p>
+                            </div>
+                        </div>
+
+                        {{-- Email --}}
+                        <div class="flex gap-5 items-start">
+                            <div class="w-16 h-16 rounded-xl bg-[#21325e] text-white flex items-center justify-center shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none"
+                                    viewBox="0 0 24 24" stroke="#f1d00a" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-[#21325e] text-2xl mb-1">Email</h3>
+                                <p class="text-lg text-[#21325e]/70">bikon.kaltim@gmail.com</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
-        </div>
-    </section>
 
-    <!-- FUNGSI BIKON -->
-    <section id="fungsi-bikon" class="bg-white pt-10 pb-20 lg:pt-12 lg:pb-24">
-        <div class="mx-auto max-w-7xl px-6 lg:px-8">
-
-            <!-- Heading -->
-            <div class="mb-12 text-center">
-                <div class="mx-auto mb-3 h-1 w-10 rounded-full bg-yellow-400"></div>
-                <h2 class="text-4xl font-extrabold text-[#143B5D] sm:text-5xl">
-                    Fungsi BIKON
+            {{-- Form Kotak Saran --}}
+            <div class="w-full bg-white rounded-[28px] shadow-xl border border-[#c5cae9]/50 p-8 md:p-10">
+                <h2 class="text-2xl font-extrabold text-[#21325e] mb-4">
+                    Kotak saran
                 </h2>
+                
+                <p class="text-m text-[#21325e]/70 mb-8">
+                    Berikan Masukan dan Saran Anda terkait Kegiatan yang dilaksanakan oleh Bidang Bina Konstruksi Dinas Pekerjaan Umum Penataan Ruang dan Perumahaan Rakyat Provinsi Kalimantan Timur.
+                </p>
+
+                <form action="#" method="POST" class="space-y-6">
+                    @csrf
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <label class="block text-base font-bold text-[#21325e] mb-3">
+                                Nama Lengkap
+                            </label>
+                            <input
+                                type="text"
+                                name="nama"
+                                placeholder="Masukkan nama lengkap"
+                                class="w-full h-14 rounded-lg border border-[#c5cae9] px-5 text-base focus:outline-none focus:border-[#3a4fac] focus:ring-4 focus:ring-[#7282cc]/20">
+                        </div>
+
+                        <div>
+                            <label class="block text-base font-bold text-[#21325e] mb-3">
+                                Email
+                            </label>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="nama@email.com"
+                                class="w-full h-14 rounded-lg border border-[#c5cae9] px-5 text-base focus:outline-none focus:border-[#3a4fac] focus:ring-4 focus:ring-[#7282cc]/20">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-base font-bold text-[#21325e] mb-3">
+                            Subjek
+                        </label>
+                        <input
+                            type="text"
+                            name="subjek"
+                            placeholder="Subjek pesan"
+                            class="w-full h-14 rounded-lg border border-[#c5cae9] px-5 text-base focus:outline-none focus:border-[#3a4fac] focus:ring-4 focus:ring-[#7282cc]/20">
+                    </div>
+
+                    <div>
+                        <label class="block text-base font-bold text-[#21325e] mb-3">
+                            Pesan
+                        </label>
+                        <textarea
+                            name="pesan"
+                            rows="6"
+                            placeholder="Tulis pesan Anda di sini..."
+                            class="w-full rounded-lg border border-[#c5cae9] px-5 py-4 text-base resize-none focus:outline-none focus:border-[#3a4fac] focus:ring-4 focus:ring-[#7282cc]/20"></textarea>
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="w-full h-14 rounded-lg bg-[#21325e] text-white text-lg font-bold flex items-center justify-center gap-3 hover:bg-[#3a4fac] transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.768 59.768 0 013.27 20.876L6 12zm0 0h7.5" />
+                        </svg>
+                        Kirim Pesan
+                    </button>
+                </form>
             </div>
 
-            <!-- Cards -->
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-
-                <!-- CARD 1 -->
-                <div class="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm">
-                    <button type="button" class="accordion-toggle w-full text-left" data-target="fungsi-card-1">
-                        <div class="flex items-start justify-between gap-4">
-                            <div class="flex items-start gap-4">
-                                <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-slate-100">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#1E2E5A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 3.75h7.5L19.5 8.75V20.25a.75.75 0 0 1-.75.75H7a2.25 2.25 0 0 1-2.25-2.25V6A2.25 2.25 0 0 1 7 3.75Z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 3.75v4.5h4.5" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 10.5h6" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 14.25h6" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18h3.75" />
-                                    </svg>
-                                </div>
-
-                                <div class="pt-2">
-                                    <h3 class="text-2xl font-bold leading-none text-[#143B5D]">
-                                        Pengaturan
-                                    </h3>
-                                    <p class="mt-4 max-w-[220px] text-base leading-8 text-slate-600">
-                                        Penetapan kebijakan dan standar dalam bina konstruksi.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <span class="mt-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#143B5D]">
-                                <svg class="arrow h-4 w-4 rotate-180 text-white transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 15l-7-7-7 7" />
-                                </svg>
-                            </span>
-                        </div>
-
-                    </button>
-
-                    <div id="fungsi-card-1" class="accordion-content pt-5">
-                        <ul class="list-disc space-y-2 pl-5 text-slate-600 leading-8">
-                            <li>Penyiapan bahan perumusan kebijakan.</li>
-                            <li>Penyusunan norma, standar, prosedur, dan kriteria.</li>
-                            <li>Penyebarluasan peraturan serta penjaminan mutu pelaksanaan pembinaan jasa konstruksi.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- CARD 2 -->
-                <div class="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm">
-                    <button type="button" class="accordion-toggle w-full text-left" data-target="fungsi-card-2">
-                        <div class="flex items-start justify-between gap-4">
-                            <div class="flex items-start gap-4">
-                                <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-slate-100">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#1E2E5A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 4.5h3A2.25 2.25 0 0 1 15.75 6.75v1.5h-7.5v-1.5A2.25 2.25 0 0 1 10.5 4.5Z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 8.25h9A2.25 2.25 0 0 1 18 10.5v7.5a2.25 2.25 0 0 1-2.25 2.25h-9A2.25 2.25 0 0 1 4.5 18v-7.5a2.25 2.25 0 0 1 2.25-2.25Z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 12h3.75" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15.75h2.25" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l4.5 4.5" />
-                                        <circle cx="15" cy="15" r="3.25" />
-                                    </svg>
-                                </div>
-
-                                <div class="pt-2">
-                                    <h3 class="text-2xl font-bold leading-none text-[#143B5D]">
-                                        Pengawasan
-                                    </h3>
-                                    <p class="mt-4 max-w-[220px] text-base leading-8 text-slate-600">
-                                        Pengendalian dan evaluasi pelaksanaan konstruksi.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <span class="mt-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#143B5D]">
-                                <svg class="arrow h-4 w-4 text-white transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 15l-7-7-7 7" />
-                                </svg>
-                            </span>
-                        </div>
-
-                    </button>
-
-                    <div id="fungsi-card-2" class="accordion-content hidden pt-5">
-                        <ul class="list-disc space-y-2 pl-5 text-slate-600 leading-8">
-                            <li>Monitoring pelaksanaan kegiatan konstruksi.</li>
-                            <li>Evaluasi penerapan kebijakan dan program bina konstruksi.</li>
-                            <li>Pengendalian mutu pekerjaan dan penyelenggaraan jasa konstruksi.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- CARD 3 -->
-                <div class="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm">
-                    <button type="button" class="accordion-toggle w-full text-left" data-target="fungsi-card-3">
-                        <div class="flex items-start justify-between gap-4">
-                            <div class="flex items-start gap-4">
-                                <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-slate-100">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#1E2E5A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75a5.25 5.25 0 0 0-9 0" />
-                                        <circle cx="12" cy="11.25" r="3.75" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 18.75a4.5 4.5 0 0 1 3.188-4.299" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 18.75a4.5 4.5 0 0 0-3.188-4.299" />
-                                        <circle cx="6.75" cy="12" r="2.25" />
-                                        <circle cx="17.25" cy="12" r="2.25" />
-                                    </svg>
-                                </div>
-
-                                <div class="pt-2">
-                                    <h3 class="text-2xl font-bold leading-none text-[#143B5D]">
-                                        Pemberdayaan
-                                    </h3>
-                                    <p class="mt-4 max-w-[220px] text-base leading-8 text-slate-600">
-                                        Penguatan kapasitas dan kualitas SDM konstruksi.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <span class="mt-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#143B5D]">
-                                <svg class="arrow h-4 w-4 text-white transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 15l-7-7-7 7" />
-                                </svg>
-                            </span>
-                        </div>
-
-                    </button>
-
-                    <div id="fungsi-card-3" class="accordion-content hidden pt-5">
-                        <ul class="list-disc space-y-2 pl-5 text-slate-600 leading-8">
-                            <li>Peningkatan kapasitas sumber daya manusia jasa konstruksi.</li>
-                            <li>Pembinaan pelaku usaha dan tenaga kerja konstruksi.</li>
-                            <li>Pengembangan sektor konstruksi yang profesional dan berkelanjutan.</li>
-                        </ul>
-                    </div>
-                </div>
-
-            </div>
         </div>
     </section>
 </div>
@@ -542,26 +486,5 @@
                 item.classList.remove('rotate-180');
             });
         });
-    });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggleBtn = document.getElementById('toggle-about');
-        const hiddenItems = document.querySelectorAll('.about-hidden');
-
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', function() {
-                const isHidden = Array.from(hiddenItems).some(item => item.classList.contains('hidden'));
-
-                if (isHidden) {
-                    hiddenItems.forEach(item => item.classList.remove('hidden'));
-                    toggleBtn.textContent = 'Tampilkan Lebih Sedikit';
-                } else {
-                    hiddenItems.forEach(item => item.classList.add('hidden'));
-                    toggleBtn.textContent = 'Baca Selengkapnya';
-                }
-            });
-        }
     });
 </script>

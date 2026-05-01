@@ -34,6 +34,10 @@ Route::get('/registrasi', function () {
     return view('welcome', ['page' => 'regist']);
 })->name('regist');
 
+Route::get('/kontak', function () {
+    return view('welcome', ['page' => 'kontak']);
+})->name('kontak');
+
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

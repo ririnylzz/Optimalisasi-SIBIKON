@@ -82,7 +82,7 @@
                         </div>
                     </div>
 
-                    <a href="#"
+                    <a href="{{ route('kontak') }}"
                         class="{{ request()->routeIs('kontak') ? 'text-yellow-400' : 'text-white' }} hover:text-yellow-400 transition">
                         Kontak
                     </a>
@@ -111,7 +111,7 @@
                     <a href="{{ route('profil') }}">Profil</a>
                     <a href="#">Berita</a>
                     <a href="#">Fungsi</a>
-                    <a href="#">Kontak</a>
+                    <a href="{{ route('kontak') }}">Kontak</a>
                     <a href="{{ route('login') }}" class="inline-flex w-fit items-center rounded-xl bg-yellow-400 px-6 py-3 font-bold text-slate-900">
                         Login
                     </a>
