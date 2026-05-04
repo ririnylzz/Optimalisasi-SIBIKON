@@ -1,29 +1,23 @@
 <div class="min-h-screen bg-white text-slate-900 relative overflow-hidden">
-    <!-- top bar -->
+
+    <!-- TOP BAR -->
     <div class="relative z-30 border-b border-slate-200 bg-white">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 text-sm lg:text-base font-semibold text-[#1E3A5F]">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 text-sm font-semibold text-[#1E3A5F]">
         </div>
     </div>
 
-    <!-- navbar -->
+    <!-- NAVBAR (copy dari profil biar konsisten) -->
     <header class="relative z-30 border-b border-white/10 bg-[#243B78]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between py-5">
-                <!-- logo -->
-                <div class="flex items-center gap-4">
-                    <!-- <div class="w-14 h-14 rounded-2xl bg-yellow-400 flex items-center justify-center shadow-lg shadow-yellow-400/20">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 10h.01M15 10h.01" />
-                            </svg>
-                        </div> -->
 
-                    <div>
-                        <h1 class="text-3xl font-extrabold leading-none text-white tracking-tight">SIBIKON</h1>
-                        <p class="text-sm text-white/70">Sistem Bina Konstruksi Indonesia</p>
-                    </div>
+                <!-- LOGO -->
+                <div>
+                    <h1 class="text-3xl font-extrabold text-white">SIBIKON</h1>
+                    <p class="text-sm text-white/70">Sistem Bina Konstruksi Indonesia</p>
                 </div>
 
-                <!-- menu desktop -->
+                <!-- MENU -->
                 <nav class="hidden md:flex items-center gap-10 font-semibold text-white">
 
                     <a href="{{ route('beranda') }}"
@@ -42,19 +36,19 @@
                         </button>
 
                         <div class="absolute left-0 top-full z-50 mt-4 hidden w-72 border-t-4 border-yellow-400 bg-white shadow-xl group-hover:block">
-                            <a href="{{ route('profil') }}" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
+                            <a href="{{ route('tentang-kami') }}" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
                                 Tentang Kami
                             </a>
                             <a href="{{ route('struktur') }}" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
                                 Struktur Organisasi
                             </a>
-                            <a href="#" class="block px-6 py-4 font-bold text-slate-800 hover:bg-slate-100">
+                            <a href="{{ route('sop-renja') }}" class="block px-6 py-4 font-bold text-slate-800 hover:bg-slate-100">
                                 SOP & Renja
                             </a>
                         </div>
                     </div>
 
-                    <a href="#"
+                    <a href="{{ route('berita') }}"
                         class="{{ request()->routeIs('berita') ? 'text-yellow-400' : 'text-white' }} hover:text-yellow-400 transition">
                         Berita
                     </a>
@@ -82,37 +76,17 @@
                         </div>
                     </div>
 
-                    <a href="#"
+                    <a href="{{ route('kontak') }}"
                         class="{{ request()->routeIs('kontak') ? 'text-yellow-400' : 'text-white' }} hover:text-yellow-400 transition">
                         Kontak
                     </a>
 
                 </nav>
 
-                <!-- login button -->
+                <!-- LOGIN -->
                 <div class="hidden md:block">
-                    <a href="#" class="inline-flex items-center rounded-2xl bg-yellow-400 px-7 py-3 font-bold text-slate-900 hover:bg-yellow-300 transition shadow-lg shadow-yellow-400/20">
-                        Login
-                    </a>
-                </div>
-
-                <!-- mobile toggle -->
-                <button id="menu-toggle" class="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-lg border border-white/20 bg-white/10">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
-            </div>
-
-            <!-- mobile menu -->
-            <div id="mobile-menu" class="hidden md:hidden pb-5">
-                <div class="flex flex-col gap-4 font-medium text-white/90">
-                    <a href="{{ route('beranda') }}">Beranda</a>
-                    <a href="{{ route('profil') }}">Profil</a>
-                    <a href="#">Berita</a>
-                    <a href="#">Fungsi</a>
-                    <a href="#">Kontak</a>
-                    <a href="#" class="inline-flex w-fit items-center rounded-xl bg-yellow-400 px-6 py-3 font-bold text-slate-900">
+                    <a href="{{ route('login') }}"
+                        class="bg-yellow-400 px-6 py-2 rounded-xl font-bold text-slate-900 hover:bg-yellow-300">
                         Login
                     </a>
                 </div>
@@ -120,20 +94,34 @@
         </div>
     </header>
 
-    <!-- STRUKTUR ORGANISASI BIKON -->
-    <section id="struktur-organisasi-bikon" class="bg-white pt-10 pb-20 lg:pt-12 lg:pb-24">
-        <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <!-- CONTENT -->
+    <section class="py-16 lg:py-20 bg-[#F3F5FC]">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
 
-            <!-- Heading -->
-            <div class="mb-12 text-center">
-                <div class="mx-auto mb-3 h-1 w-10 rounded-full bg-yellow-400"></div>
-                <h2 class="text-4xl font-extrabold text-[#143B5D] sm:text-5xl">
-                    Struktur Organisasi Bina Konstruksi
+            <!-- JUDUL -->
+            <div class="text-center mb-12">
+                <h2 class="text-4xl sm:text-5xl font-extrabold text-[#143B5D]">
+                    Struktur Organisasi
                 </h2>
+                <div class="mx-auto mt-4 h-1.5 w-44 bg-[#0B5CAD] rounded-full"></div>
+            </div>
+
+            <!-- CARD IMAGE -->
+            <div class="bg-white rounded-[28px] shadow-xl shadow-slate-300/40 p-4 sm:p-6">
+
+                <!-- WRAPPER biar responsive scroll -->
+                <div class="overflow-x-auto">
+                    <img
+                        src="{{ asset('images/struktur.png') }}"
+                        alt="Struktur Organisasi"
+                        class="min-w-[900px] w-full h-auto rounded-xl">
+                </div>
+
             </div>
 
         </div>
     </section>
+
 </div>
 
 <footer class="bg-[#223B78] text-white">
@@ -256,3 +244,50 @@
         </div>
     </div>
 </footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.nav-dropdown-btn');
+
+        buttons.forEach((button) => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+
+                const dropdownId = this.dataset.dropdown;
+                const dropdown = document.getElementById(dropdownId);
+                const arrow = this.querySelector('.dropdown-arrow');
+
+                document.querySelectorAll('.nav-dropdown').forEach((item) => {
+                    if (item !== dropdown) {
+                        item.classList.add('hidden');
+                    }
+                });
+
+                document.querySelectorAll('.dropdown-arrow').forEach((item) => {
+                    if (item !== arrow) {
+                        item.classList.remove('rotate-180');
+                    }
+                });
+
+                dropdown.classList.toggle('hidden');
+                arrow.classList.toggle('rotate-180');
+            });
+        });
+
+        document.querySelectorAll('.nav-dropdown').forEach((dropdown) => {
+            dropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.nav-dropdown').forEach((item) => {
+                item.classList.add('hidden');
+            });
+
+            document.querySelectorAll('.dropdown-arrow').forEach((item) => {
+                item.classList.remove('rotate-180');
+            });
+        });
+    });
+</script>

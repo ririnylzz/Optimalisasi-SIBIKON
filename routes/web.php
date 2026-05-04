@@ -14,17 +14,23 @@ Route::get('/', function () {
     ]);
 })->name('beranda');
 
-Route::get('/profil', function () {
+Route::get('/profil/tentang-kami', function () {
     return view('welcome', [
-        'page' => 'profil'
+        'page' => 'tentang-kami'
     ]);
-})->name('profil');
+})->name('tentang-kami');
 
-Route::get('/struktur', function () {
+Route::get('/profil/struktur', function () {
     return view('welcome', [
         'page' => 'struktur'
     ]);
 })->name('struktur');
+
+Route::get('/profil/sop-renja', function () {
+    return view('welcome', [
+        'page' => 'sop-renja'
+    ]);
+})->name('sop-renja');
 
 Route::get('/login', function () {
     return view('welcome', ['page' => 'login']);

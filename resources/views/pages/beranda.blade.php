@@ -42,13 +42,13 @@
                         </button>
 
                         <div class="absolute left-0 top-full z-50 mt-4 hidden w-72 border-t-4 border-yellow-400 bg-white shadow-xl group-hover:block">
-                            <a href="{{ route('profil') }}" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
+                            <a href="{{ route('tentang-kami') }}" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
                                 Tentang Kami
                             </a>
-                            <a href="#" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
+                            <a href="{{ route('struktur') }}" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
                                 Struktur Organisasi
                             </a>
-                            <a href="#" class="block px-6 py-4 font-bold text-slate-800 hover:bg-slate-100">
+                            <a href="{{ route('sop-renja') }}" class="block px-6 py-4 font-bold text-slate-800 hover:bg-slate-100">
                                 SOP & Renja
                             </a>
                         </div>
@@ -108,7 +108,7 @@
             <div id="mobile-menu" class="hidden md:hidden pb-5">
                 <div class="flex flex-col gap-4 font-medium text-white/90">
                     <a href="{{ route('beranda') }}">Beranda</a>
-                    <a href="{{ route('profil') }}">Profil</a>
+                    <a href="{{ route('tentang-kami') }}">Profil</a>
                     <a href="{{ route('berita') }}">Berita</a>
                     <a href="#">Fungsi</a>
                     <a href="{{ route('kontak') }}">Kontak</a>
