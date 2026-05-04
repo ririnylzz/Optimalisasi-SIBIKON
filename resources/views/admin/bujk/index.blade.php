@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('page-title', 'Daftar Badan Usaha Jasa Konstruksi')
-@section('page-subtitle', 'Kelola data BUJK melalui input manual dan import file')
+@section('page-subtitle', 'Kelola identitas, klasifikasi, wilayah, dan kontak usaha jasa konstruksi di Kalimantan Timur.')
 
 @section('content')
     @php
@@ -132,9 +132,6 @@
             <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
                     <h3 class="text-base font-bold text-slate-900">Tabel Data BUJK</h3>
-                    <p class="mt-1 text-xs text-slate-500">
-                        Format kolom menyesuaikan kebutuhan data utama: NIB, nama BUJK, jenis usaha, alamat, NPWP, kontak, dan aksi.
-                    </p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
@@ -156,7 +153,7 @@
                 </div>
             </div>
 
-            <form id="bujk-filter-form" method="GET" action="{{ route('admin.bujk') }}" class="mt-5 grid grid-cols-1 gap-3 text-xs md:grid-cols-2 xl:grid-cols-5">
+            <form id="bujk-filter-form" method="GET" action="{{ route('admin.bujk') }}" class="mt-8 grid grid-cols-1 gap-3 text-xs md:grid-cols-2 xl:grid-cols-5">
                 <div class="xl:col-span-2">
                     <label for="search" class="mb-2 block text-xs font-semibold text-slate-600">Filter / keyword</label>
                     <input
@@ -1317,8 +1314,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     loadProvinces();
-
-
 });
 </script>
 @endpush
