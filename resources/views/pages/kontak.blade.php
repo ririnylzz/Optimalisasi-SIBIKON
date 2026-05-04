@@ -54,7 +54,7 @@
                         </div>
                     </div>
 
-                    <a href="#"
+                    <a href="{{ route('berita') }}"
                         class="{{ request()->routeIs('berita') ? 'text-yellow-400' : 'text-white' }} hover:text-yellow-400 transition">
                         Berita
                     </a>
@@ -109,7 +109,7 @@
                 <div class="flex flex-col gap-4 font-medium text-white/90">
                     <a href="{{ route('beranda') }}">Beranda</a>
                     <a href="{{ route('profil') }}">Profil</a>
-                    <a href="#">Berita</a>
+                    <a href="{{ route('berita') }}">Berita</a>
                     <a href="#">Fungsi</a>
                     <a href="{{ route('kontak') }}">Kontak</a>
                     <a href="{{ route('login') }}" class="inline-flex w-fit items-center rounded-xl bg-yellow-400 px-6 py-3 font-bold text-slate-900">

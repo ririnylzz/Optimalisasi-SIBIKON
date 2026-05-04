@@ -19,6 +19,8 @@
         @include('pages.regist')
     @elseif ($page === 'kontak')
         @include('pages.kontak')
+    @elseif ($page === 'berita')
+        @include('pages.berita')
     @endif
 
 </body>

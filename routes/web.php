@@ -38,6 +38,10 @@ Route::get('/kontak', function () {
     return view('welcome', ['page' => 'kontak']);
 })->name('kontak');
 
+Route::get('/berita', function () {
+    return view('welcome', ['page' => 'berita']);
+})->name('berita');
+
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
