@@ -17,6 +17,8 @@
         @include('pages.profil.struktur')
     @elseif ($page == 'sop-renja')
         @include('pages.profil.sop-renja')
+    @elseif ($page == 'pengaturan')
+        @include('pages.fungsi.pengaturan')
     @elseif ($page === 'login')
         @include('pages.login')
     @elseif ($page === 'regist')

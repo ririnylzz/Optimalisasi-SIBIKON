@@ -47,6 +47,16 @@ Route::get('/kontak', function () {
 Route::get('/berita', function () {
     return view('welcome', ['page' => 'berita']);
 })->name('berita');
+ 
+Route::get('/fungsi/pengaturan', function () {
+    return view('pages.fungsi.pengaturan');
+})->name('pengaturan');
+
+Route::get('/fungsi/pengaturan', function () {
+    return view('welcome', [
+        'page' => 'pengaturan'
+    ]);
+})->name('pengaturan');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
