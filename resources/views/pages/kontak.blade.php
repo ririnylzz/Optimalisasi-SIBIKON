@@ -108,7 +108,7 @@
             <div id="mobile-menu" class="hidden md:hidden pb-5">
                 <div class="flex flex-col gap-4 font-medium text-white/90">
                     <a href="{{ route('beranda') }}">Beranda</a>
-                    <a href="{{ route('profil') }}">Profil</a>
+                    <a href="{{ route('tentang-kami') }}">Profil</a>
                     <a href="{{ route('berita') }}">Berita</a>
                     <a href="#">Fungsi</a>
                     <a href="{{ route('kontak') }}">Kontak</a>
