@@ -5,10 +5,6 @@ use App\Http\Controllers\Admin\BujkController;
 use App\Http\Controllers\Admin\DashboardController;
 
 Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/', function () {
     return view('welcome', [
         'page' => 'beranda'
     ]);
@@ -47,16 +43,24 @@ Route::get('/kontak', function () {
 Route::get('/berita', function () {
     return view('welcome', ['page' => 'berita']);
 })->name('berita');
- 
-Route::get('/fungsi/pengaturan', function () {
-    return view('pages.fungsi.pengaturan');
-})->name('pengaturan');
 
-Route::get('/fungsi/pengaturan', function () {
+Route::get('/fungsi/pengaturan/rakor', function () {
     return view('welcome', [
-        'page' => 'pengaturan'
+        'page' => 'rakor'
     ]);
-})->name('pengaturan');
+})->name('rakor');
+
+Route::get('/fungsi/pengaturan/sosialisasi', function () {
+    return view('welcome', [
+        'page' => 'sosialisasi'
+    ]);
+})->name('sosialisasi');
+
+Route::get('/fungsi/pengaturan/daftar-sosil', function () {
+    return view('welcome', [
+        'page' => 'daftar-sosil'
+    ]);
+})->name('daftar-sosil');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
