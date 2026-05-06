@@ -56,6 +56,18 @@ Route::get('/fungsi/pengaturan/sosialisasi', function () {
     ]);
 })->name('sosialisasi');
 
+Route::get('/fungsi/pengaturan/forum', function () {
+    return view('welcome', [
+        'page' => 'forum'
+    ]);
+})->name('forum');
+
+Route::get('/fungsi/pengaturan/rantai-pasok', function () {
+    return view('welcome', [
+        'page' => 'rantai-pasok'
+    ]);
+})->name('rantai-pasok');
+
 Route::get('/fungsi/pengaturan/daftar-sosil', function () {
     return view('welcome', [
         'page' => 'daftar-sosil'

@@ -152,7 +152,7 @@
                                 Sosialisasi
                             </a>
 
-                            <a href="#forum"
+                            <a href="{{ route('forum') }}"
                                 class="category-link block text-[#F8F8F6] transition hover:text-yellow-500"
                                 data-category="forum">
                                 Forum
@@ -290,97 +290,6 @@
                                         <td class="border-r border-slate-200 px-4 py-5 align-top">
                                             <span class="inline-flex rounded-md bg-blue-600 px-3 py-1 text-xs font-bold text-white">
                                                 Instansi Pemerintah
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-5 align-top">
-                                            <a href="#"
-                                                class="inline-flex rounded-lg bg-yellow-400 px-4 py-2 text-xs font-bold text-slate-900 transition hover:bg-yellow-300">
-                                                Daftar
-                                            </a>
-                                        </td>
-                                    </tr>
-
-                                    <!-- Contoh data kategori lain, bisa kamu ganti dari database -->
-                                    <tr class="table-row hidden hover:bg-slate-50"
-                                        data-category="sosialisasi">
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top font-semibold">1.</td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            <a href="#" class="font-semibold leading-relaxed text-blue-600 hover:text-blue-800 hover:underline">
-                                                Sosialisasi Peraturan Jasa Konstruksi Provinsi Kalimantan Timur
-                                            </a>
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            15 Mei 2025
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top leading-relaxed">
-                                            Aula Dinas PUPRPERA Provinsi Kalimantan Timur
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top font-semibold uppercase">
-                                            Samarinda
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            <span class="inline-flex rounded-md bg-blue-600 px-3 py-1 text-xs font-bold text-white">
-                                                Instansi Pemerintah
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-5 align-top">
-                                            <a href="#"
-                                                class="inline-flex rounded-lg bg-yellow-400 px-4 py-2 text-xs font-bold text-slate-900 transition hover:bg-yellow-300">
-                                                Daftar
-                                            </a>
-                                        </td>
-                                    </tr>
-
-                                    <tr class="table-row hidden hover:bg-slate-50"
-                                        data-category="forum">
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top font-semibold">1.</td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            <a href="#" class="font-semibold leading-relaxed text-blue-600 hover:text-blue-800 hover:underline">
-                                                Forum Komunikasi Penyelenggaraan Jasa Konstruksi
-                                            </a>
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            20 Juni 2025
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top leading-relaxed">
-                                            Balikpapan, Kalimantan Timur
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top font-semibold uppercase">
-                                            Balikpapan
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            <span class="inline-flex rounded-md bg-blue-600 px-3 py-1 text-xs font-bold text-white">
-                                                Instansi Pemerintah
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-5 align-top">
-                                            <a href="#"
-                                                class="inline-flex rounded-lg bg-yellow-400 px-4 py-2 text-xs font-bold text-slate-900 transition hover:bg-yellow-300">
-                                                Daftar
-                                            </a>
-                                        </td>
-                                    </tr>
-
-                                    <tr class="table-row hidden hover:bg-slate-50"
-                                        data-category="rantai-pasok">
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top font-semibold">1.</td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            <a href="#" class="font-semibold leading-relaxed text-blue-600 hover:text-blue-800 hover:underline">
-                                                Rapat Koordinasi Rantai Pasok Material dan Peralatan Konstruksi
-                                            </a>
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            12 Agustus 2025
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top leading-relaxed">
-                                            Kantor Dinas PUPRPERA Provinsi Kalimantan Timur
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top font-semibold uppercase">
-                                            Samarinda
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            <span class="inline-flex rounded-md bg-blue-600 px-3 py-1 text-xs font-bold text-white">
-                                                Penyedia Jasa
                                             </span>
                                         </td>
                                         <td class="px-4 py-5 align-top">
