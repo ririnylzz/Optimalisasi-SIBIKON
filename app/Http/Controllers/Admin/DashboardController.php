@@ -161,46 +161,114 @@ class DashboardController extends Controller
 
     public function tkk()
     {
-        // KPI (dummy dulu)
         $kpi = [
             [
                 'label' => 'TKK',
                 'title' => 'Tenaga Kerja Konstruksi',
-                'value' => number_format(555505),
+                'value' => number_format(8757),
             ],
             [
                 'label' => 'SKK',
                 'title' => 'Sertifikat Kompetensi Kerja',
-                'value' => number_format(736921),
+                'value' => number_format(8757),
+            ],
+            [
+                'label' => 'AKTIF',
+                'title' => 'Sertifikat Aktif',
+                'value' => number_format(8247),
+            ],
+            [
+                'label' => 'EXP',
+                'title' => 'Kadaluarsa Tahun Ini',
+                'value' => number_format(510),
             ],
         ];
 
-        // Dummy chart (ambil dari gambar kamu)
-        $asosiasiTkk = [
-            ['label' => 'ASTEKINDO', 'value' => 147066],
-            ['label' => 'PERTAMA', 'value' => 101887],
-            ['label' => 'PERKONI', 'value' => 77828],
-            ['label' => 'NON ASOSIASI', 'value' => 65346],
-            ['label' => 'GATAKI', 'value' => 47369],
+        $statusSertifikasi = [
+            ['label' => 'Aktif', 'value' => 8247],
+            ['label' => 'Kadaluarsa Akhir Tahun Ini', 'value' => 510],
         ];
 
-        $kualifikasiSkk = [
-            ['label' => 'Ahli', 'value' => 53661],
-            ['label' => 'Teknisi/Analis', 'value' => 113670],
-            ['label' => 'Operator', 'value' => 80711],
+        $distribusiJenjang = [
+            ['label' => '7', 'value' => 5396],
+            ['label' => '8', 'value' => 2441],
+            ['label' => '9', 'value' => 920],
         ];
 
-        $jabkerSkk = [
-            ['label' => 'Manajer Lapangan', 'value' => 44098],
-            ['label' => 'Pelaksana', 'value' => 36402],
-            ['label' => 'Pengawas', 'value' => 32113],
+        $topAsosiasi = [
+            ['label' => 'ATAKI', 'value' => 1403],
+            ['label' => 'ASTEKINDO', 'value' => 1014],
+            ['label' => 'PERTAMA', 'value' => 967],
+            ['label' => 'PERPAKOM', 'value' => 884],
+            ['label' => 'Asosiasi Lainnya', 'value' => 4489],
+        ];
+
+        $topKlasifikasi = [
+            ['label' => 'Sipil', 'value' => 5112],
+            ['label' => 'Manajemen Pelaksanaan', 'value' => 3254],
+            ['label' => 'Mekanikal', 'value' => 184],
+            ['label' => 'Arsitektur', 'value' => 83],
+            ['label' => 'Perencanaan Wilayah dan Kota', 'value' => 67],
+        ];
+
+        $perbandinganKabupaten = [
+            ['label' => 'Kab. Kutai Kartanegara', 'value' => 965],
+            ['label' => 'Kota Bontang', 'value' => 420],
+            ['label' => 'Kota Samarinda', 'value' => 4232],
+            ['label' => 'Kota Balikpapan', 'value' => 1498],
+            ['label' => 'Kab. Paser', 'value' => 269],
+            ['label' => 'Kab. Penajam Paser Utara', 'value' => 433],
+            ['label' => 'Kab. Berau', 'value' => 290],
+            ['label' => 'Kab. Kutai Timur', 'value' => 372],
+            ['label' => 'Kab. Mahakam Ulu', 'value' => 73],
+            ['label' => 'Kab. Kutai Barat', 'value' => 205],
+        ];
+
+        $proyeksiKadaluarsa = [
+            ['label' => '2026', 'value' => 510],
+            ['label' => '2027', 'value' => 969],
+            ['label' => '2028', 'value' => 2417],
+            ['label' => '2029', 'value' => 2787],
+            ['label' => '2030', 'value' => 1779],
+            ['label' => '2031', 'value' => 295],
+        ];
+
+        $kabupatenOptions = [
+            'Kab. Berau',
+            'Kab. Kutai Barat',
+            'Kab. Kutai Kartanegara',
+            'Kab. Kutai Timur',
+            'Kab. Mahakam Ulu',
+            'Kab. Paser',
+            'Kab. Penajam Paser Utara',
+            'Kota Balikpapan',
+            'Kota Bontang',
+            'Kota Samarinda',
+        ];
+
+        $tkkRows = [
+            ['nama' => 'Anindi F*******', 'kabupaten' => 'Kab. Kutai Kartanegara', 'jabatan' => 'Ahli Muda Teknik Bangunan Gedung', 'jenjang' => 7, 'status' => 'Aktif'],
+            ['nama' => 'Libra F*******', 'kabupaten' => 'Kota Bontang', 'jabatan' => 'Ahli Muda Teknik Bangunan Gedung', 'jenjang' => 7, 'status' => 'Aktif'],
+            ['nama' => 'Libra F*******', 'kabupaten' => 'Kota Bontang', 'jabatan' => 'Ahli Muda Bidang Keahlian Teknik Sumber Daya Air', 'jenjang' => 7, 'status' => 'Aktif'],
+            ['nama' => 'Muhammad R*******', 'kabupaten' => 'Kab. Kutai Kartanegara', 'jabatan' => 'Ahli Muda Teknik Jalan', 'jenjang' => 7, 'status' => 'Aktif'],
+            ['nama' => 'Rahman S*******', 'kabupaten' => 'Kota Samarinda', 'jabatan' => 'Ahli Madya Bidang Keahlian Manajemen Konstruksi', 'jenjang' => 8, 'status' => 'Aktif'],
+            ['nama' => 'Situmorang Y*******', 'kabupaten' => 'Kota Samarinda', 'jabatan' => 'Ahli Madya Bidang Keahlian Manajemen Konstruksi', 'jenjang' => 8, 'status' => 'Aktif'],
+            ['nama' => 'Julius A*******', 'kabupaten' => 'Kota Samarinda', 'jabatan' => 'Ahli Muda Bidang Keahlian Teknik Jalan', 'jenjang' => 7, 'status' => 'Aktif'],
+            ['nama' => 'A. A*******', 'kabupaten' => 'Kab. Kutai Kartanegara', 'jabatan' => 'Ahli Madya K3 Konstruksi', 'jenjang' => 8, 'status' => 'Aktif'],
+            ['nama' => 'A. H*******', 'kabupaten' => 'Kota Samarinda', 'jabatan' => 'Ahli Muda K3 Konstruksi', 'jenjang' => 7, 'status' => 'Aktif'],
+            ['nama' => 'A. W*******', 'kabupaten' => 'Kota Bontang', 'jabatan' => 'Ahli Muda K3 Konstruksi', 'jenjang' => 7, 'status' => 'Aktif'],
         ];
 
         return view('admin.dashboard-tkk', compact(
             'kpi',
-            'asosiasiTkk',
-            'kualifikasiSkk',
-            'jabkerSkk'
+            'statusSertifikasi',
+            'distribusiJenjang',
+            'topAsosiasi',
+            'topKlasifikasi',
+            'perbandinganKabupaten',
+            'proyeksiKadaluarsa',
+            'kabupatenOptions',
+            'tkkRows'
         ));
     }
 }
