@@ -66,7 +66,7 @@
                             <a href="{{ route('rakor') }}" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
                                 Pengaturan
                             </a>
-                            <a href="{{ route('tabel-tkk') }}" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
+                            <a href="#" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
                                 Pemberdayaan
                             </a>
                             <a href="#" class="block px-6 py-4 font-bold text-slate-800 hover:bg-slate-100">
@@ -112,24 +112,24 @@
         </div>
     </header>
 
-    <!-- HALAMAN PENGATURAN -->
+    <!-- HALAMAN PEMBERDAYAAN -->
     <section class="bg-white py-16 lg:py-20">
         <div class="mx-auto max-w-[1540px] px-6 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
 
             <!-- Heading -->
             <div class="mb-10 text-center">
                 <p class="text-xs font-semibold uppercase tracking-[0.25em] text-slate-400">
-                    Fungsi Pengaturan
+                    Fungsi Pemberdayaan
                 </p>
 
                 <h1 class="mt-3 text-3xl font-extrabold uppercase tracking-tight text-[#111827] sm:text-4xl">
-                    Rapat Koordinasi Sub Urusan Jasa Konstruksi
+                    PELATIHAN dan SERTIFIKASI TAHUN 2026
                 </h1>
 
                 <div class="mx-auto mt-4 h-1.5 w-40 rounded-full bg-yellow-400"></div>
             </div>
 
-            <!-- Grid Kategori + Tabel -->
+            <!-- Grid Kategori + Card -->
             <div class="grid grid-cols-1 gap-8 lg:grid-cols-[240px_minmax(0,1fr)] items-stretch">
 
                 <!-- SIDEBAR KATEGORI -->
@@ -140,107 +140,53 @@
                         </h2>
 
                         <nav class="space-y-7 text-base font-semibold">
-                            <a href="{{ route('rakor') }}"
+                            <a href="{{ route('tabel-tkk') }}"
                                 class="category-link block text-[#F8F8F6] transition hover:text-yellow-500"
-                                data-category="rakor">
-                                Rakor
+                                data-category="tabel-tkk">
+                                Tenaga Kerja Konstruksi
                             </a>
 
-                            <a href="{{ route('sosialisasi') }}"
+                            <a href="{{ route('pelatihan-ahli') }}"
                                 class="category-link block text-[#F8F8F6] transition hover:text-yellow-500"
-                                data-category="sosialisasi">
-                                Sosialisasi
-                            </a>
-
-                            <a href="{{ route('forum') }}"
-                                class="category-link block text-[#F8F8F6] transition hover:text-yellow-500"
-                                data-category="forum">
-                                Forum
-                            </a>
-
-                            <a href="{{ route('rantai-pasok') }}"
-                                class="category-link block text-[#F8F8F6] transition hover:text-yellow-500"
-                                data-category="rantai-pasok">
-                                Rantai Pasok
+                                data-category="pelatihan-ahli">
+                                Pelatihan dan Sertifikasi Ahli
                             </a>
                         </nav>
                     </div>
                 </aside>
 
-                <!-- CONTENT / TABLE -->
+                <!-- CONTENT -->
                 <main class="min-w-0">
-                    <div class="w-full h-full overflow-hidden rounded-[24px] border border-slate-200 bg-white p-5 shadow-xl shadow-slate-200/70">
-
-                        <!-- Controls -->
-                        <div class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                            <div class="flex items-center gap-2 text-sm text-slate-600">
-                                <span>Show</span>
-
-                                <select id="entries-select"
-                                    class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:border-[#243B78] focus:outline-none">
-                                    <option value="10">10</option>
-                                    <option value="25">25</option>
-                                    <option value="50">50</option>
-                                </select>
-
-                                <span>entries</span>
+                    <div class="container mt-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="card bg-white rounded-lg shadow-lg p-5">
+                                <img src="{{ asset('images/poster-pelatihan.jpg') }}" alt="Pelatihan 1" class="w-full h-40 object-cover rounded-lg">
+                                <h3 class="text-xl font-semibold mt-4">	Pelatihan dan Sertifikasi TKK Ahli Muda Teknik Sumber Daya Air Jenjang 7</h3>
+                                
+                                <!-- <p class="text-gray-600 mt-2">Waktu Pelaksanaan: 07 - 10 April 2026</p>
+                                <p class="text-gray-600">Lokasi: Dinas Pekerjaan Umum Penataan Ruang dan Perumahan Rakyat Provinsi Kalimantan Timur</p>
+                                <p class="text-gray-600">Jumlah Peserta: 32</p> -->
+                                <a href="#" class="inline-block mt-4 bg-blue-500 text-white py-2 px-4 rounded-full">Daftar Sekarang</a>
                             </div>
 
-                            <div class="flex items-center gap-2 text-sm text-slate-600">
-                                <label for="table-search">Search:</label>
-                                <input id="table-search" type="text"
-                                    class="w-full rounded-lg border border-slate-200 px-4 py-2 text-sm focus:border-[#243B78] focus:outline-none sm:w-64">
+                            <div class="card bg-white rounded-lg shadow-lg p-5">
+                                <img src="{{ asset('images/poster-pelatihan.jpg') }}" alt="Pelatihan 2" class="w-full h-40 object-cover rounded-lg">
+                                <h3 class="text-xl font-semibold mt-4">	Pelatihan dan Sertifikasi TKK Ahli Muda K3 Konstruksi Jenjang 7</h3>
+                                <p class="text-gray-600 mt-2">Waktu Pelaksanaan: 07 - 10 April 2026</p>
+                                <p class="text-gray-600">Lokasi: Dinas Pekerjaan Umum Penataan Ruang dan Perumahan Rakyat Provinsi Kalimantan Timur</p>
+                                <p class="text-gray-600">Jumlah Peserta: 50</p>
+                                <a href="#" class="inline-block mt-4 bg-blue-500 text-white py-2 px-4 rounded-full">Daftar Sekarang</a>
+                            </div>
+
+                            <div class="card bg-white rounded-lg shadow-lg p-5">
+                                <img src="{{ asset('images/poster-pelatihan.jpg') }}" alt="Pelatihan 3" class="w-full h-40 object-cover rounded-lg">
+                                <h3 class="text-xl font-semibold mt-4">	Pelatihan dan Sertifikasi TKK Ahli Muda Teknik Bangunan Gedung Jenjang 7</h3>
+                                <p class="text-gray-600 mt-2">Waktu Pelaksanaan: 07 - 10 April 2026</p>
+                                <p class="text-gray-600">Lokasi: Dinas Pekerjaan Umum Penataan Ruang dan Perumahan Rakyat Provinsi Kalimantan Timur</p>
+                                <p class="text-gray-600">Jumlah Peserta: 30</p>
+                                <a href="#" class="inline-block mt-4 bg-blue-500 text-white py-2 px-4 rounded-full">Daftar Sekarang</a>
                             </div>
                         </div>
-
-                        <!-- Table -->
-                        <div class="w-full overflow-x-auto">
-                            <table class="w-full min-w-[1180px] border-collapse text-left text-sm">
-                                <thead>
-                                    <tr class="border-y border-slate-200 bg-slate-50 text-[11px] uppercase tracking-wide text-slate-700">
-                                        <th class="w-14 border-r border-slate-200 px-4 py-4 font-extrabold">No.</th>
-                                        <th class="min-w-[150px] border-r border-slate-200 px-4 py-4 font-extrabold">Nama</th>
-                                        <th class="min-w-[280px] border-r border-slate-200 px-4 py-4 font-extrabold">Bidang Usaha</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody id="kegiatan-table" class="divide-y divide-slate-200 text-slate-700">
-
-                                    <tr class="table-row hover:bg-slate-50"
-                                        data-category="rantai-pasok">
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top font-semibold">3.</td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            <a href="{{ route('rantai-pasok') }}" class="font-semibold leading-relaxed text-blue-600 hover:text-blue-800 hover:underline">
-                                                RANTAI PASOK 2025 dengan tema "Rantai Pasok Kalimantan Timur Menuju Konstruksi Berkualitas"
-                                            </a>
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            03 September 2025
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Footer table -->
-                        <div class="mt-5 flex flex-col gap-4 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-                            <p id="table-info">
-                                Showing 1 to 3 of 3 entries
-                            </p>
-
-                            <div class="inline-flex items-center overflow-hidden rounded-lg border border-slate-200">
-                                <button type="button" class="bg-slate-100 px-4 py-2 text-slate-500">
-                                    Previous
-                                </button>
-                                <button type="button" class="bg-yellow-400 px-4 py-2 font-bold text-slate-900">
-                                    1
-                                </button>
-                                <button type="button" class="bg-white px-4 py-2 text-slate-500">
-                                    Next
-                                </button>
-                            </div>
-                        </div>
-
                     </div>
                 </main>
             </div>
@@ -342,66 +288,3 @@
         </div>
     </div>
 </footer>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const categoryLinks = document.querySelectorAll('.category-link');
-        const rows = document.querySelectorAll('.table-row');
-        const searchInput = document.getElementById('table-search');
-        const tableInfo = document.getElementById('table-info');
-
-        let activeCategory = 'rantai-pasok';
-
-        function updateTable() {
-            const keyword = searchInput.value.toLowerCase();
-            let visibleRows = [];
-
-            rows.forEach((row) => {
-                const rowCategory = row.dataset.category;
-                const rowText = row.textContent.toLowerCase();
-
-                const matchCategory = rowCategory === activeCategory;
-                const matchSearch = rowText.includes(keyword);
-
-                if (matchCategory && matchSearch) {
-                    row.classList.remove('hidden');
-                    visibleRows.push(row);
-                } else {
-                    row.classList.add('hidden');
-                }
-            });
-
-            visibleRows.forEach((row, index) => {
-                row.querySelector('td').textContent = `${index + 1}.`;
-            });
-
-            tableInfo.textContent = visibleRows.length > 0 ?
-                `Showing 1 to ${visibleRows.length} of ${visibleRows.length} entries` :
-                'Showing 0 to 0 of 0 entries';
-        }
-
-        categoryLinks.forEach((link) => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-
-                activeCategory = this.dataset.category;
-
-                categoryLinks.forEach((item) => {
-                    item.classList.remove('text-yellow-500');
-                    item.classList.add('text-[#21325e]');
-                });
-
-                this.classList.remove('text-[#21325e]');
-                this.classList.add('text-yellow-500');
-
-                updateTable();
-            });
-        });
-
-        if (searchInput) {
-            searchInput.addEventListener('keyup', updateTable);
-        }
-
-        updateTable();
-    });
-</script>

@@ -73,7 +73,7 @@
                             <a href="{{ route('rakor') }}" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
                                 Pengaturan
                             </a>
-                            <a href="#" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
+                            <a href="{{ route('tabel-tkk') }}" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
                                 Pemberdayaan
                             </a>
                             <a href="#" class="block px-6 py-4 font-bold text-slate-800 hover:bg-slate-100">

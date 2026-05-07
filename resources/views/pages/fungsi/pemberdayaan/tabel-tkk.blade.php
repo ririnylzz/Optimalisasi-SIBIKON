@@ -66,7 +66,7 @@
                             <a href="{{ route('rakor') }}" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
                                 Pengaturan
                             </a>
-                            <a href="{{ route('tabel-tkk') }}" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
+                            <a href="#" class="block px-6 py-4 font-bold text-slate-800 border-b border-slate-200 hover:bg-slate-100">
                                 Pemberdayaan
                             </a>
                             <a href="#" class="block px-6 py-4 font-bold text-slate-800 hover:bg-slate-100">
@@ -112,18 +112,18 @@
         </div>
     </header>
 
-    <!-- HALAMAN PENGATURAN -->
+    <!-- HALAMAN PEMBERDAYAAN -->
     <section class="bg-white py-16 lg:py-20">
         <div class="mx-auto max-w-[1540px] px-6 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
 
             <!-- Heading -->
             <div class="mb-10 text-center">
                 <p class="text-xs font-semibold uppercase tracking-[0.25em] text-slate-400">
-                    Fungsi Pengaturan
+                    Masyarakat Konstruksi
                 </p>
 
                 <h1 class="mt-3 text-3xl font-extrabold uppercase tracking-tight text-[#111827] sm:text-4xl">
-                    Rapat Koordinasi Sub Urusan Jasa Konstruksi
+                    TENAGA KERJA KONSTRUKSI
                 </h1>
 
                 <div class="mx-auto mt-4 h-1.5 w-40 rounded-full bg-yellow-400"></div>
@@ -140,28 +140,16 @@
                         </h2>
 
                         <nav class="space-y-7 text-base font-semibold">
-                            <a href="{{ route('rakor') }}"
+                            <a href="{{ route('tabel-tkk') }}"
                                 class="category-link block text-[#F8F8F6] transition hover:text-yellow-500"
-                                data-category="rakor">
-                                Rakor
+                                data-category="tabel-tkk">
+                                Tenaga Kerja Konstruksi
                             </a>
 
-                            <a href="{{ route('sosialisasi') }}"
+                            <a href="{{ route('pelatihan-ahli') }}"
                                 class="category-link block text-[#F8F8F6] transition hover:text-yellow-500"
-                                data-category="sosialisasi">
-                                Sosialisasi
-                            </a>
-
-                            <a href="{{ route('forum') }}"
-                                class="category-link block text-[#F8F8F6] transition hover:text-yellow-500"
-                                data-category="forum">
-                                Forum
-                            </a>
-
-                            <a href="#rantai-pasok"
-                                class="category-link block text-[#F8F8F6] transition hover:text-yellow-500"
-                                data-category="rantai-pasok">
-                                Rantai Pasok
+                                data-category="pelatihan-ahli">
+                                Pelatihan dan Sertifikasi Ahli
                             </a>
                         </nav>
                     </div>
@@ -199,104 +187,24 @@
                                 <thead>
                                     <tr class="border-y border-slate-200 bg-slate-50 text-[11px] uppercase tracking-wide text-slate-700">
                                         <th class="w-14 border-r border-slate-200 px-4 py-4 font-extrabold">No.</th>
-                                        <th class="min-w-[280px] border-r border-slate-200 px-4 py-4 font-extrabold">Judul Kegiatan</th>
-                                        <th class="min-w-[150px] border-r border-slate-200 px-4 py-4 font-extrabold">Waktu Kegiatan</th>
-                                        <th class="min-w-[300px] border-r border-slate-200 px-4 py-4 font-extrabold">Tempat Kegiatan Kegiatan</th>
-                                        <th class="min-w-[140px] border-r border-slate-200 px-4 py-4 font-extrabold">Kab/Kota</th>
-                                        <th class="min-w-[140px] border-r border-slate-200 px-4 py-4 font-extrabold">Peserta</th>
-                                        <th class="min-w-[100px] px-4 py-4 font-extrabold">Daftar</th>
+                                        <th class="min-w-[280px] border-r border-slate-200 px-4 py-4 font-extrabold">Nama Tenaga Kerja</th>
+                                        <th class="min-w-[150px] border-r border-slate-200 px-4 py-4 font-extrabold">Pendidikan</th>
+                                        <th class="min-w-[300px] border-r border-slate-200 px-4 py-4 font-extrabold">Keahlian</th>
                                     </tr>
                                 </thead>
 
                                 <tbody id="kegiatan-table" class="divide-y divide-slate-200 text-slate-700">
                                     <tr class="table-row hover:bg-slate-50"
-                                        data-category="rakor">
+                                        data-category="tabel-tkk">
                                         <td class="border-r border-slate-200 px-4 py-5 align-top font-semibold">1.</td>
                                         <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            <a href="#" class="font-semibold leading-relaxed text-blue-600 hover:text-blue-800 hover:underline">
-                                                Rapat Koordinasi Sub Urusan Jasa Konstruksi Kabupaten/Kota Se Kalimantan Timur Tahun 2025
-                                            </a>
+                                            M. Ali Wardana, S.T
                                         </td>
                                         <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            08 Oktober 2025
+                                            Teknik Sipil
                                         </td>
                                         <td class="border-r border-slate-200 px-4 py-5 align-top leading-relaxed">
-                                            Auditorium Kantor Walikota Bontang Jl. Moch. Roem No 1 Kelurahan Bontang Lestari,
-                                            Kecamatan Bontang Selatan, Kota Bontang
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top font-semibold uppercase">
-                                            Kota Bontang
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            <span class="inline-flex rounded-md bg-blue-600 px-3 py-1 text-xs font-bold text-white">
-                                                Instansi Pemerintah
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-5 align-top">
-                                            <a href="#"
-                                                class="inline-flex rounded-lg bg-yellow-400 px-4 py-2 text-xs font-bold text-slate-900 transition hover:bg-yellow-300">
-                                                Daftar
-                                            </a>
-                                        </td>
-                                    </tr>
-
-                                    <tr class="table-row hover:bg-slate-50"
-                                        data-category="rakor">
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top font-semibold">2.</td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            <a href="#" class="font-semibold leading-relaxed text-blue-600 hover:text-blue-800 hover:underline">
-                                                Rapat Koordinasi Sub Urusan Jasa Konstruksi Kabupaten/Kota Se Kalimantan Timur Tahun 2024
-                                            </a>
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            11 Desember 2024
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top leading-relaxed">
-                                            Hotel Kyriad Sadurengas, Kabupaten Paser Jl. Kesuma Bangsa KM. 5 Tanah Grogot, Paser
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top font-semibold uppercase">
-                                            Paser
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            <span class="inline-flex rounded-md bg-blue-600 px-3 py-1 text-xs font-bold text-white">
-                                                Instansi Pemerintah
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-5 align-top">
-                                            <a href="#"
-                                                class="inline-flex rounded-lg bg-yellow-400 px-4 py-2 text-xs font-bold text-slate-900 transition hover:bg-yellow-300">
-                                                Daftar
-                                            </a>
-                                        </td>
-                                    </tr>
-
-                                    <tr class="table-row hover:bg-slate-50"
-                                        data-category="rakor">
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top font-semibold">3.</td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            <a href="#" class="font-semibold leading-relaxed text-blue-600 hover:text-blue-800 hover:underline">
-                                                Rapat Koordinasi Daerah Sub Urusan Jasa Konstruksi Kabupaten / Kota Se-Kalimantan Timur Tahun 2023
-                                            </a>
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            22 November 2023
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top leading-relaxed">
-                                            Kantor Bupati Kab. Penajam Paser Utara, Ruang Aula Lantai 1 - Jl. Propinsi KM. 09, Nipah-Nipah
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top font-semibold uppercase">
-                                            Penajam Paser Utara
-                                        </td>
-                                        <td class="border-r border-slate-200 px-4 py-5 align-top">
-                                            <span class="inline-flex rounded-md bg-blue-600 px-3 py-1 text-xs font-bold text-white">
-                                                Instansi Pemerintah
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-5 align-top">
-                                            <a href="#"
-                                                class="inline-flex rounded-lg bg-yellow-400 px-4 py-2 text-xs font-bold text-slate-900 transition hover:bg-yellow-300">
-                                                Daftar
-                                            </a>
+                                            Ahli Muda Teknik Jembatan
                                         </td>
                                     </tr>
                                 </tbody>

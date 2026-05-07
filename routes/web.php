@@ -74,6 +74,18 @@ Route::get('/fungsi/pengaturan/daftar-sosil', function () {
     ]);
 })->name('daftar-sosil');
 
+Route::get('/fungsi/pemberdayaan/tabel-tkk', function () {
+    return view('welcome', [
+        'page' => 'tabel-tkk'
+    ]);
+})->name('tabel-tkk');
+
+Route::get('/fungsi/pemberdayaan/pelatihan-ahli', function () {
+    return view('welcome', [
+        'page' => 'pelatihan-ahli'
+    ]);
+})->name('pelatihan-ahli');
+
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
