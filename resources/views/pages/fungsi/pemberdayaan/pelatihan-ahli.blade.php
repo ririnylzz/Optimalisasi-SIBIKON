@@ -162,10 +162,9 @@
                             <div class="card bg-white rounded-lg shadow-lg p-5">
                                 <img src="{{ asset('images/poster-pelatihan.jpg') }}" alt="Pelatihan 1" class="w-full h-40 object-cover rounded-lg">
                                 <h3 class="text-xl font-semibold mt-4">	Pelatihan dan Sertifikasi TKK Ahli Muda Teknik Sumber Daya Air Jenjang 7</h3>
-                                
-                                <!-- <p class="text-gray-600 mt-2">Waktu Pelaksanaan: 07 - 10 April 2026</p>
+                                <p class="text-gray-600 mt-2">Waktu Pelaksanaan: 07 - 10 April 2026</p>
                                 <p class="text-gray-600">Lokasi: Dinas Pekerjaan Umum Penataan Ruang dan Perumahan Rakyat Provinsi Kalimantan Timur</p>
-                                <p class="text-gray-600">Jumlah Peserta: 32</p> -->
+                                <p class="text-gray-600">Jumlah Peserta: 32</p>
                                 <a href="#" class="inline-block mt-4 bg-blue-500 text-white py-2 px-4 rounded-full">Daftar Sekarang</a>
                             </div>
 

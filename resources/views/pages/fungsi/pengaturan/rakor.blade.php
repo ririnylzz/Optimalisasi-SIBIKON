@@ -232,12 +232,12 @@
                                                 Instansi Pemerintah
                                             </span>
                                         </td>
-                                        <td class="px-4 py-5 align-top">
+                                        <!-- <td class="px-4 py-5 align-top">
                                             <a href="#"
                                                 class="inline-flex rounded-lg bg-yellow-400 px-4 py-2 text-xs font-bold text-slate-900 transition hover:bg-yellow-300">
                                                 Daftar
                                             </a>
-                                        </td>
+                                        </td> -->
                                     </tr>
 
                                     <tr class="table-row hover:bg-slate-50"
@@ -262,7 +262,7 @@
                                                 Instansi Pemerintah
                                             </span>
                                         </td>
-                                        <td class="px-4 py-5 align-top">
+                                        <!-- <td class="px-4 py-5 align-top">
                                             <a href="#"
                                                 class="inline-flex rounded-lg bg-yellow-400 px-4 py-2 text-xs font-bold text-slate-900 transition hover:bg-yellow-300">
                                                 Daftar
@@ -292,12 +292,12 @@
                                                 Instansi Pemerintah
                                             </span>
                                         </td>
-                                        <td class="px-4 py-5 align-top">
+                                        <!-- <td class="px-4 py-5 align-top">
                                             <a href="#"
                                                 class="inline-flex rounded-lg bg-yellow-400 px-4 py-2 text-xs font-bold text-slate-900 transition hover:bg-yellow-300">
                                                 Daftar
                                             </a>
-                                        </td>
+                                        </td> -->
                                     </tr>
                                 </tbody>
                             </table>
