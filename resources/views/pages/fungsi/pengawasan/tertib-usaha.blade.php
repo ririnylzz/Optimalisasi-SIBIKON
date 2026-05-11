@@ -7,11 +7,11 @@
         {{-- Header --}}
         <div class="mb-16 text-center">
             <p class="mb-4 text-xs font-bold uppercase tracking-[0.45em] text-slate-400">
-                Fungsi Pemberdayaan
+                Masyarakat Konstruksi 
             </p>
 
             <h1 class="text-3xl font-extrabold uppercase text-[#071226] md:text-4xl">
-                Pelatihan dan Sertifikasi Tahun 2026
+                Fungsi Pengawasan
             </h1>
 
             <span class="mx-auto mt-8 block h-2 w-60 rounded-full bg-yellow-400"></span>
@@ -26,19 +26,24 @@
                 </h2>
 
                 <nav>
-                    <a href="{{ route('tabel-tkk') }}"
-                        class="{{ request()->routeIs('tabel-tkk') ? 'text-yellow-300' : 'text-white' }} block border-y border-white/45 py-4 text-base transition hover:text-yellow-300">
-                        Tenaga Kerja Konstruksi
+                    <a href="{{ route('tertib-usaha') }}"
+                        class="{{ request()->routeIs('tertib-usaha') ? 'text-yellow-300' : 'text-white' }} block border-y border-white/45 py-4 text-base font-bold transition hover:text-yellow-300">
+                        Tertib Usaha
                     </a>
 
-                    <a href="{{ route('pelatihan-ahli') }}"
-                        class="{{ request()->routeIs('pelatihan-ahli') ? 'text-yellow-300' : 'text-white' }} block border-b border-white/45 py-4 text-base leading-relaxed transition hover:text-yellow-300">
-                        Pelatihan dan Sertifikasi Ahli
+                    <a href="{{ route('tertib-pemanfaatan') }}"
+                        class="{{ request()->routeIs('tertib-pemanfaatan') ? 'text-yellow-300' : 'text-white' }} block border-b border-white/45 py-4 text-base font-bold leading-relaxed transition hover:text-yellow-300">
+                        Tertib Pemanfaatan
+                    </a>
+
+                    <a href="{{ route('tertib-penyelenggaraan') }}"
+                        class="{{ request()->routeIs('tertib-penyelenggaraan') ? 'text-yellow-300' : 'text-white' }} block border-b border-white/45 py-4 text-base font-bold leading-relaxed transition hover:text-yellow-300">
+                        Tertib Penyelenggaraan
                     </a>
                 </nav>
             </aside>
 
-            {{-- Card List --}}
+            <!-- {{-- Card List --}}
             <div>
                 @php
                 $pelatihan = [
@@ -110,7 +115,7 @@
                     </article>
                     @endforeach
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </section>

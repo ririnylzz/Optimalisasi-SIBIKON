@@ -31,6 +31,18 @@
         @include('pages.fungsi.pemberdayaan.tabel-tkk')
     @elseif ($page === 'pelatihan-ahli')
         @include('pages.fungsi.pemberdayaan.pelatihan-ahli')
+    @elseif ($page === 'tertib-usaha')
+        @include('pages.fungsi.pengawasan.tertib-usaha')
+    @elseif ($page === 'tertib-penyelenggaraan')
+        @include('pages.fungsi.pengawasan.tertib-penyelenggaraan')
+    @elseif ($page === 'tertib-pemanfaatan')
+        @include('pages.fungsi.pengawasan.tertib-pemanfaatan')
+    @elseif ($page === 'asosiasi-perusahaan')
+        @include('pages.layanan.asosiasi-perusahaan')
+    @elseif ($page === 'asosiasi-profesi')
+        @include('pages.layanan.asosiasi-profesi')
+    @elseif ($page === 'penyedia-jasa')
+        @include('pages.layanan.penyedia-jasa')
     @elseif ($page === 'login')
         @include('pages.login')
     @elseif ($page === 'regist')
@@ -39,6 +51,8 @@
         @include('pages.kontak')
     @elseif ($page === 'berita')
         @include('pages.berita')
+    @elseif ($page === 'detail-berita')
+        @include('pages.detail-berita')
     @endif
 
 </body>

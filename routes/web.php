@@ -44,6 +44,10 @@ Route::get('/berita', function () {
     return view('welcome', ['page' => 'berita']);
 })->name('berita');
 
+Route::get('/detail-berita', function () {
+    return view('welcome', ['page' => 'detail-berita']);
+})->name('detail-berita');
+
 Route::get('/fungsi/pengaturan/rakor', function () {
     return view('welcome', [
         'page' => 'rakor'
@@ -85,6 +89,42 @@ Route::get('/fungsi/pemberdayaan/pelatihan-ahli', function () {
         'page' => 'pelatihan-ahli'
     ]);
 })->name('pelatihan-ahli');
+
+Route::get('/fungsi/pengawasan/tertib-usaha', function () {
+    return view('welcome', [
+        'page' => 'tertib-usaha'
+    ]);
+})->name('tertib-usaha');
+
+Route::get('/fungsi/pengawasan/tertib-penyelenggaraan', function () {
+    return view('welcome', [
+        'page' => 'tertib-penyelenggaraan'
+    ]);
+})->name('tertib-penyelenggaraan');
+
+Route::get('/fungsi/pengawasan/tertib-pemanfaatan', function () {
+    return view('welcome', [
+        'page' => 'tertib-pemanfaatan'
+    ]);
+})->name('tertib-pemanfaatan');
+
+Route::get('/layanan/asosiasi-perusahaan', function () {
+    return view('pages.layanan.asosiasi-perusahaan', [
+        'asosiasiPerusahaan' => []
+    ]);
+})->name('asosiasi-perusahaan');
+
+Route::get('/layanan/asosiasi-profesi', function () {
+    return view('pages.layanan.asosiasi-profesi', [
+        'asosiasiProfesi' => []
+    ]);
+})->name('asosiasi-profesi');
+
+Route::get('/layanan/penyedia-jasa', function () {
+    return view('pages.layanan.penyedia-jasa', [
+        'penyediaJasa' => []
+    ]);
+})->name('penyedia-jasa');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
