@@ -35,7 +35,9 @@ class BujkController extends Controller
         if ($search !== '') {
             $filteredQuery->where(function (Builder $query) use ($search): void {
                 $query->where('nib', 'like', '%' . $search . '%')
-                    ->orWhere('nama_bujk', 'like', '%' . $search . '%');
+                    ->orWhere('nama_bu', 'like', '%' . $search . '%')
+                    ->orWhere('npwp', 'like', '%' . $search . '%')
+                    ->orWhere('id_izin', 'like', '%' . $search . '%');
             });
         }
 
@@ -44,15 +46,15 @@ class BujkController extends Controller
         }
 
         if ($regencyFilter !== '') {
-            $filteredQuery->where('kab_kota_bujk', $regencyFilter);
+            $filteredQuery->where('kabupaten', $regencyFilter);
         }
 
         $regencyFilterOptions = Bujk::query()
             ->active()
-            ->whereNotNull('kab_kota_bujk')
-            ->where('kab_kota_bujk', '<>', '')
-            ->orderBy('kab_kota_bujk')
-            ->pluck('kab_kota_bujk')
+            ->whereNotNull('kabupaten')
+            ->where('kabupaten', '<>', '')
+            ->orderBy('kabupaten')
+            ->pluck('kabupaten')
             ->map(fn ($value) => $this->normalizeRegionValue((string) $value))
             ->filter()
             ->unique()
@@ -91,7 +93,26 @@ class BujkController extends Controller
     public function store(BujkFormRequest $request): RedirectResponse
     {
         $payload = $request->validated();
-        $existing = Bujk::query()->where('nib', $payload['nib'])->first();
+
+        $existing = null;
+
+        if (!blank($payload['id_izin'] ?? null)) {
+            $existing = Bujk::query()->where('id_izin', $payload['id_izin'])->first();
+        }
+
+        if (!$existing && !blank($payload['nib'] ?? null)) {
+            $query = Bujk::query()->where('nib', $payload['nib']);
+
+            if (!blank($payload['kode_subklasifikasi'] ?? null)) {
+                $query->where('kode_subklasifikasi', $payload['kode_subklasifikasi']);
+            }
+
+            if (!blank($payload['subklasifikasi'] ?? null)) {
+                $query->where('subklasifikasi', $payload['subklasifikasi']);
+            }
+
+            $existing = $query->first();
+        }
 
         if ($existing) {
             $existing->fill($payload);
@@ -101,7 +122,7 @@ class BujkController extends Controller
 
             return redirect()
                 ->route('admin.bujk')
-                ->with('success', 'Data BUJK berhasil disimpan dan data lama dengan NIB yang sama dipulihkan.');
+                ->with('success', 'Data BUJK berhasil disimpan dan data lama yang sama dipulihkan.');
         }
 
         Bujk::query()->create($payload + ['is_deleted' => false]);
@@ -149,7 +170,7 @@ class BujkController extends Controller
         ]);
 
         $ids = collect($validated['ids'])
-            ->map(fn($id) => (int) $id)
+            ->map(fn ($id) => (int) $id)
             ->filter()
             ->unique()
             ->values()
@@ -312,7 +333,7 @@ class BujkController extends Controller
     protected function applyJenisFilter(Builder $query, string $jenis): void
     {
         $normalized = str_replace(', ', ',', trim($jenis));
-        $expression = "REPLACE(jenis_bujk, ', ', ',')";
+        $expression = "REPLACE(jenis_usaha, ', ', ',')";
 
         $query->where(function (Builder $innerQuery) use ($expression, $normalized): void {
             $innerQuery->whereRaw($expression . ' = ?', [$normalized])

@@ -2,50 +2,86 @@
 
 namespace App\Support;
 
+use Carbon\Carbon;
+use DateTimeInterface;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 
 class BujkDataNormalizer
 {
     public function normalizeFormInput(array $input): array
     {
         return [
-            'nib' => $this->sanitizeIdentifier(Arr::get($input, 'nib')),
-            'nama_bujk' => $this->sanitizeText(Arr::get($input, 'nama_bujk')),
-            'npwp_bujk' => $this->sanitizeText(Arr::get($input, 'npwp_bujk')),
-            'jenis_bujk' => $this->implodeJenisBujk(Arr::get($input, 'jenis_bujk')),
-            'alamat_bujk' => $this->sanitizeText(Arr::get($input, 'alamat_bujk')),
-            'kab_kota_bujk' => $this->normalizeKabupatenKota(Arr::get($input, 'kab_kota_bujk')),
-            'provinsi_bujk' => $this->normalizeProvince(Arr::get($input, 'provinsi_bujk')),
-            'telp_bujk' => $this->sanitizePhone(Arr::get($input, 'telp_bujk')),
-            'email_bujk' => $this->sanitizeEmail(Arr::get($input, 'email_bujk')),
-            'website_bujk' => $this->sanitizeWebsite(Arr::get($input, 'website_bujk')),
-            'jumlah_tenaga_kerja' => $this->sanitizeInteger(Arr::get($input, 'jumlah_tenaga_kerja')),
+            'id_izin' => $this->sanitizeText($this->first($input, ['id_izin'])),
+            'nib' => $this->sanitizeIdentifier($this->first($input, ['nib'])),
+            'npwp' => $this->sanitizeText($this->first($input, ['npwp', 'npwp_bujk'])),
+            'asosiasi' => $this->sanitizeUpperText($this->first($input, ['asosiasi'])),
+            'nama_bu' => $this->sanitizeUpperText($this->first($input, ['nama_bu', 'nama_bujk'])),
+            'bentuk_usaha' => $this->sanitizeText($this->first($input, ['bentuk_usaha'])),
+            'alamat' => $this->sanitizeText($this->first($input, ['alamat', 'alamat_bujk'])),
+            'telepon' => $this->sanitizePhone($this->first($input, ['telepon', 'telp_bujk', 'telp'])),
+            'email' => $this->sanitizeEmail($this->first($input, ['email', 'email_bujk'])),
+            'website' => $this->sanitizeWebsite($this->first($input, ['website', 'website_bujk'])),
+            'faksimili' => $this->sanitizePhone($this->first($input, ['faksimili'])),
+            'propinsi' => $this->normalizeProvince($this->first($input, ['propinsi', 'provinsi_bujk', 'provinsi'])),
+            'kabupaten' => $this->normalizeKabupatenKota($this->first($input, ['kabupaten', 'kab_kota_bujk', 'kab_kota'])),
+            'jenis_usaha' => $this->implodeJenisUsaha($this->first($input, ['jenis_usaha', 'jenis_bujk'])),
+            'sifat' => $this->sanitizeText($this->first($input, ['sifat'])),
+            'kbli_bener' => $this->sanitizeIdentifier($this->first($input, ['kbli_bener'])),
+            'kbli_inputan' => $this->sanitizeIdentifier($this->first($input, ['kbli_inputan'])),
+            'ket_kbli' => $this->sanitizeText($this->first($input, ['ket_kbli'])),
+            'bentuk_badan_usaha' => $this->sanitizeText($this->first($input, ['bentuk_badan_usaha'])),
+            'klasifikasi' => $this->sanitizeText($this->first($input, ['klasifikasi'])),
+            'kode_subklasifikasi' => $this->sanitizeText($this->first($input, ['kode_subklasifikasi'])),
+            'subklasifikasi' => $this->sanitizeText($this->first($input, ['subklasifikasi'])),
+            'id_kualifikasi' => $this->sanitizeText($this->first($input, ['id_kualifikasi'])),
+            'pelaksana_sertifikasi' => $this->sanitizeText($this->first($input, ['pelaksana_sertifikasi'])),
+            'tanggal_ditetapkan' => $this->sanitizeDateTime($this->first($input, ['tanggal_ditetapkan'])),
+            'tanggal_masa_berlaku' => $this->sanitizeDateTime($this->first($input, ['tanggal_masa_berlaku'])),
+            'valid' => $this->sanitizeText($this->first($input, ['valid'])),
+            'tgl_update' => $this->sanitizeDateTime($this->first($input, ['tgl_update'])),
+            'nama_pjbu' => $this->sanitizeText($this->first($input, ['nama_pjbu'])),
+            'nik_pjbu' => $this->sanitizeIdentifier($this->first($input, ['nik_pjbu'])),
+            'npwp_pjbu' => $this->sanitizeText($this->first($input, ['npwp_pjbu'])),
+            'jenis_perubahan' => $this->sanitizeText($this->first($input, ['jenis_perubahan'])),
+            'last_perubahan_at' => $this->sanitizeDateTime($this->first($input, ['last_perubahan_at'])),
+            'deskripsi_klasifikasi' => $this->sanitizeText($this->first($input, ['deskripsi_klasifikasi'])),
+            'status' => $this->sanitizeText($this->first($input, ['status'])),
+            'negara_asal' => $this->sanitizeText($this->first($input, ['negara_asal'])),
+            'nama_pjtbu' => $this->sanitizeText($this->first($input, ['nama_pjtbu'])),
+            'nama_pjskbu' => $this->sanitizeText($this->first($input, ['nama_pjskbu'])),
+            'nama_pjskbu_2' => $this->sanitizeText($this->first($input, ['nama_pjskbu_2'])),
+            'id_asosiasi' => $this->sanitizeText($this->first($input, ['id_asosiasi'])),
         ];
+    }
+
+    public function sanitizeWebsite(mixed $value): ?string
+    {
+        $normalized = $this->sanitizeText($value);
+
+        if ($normalized === null) {
+            return null;
+        }
+
+        return preg_replace('/\s+/', '', $normalized);
     }
 
     public function normalizeImportedRow(array $row): array
     {
-        return $this->normalizeFormInput([
-            'nib' => $row['nib'] ?? null,
-            'nama_bujk' => $row['nama_bujk'] ?? null,
-            'npwp_bujk' => $row['npwp_bujk'] ?? null,
-            'jenis_bujk' => $row['jenis_bujk'] ?? null,
-            'alamat_bujk' => $row['alamat_bujk'] ?? null,
-            'kab_kota_bujk' => $row['kab_kota_bujk'] ?? null,
-            'provinsi_bujk' => $row['provinsi_bujk'] ?? null,
-            'telp_bujk' => $row['telp_bujk'] ?? null,
-            'email_bujk' => $row['email_bujk'] ?? null,
-            'website_bujk' => $row['website_bujk'] ?? null,
-            'jumlah_tenaga_kerja' => $row['jumlah_tenaga_kerja'] ?? null,
-        ]);
+        return $this->normalizeFormInput($row);
+    }
+
+    public function implodeJenisUsaha(mixed $value): ?string
+    {
+        $jenisList = $this->normalizeJenisBujk($value);
+
+        return empty($jenisList) ? $this->sanitizeText($value) : implode(', ', $jenisList);
     }
 
     public function implodeJenisBujk(mixed $value): ?string
     {
-        $jenisList = $this->normalizeJenisBujk($value);
-
-        return empty($jenisList) ? null : implode(', ', $jenisList);
+        return $this->implodeJenisUsaha($value);
     }
 
     public function normalizeJenisBujk(mixed $value): array
@@ -76,7 +112,7 @@ class BujkDataNormalizer
         return empty($ordered) ? $normalized->values()->all() : $ordered;
     }
 
-    public function normalizeProvince(?string $value): ?string
+    public function normalizeProvince(mixed $value): ?string
     {
         $lookup = $this->normalizeLookupKey($value);
 
@@ -96,7 +132,7 @@ class BujkDataNormalizer
         return $this->sanitizeUpperText($value);
     }
 
-    public function normalizeKabupatenKota(?string $value): ?string
+    public function normalizeKabupatenKota(mixed $value): ?string
     {
         $lookup = $this->normalizeLookupKey($value);
 
@@ -104,7 +140,7 @@ class BujkDataNormalizer
             return null;
         }
 
-        foreach (config('bujk.regions', []) as $province => $regions) {
+        foreach (config('bujk.regions', []) as $regions) {
             foreach ($regions as $region) {
                 $canonicalLookup = $this->normalizeLookupKey($region);
                 $withoutPrefixLookup = $this->normalizeLookupKey(
@@ -161,13 +197,6 @@ class BujkDataNormalizer
         return $normalized === null ? null : Str::lower($normalized);
     }
 
-    public function sanitizeWebsite(mixed $value): ?string
-    {
-        $normalized = $this->sanitizeText($value);
-
-        return $normalized === null ? null : Str::replace(' ', '', $normalized);
-    }
-
     public function sanitizeInteger(mixed $value): ?int
     {
         if ($value === null || $value === '') {
@@ -177,6 +206,27 @@ class BujkDataNormalizer
         $numeric = preg_replace('/[^0-9]/', '', (string) $value);
 
         return $numeric === '' ? null : (int) $numeric;
+    }
+
+    public function sanitizeDateTime(mixed $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if ($value instanceof DateTimeInterface) {
+            return Carbon::instance($value)->format('Y-m-d H:i:s');
+        }
+
+        try {
+            if (is_numeric($value)) {
+                return Carbon::instance(ExcelDate::excelToDateTimeObject((float) $value))->format('Y-m-d H:i:s');
+            }
+
+            return Carbon::parse((string) $value)->format('Y-m-d H:i:s');
+        } catch (\Throwable) {
+            return $this->sanitizeText($value);
+        }
     }
 
     public function sanitizeText(mixed $value): ?string
@@ -195,6 +245,17 @@ class BujkDataNormalizer
         $normalized = $this->sanitizeText($value);
 
         return $normalized === null ? null : strtoupper($normalized);
+    }
+
+    protected function first(array $input, array $keys): mixed
+    {
+        foreach ($keys as $key) {
+            if (Arr::exists($input, $key)) {
+                return Arr::get($input, $key);
+            }
+        }
+
+        return null;
     }
 
     protected function normalizeLookupKey(mixed $value): string
