@@ -1,19 +1,33 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        DB::statement('ALTER TABLE bujk MODIFY kab_kota_bujk TEXT NULL');
-        DB::statement('ALTER TABLE bujk MODIFY provinsi_bujk TEXT NULL');
+        /*
+         * Migration lama ini sebelumnya mengubah:
+         * - kab_kota_bujk
+         * - provinsi_bujk
+         *
+         * menjadi TEXT.
+         *
+         * Di MySQL, kolom TEXT tidak bisa tetap dipakai sebagai index tanpa panjang key,
+         * sehingga migration gagal dengan error:
+         * BLOB/TEXT column used in key specification without a key length.
+         *
+         * Karena struktur BUJK sekarang sudah dipindahkan ke kolom spreadsheet baru:
+         * - kabupaten
+         * - propinsi
+         *
+         * maka migration lama ini sengaja dibuat no-op agar proses migration bisa lanjut
+         * ke migration rebuild BUJK terbaru.
+         */
     }
 
     public function down(): void
     {
-        DB::statement('ALTER TABLE bujk MODIFY kab_kota_bujk VARCHAR(255) NULL');
-        DB::statement('ALTER TABLE bujk MODIFY provinsi_bujk VARCHAR(255) NULL');
+        //
     }
 };

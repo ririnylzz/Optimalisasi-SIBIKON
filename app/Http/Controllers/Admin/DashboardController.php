@@ -11,7 +11,7 @@ class DashboardController extends Controller
     public function index()
     {
         $bujkRows = DB::table('bujk')
-            ->select('id', 'nib', 'nama_bujk', 'jenis_bujk', 'kab_kota_bujk', 'provinsi_bujk', 'is_deleted', 'created_at')
+            ->select('id', 'nib', 'nama_bu', 'jenis_usaha', 'kabupaten', 'propinsi', 'is_deleted', 'created_at')
             ->get();
 
         $activeRows = $bujkRows->where('is_deleted', 0);
@@ -26,8 +26,8 @@ class DashboardController extends Controller
             ->filter(fn ($items) => $items->count() > 1)
             ->count();
 
-        $konstruksiCount = $activeRows->filter(fn ($row) => str_contains(strtolower($row->jenis_bujk ?? ''), 'konstruksi'))->count();
-        $konsultanCount = $activeRows->filter(fn ($row) => str_contains(strtolower($row->jenis_bujk ?? ''), 'konsultan'))->count();
+        $konstruksiCount = $activeRows->filter(fn ($row) => str_contains(strtolower($row->jenis_usaha ?? ''), 'konstruksi'))->count();
+        $konsultanCount = $activeRows->filter(fn ($row) => str_contains(strtolower($row->jenis_usaha ?? ''), 'konsultan'))->count();
 
         $bujkStats = [
             [
@@ -76,7 +76,6 @@ class DashboardController extends Controller
             ['label' => 'Terintegrasi', 'value' => 0],
         ];
 
-        // Data dummy untuk visualisasi tambahan, nanti bisa diganti kalau tabel SBU/asosiasi sudah tersedia.
         $association = [
             ['label' => 'ASPEKNAS', 'value' => 26252],
             ['label' => 'GAPENSI', 'value' => 17094],
@@ -140,12 +139,6 @@ class DashboardController extends Controller
             ],
         ];
 
-        $latestBujk = DB::table('bujk')
-            ->where('is_deleted', 0)
-            ->orderByDesc('created_at')
-            ->limit(5)
-            ->get();
-
         return view('admin.dashboard', compact(
             'association',
             'jenisBujk',
@@ -161,7 +154,6 @@ class DashboardController extends Controller
 
     public function tkk()
     {
-        // KPI (dummy dulu)
         $kpi = [
             [
                 'label' => 'TKK',
@@ -175,7 +167,6 @@ class DashboardController extends Controller
             ],
         ];
 
-        // Dummy chart (ambil dari gambar kamu)
         $asosiasiTkk = [
             ['label' => 'ASTEKINDO', 'value' => 147066],
             ['label' => 'PERTAMA', 'value' => 101887],
