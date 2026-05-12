@@ -11,14 +11,18 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class BujkController extends Controller
 {
+    protected string $latestDataDatePath = 'bujk/latest-data-date.txt';
+
     public function index(Request $request)
     {
         $perPage = in_array((int) $request->integer('per_page'), [10, 25, 50, 100], true)
@@ -70,6 +74,8 @@ class BujkController extends Controller
             ? Bujk::query()->active()->findOrFail((int) $request->query('edit'))
             : null;
 
+        $latestDataDate = $this->getLatestDataDate();
+
         $viewData = [
             'bujks' => $bujks,
             'editingBujk' => $editingBujk,
@@ -79,6 +85,7 @@ class BujkController extends Controller
             'regencyFilter' => $regencyFilter,
             'regencyFilterOptions' => $regencyFilterOptions,
             'perPage' => $perPage,
+            'latestDataDate' => $latestDataDate,
         ];
 
         if ($request->ajax()) {
@@ -215,8 +222,13 @@ class BujkController extends Controller
 
     public function import(BujkImportRequest $request, BujkImportService $importService): RedirectResponse
     {
+        $validated = $request->validated();
+
         try {
             $summary = $importService->import($request->file('file_import'));
+
+            $latestDataDate = Carbon::parse($validated['tanggal_data_terbaru'])->toDateString();
+            Storage::disk('local')->put($this->latestDataDatePath, $latestDataDate);
         } catch (ValidationException $exception) {
             throw $exception;
         } catch (Throwable $exception) {
@@ -341,6 +353,17 @@ class BujkController extends Controller
                 ->orWhereRaw($expression . ' LIKE ?', ['%,' . $normalized])
                 ->orWhereRaw($expression . ' LIKE ?', ['%,' . $normalized . ',%']);
         });
+    }
+
+    protected function getLatestDataDate(): ?string
+    {
+        if (!Storage::disk('local')->exists($this->latestDataDatePath)) {
+            return null;
+        }
+
+        $date = trim((string) Storage::disk('local')->get($this->latestDataDatePath));
+
+        return $date !== '' ? $date : null;
     }
 
     protected function squish(?string $value): string

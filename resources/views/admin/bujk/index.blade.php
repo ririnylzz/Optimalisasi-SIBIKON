@@ -32,14 +32,28 @@
             $availableKabupaten->push($selectedKabupaten);
         }
 
+        $latestDataDate = $latestDataDate ?? null;
+        $latestDataDateLabel = null;
+
+        if (!blank($latestDataDate)) {
+            try {
+                $latestDataDateLabel = \Illuminate\Support\Carbon::parse($latestDataDate)
+                    ->locale('id')
+                    ->translatedFormat('d F Y');
+            } catch (\Throwable $exception) {
+                $latestDataDateLabel = $latestDataDate;
+            }
+        }
+
         $requestedPanel = request('panel');
         $initialPanel = 'closed';
+        $hasUploadError = $errors->has('file_import') || $errors->has('tanggal_data_terbaru');
 
         if (in_array($requestedPanel, ['upload', 'manual'], true)) {
             $initialPanel = $requestedPanel;
-        } elseif ($errors->has('file_import')) {
+        } elseif ($hasUploadError) {
             $initialPanel = 'upload';
-        } elseif ($isEditing || ($errors->any() && !$errors->has('file_import'))) {
+        } elseif ($isEditing || ($errors->any() && !$hasUploadError)) {
             $initialPanel = 'manual';
         }
 
@@ -63,6 +77,11 @@
             $toastMessages[] = [
                 'type' => 'error',
                 'message' => $errors->first('file_import'),
+            ];
+        } elseif ($errors->has('tanggal_data_terbaru')) {
+            $toastMessages[] = [
+                'type' => 'error',
+                'message' => $errors->first('tanggal_data_terbaru'),
             ];
         } elseif ($errors->any()) {
             $toastMessages[] = [
@@ -132,6 +151,14 @@
             <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
                     <h3 class="text-base font-bold text-slate-900">Tabel Data BUJK</h3>
+
+                    @if($latestDataDateLabel)
+                        <div class="mt-3 flex flex-wrap items-center gap-2">
+                            <span class="inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700">
+                                Data terbaru per {{ $latestDataDateLabel }}
+                            </span>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
@@ -268,16 +295,22 @@
                 </div>
 
                 <div class="px-5 py-4">
-                    <form action="{{ route('admin.bujk.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    <form id="bujk-import-form" action="{{ route('admin.bujk.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                         @csrf
 
                         <div>
-                            <label for="file_import" class="mb-2 block text-sm font-medium text-slate-700">File upload</label>
+                            <label for="file_import" class="mb-2 block text-sm font-medium text-slate-700">
+                                File upload <span class="text-rose-500">*</span>
+                            </label>
                             <input
                                 id="file_import"
                                 type="file"
                                 name="file_import"
                                 accept=".csv,.txt,.xlsx"
+                                required
+                                oninvalid="this.setCustomValidity('File import wajib dipilih.')"
+                                oninput="this.setCustomValidity('')"
+                                onchange="this.setCustomValidity('')"
                                 class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm text-slate-700 file:mr-3 file:rounded-md file:border-0 file:bg-indigo-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-indigo-500"
                             />
                             @error('file_import')
@@ -285,12 +318,35 @@
                             @enderror
                         </div>
 
+                        <div>
+                            <label for="tanggal_data_terbaru" class="mb-2 block text-sm font-medium text-slate-700">
+                                Tanggal data terbaru <span class="text-rose-500">*</span>
+                            </label>
+                            <input
+                                id="tanggal_data_terbaru"
+                                type="date"
+                                name="tanggal_data_terbaru"
+                                value="{{ old('tanggal_data_terbaru', $latestDataDate) }}"
+                                required
+                                oninvalid="this.setCustomValidity('Tanggal data wajib diisi.')"
+                                oninput="this.setCustomValidity('')"
+                                onchange="this.setCustomValidity('')"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                            />
+                            <p class="mt-2 text-xs leading-5 text-slate-500">
+                                Tanggal ini akan dicatat sebagai tanggal data terbaru dan ditampilkan di bawah judul Tabel Data BUJK.
+                            </p>
+                            @error('tanggal_data_terbaru')
+                                <p class="mt-2 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-600">
                             <p class="font-semibold text-slate-800">Aturan import:</p>
                             <p>1. File yang didukung: <span class="font-medium text-slate-800">CSV</span> dan <span class="font-medium text-slate-800">XLSX</span>.</p>
-                            <p>2. Header bisa dari template sederhana atau dari file sumber mentah yang punya alias kolom BUJK.</p>
-                            <p>3. Data dengan NIB sama akan digabung dan di-update, bukan ditambahkan duplikat baru.</p>
-                            <p>4. Jika satu BUJK muncul berkali-kali di file karena subklasifikasi berbeda, service akan merge menjadi satu record BUJK.</p>
+                            <p>2. Tanggal data terbaru wajib diisi untuk menandai periode pembaruan data.</p>
+                            <p>3. Header bisa dari template sederhana atau dari file sumber mentah yang punya alias kolom BUJK.</p>
+                            <p>4. Data dengan NIB sama akan digabung dan di-update, bukan ditambahkan duplikat baru.</p>
                         </div>
 
                         <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4">
@@ -367,14 +423,12 @@
                 </div>
 
                 <div class="px-5 py-4">
-                    @if($errors->any() && !$errors->has('file_import'))
+                    @if($errors->any() && !$hasUploadError)
                         <div class="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
                             <p class="font-semibold">Masih ada input yang perlu diperbaiki:</p>
                             <ul class="mt-2 space-y-1 text-xs">
                                 @foreach($errors->all() as $error)
-                                    @if($error !== $errors->first('file_import'))
-                                        <li>• {{ $error }}</li>
-                                    @endif
+                                    <li>• {{ $error }}</li>
                                 @endforeach
                             </ul>
                         </div>
@@ -416,7 +470,7 @@
                                     placeholder="Nama BUJK"
                                     class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
                                 />
-                                @error('nama_bujk')
+                                @error('nama_bu')
                                     <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -438,7 +492,7 @@
                                     </label>
                                 @endforeach
                             </div>
-                            @error('jenis_bujk')
+                            @error('jenis_usaha')
                                 <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
                             @enderror
                         </div>
@@ -452,7 +506,7 @@
                                 placeholder="Alamat BUJK"
                                 class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
                             >{{ old('alamat_bujk', $editingBujk?->alamat_bujk) }}</textarea>
-                            @error('alamat_bujk')
+                            @error('alamat')
                                 <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
                             @enderror
                         </div>
@@ -470,7 +524,7 @@
                                         <option value="{{ $selectedProvince }}" selected>{{ $selectedProvince }}</option>
                                     @endif
                                 </select>
-                                @error('provinsi_bujk')
+                                @error('propinsi')
                                     <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -487,7 +541,7 @@
                                         <option value="{{ $kabupaten }}" selected>{{ $kabupaten }}</option>
                                     @endforeach
                                 </select>
-                                @error('kab_kota_bujk')
+                                @error('kabupaten')
                                     <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -502,7 +556,7 @@
                                     placeholder="NPWP BUJK"
                                     class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
                                 />
-                                @error('npwp_bujk')
+                                @error('npwp')
                                     <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -519,7 +573,7 @@
                                     placeholder="Email BUJK"
                                     class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
                                 />
-                                @error('email_bujk')
+                                @error('email')
                                     <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -534,7 +588,7 @@
                                     placeholder="Nomor Telepon"
                                     class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
                                 />
-                                @error('telp_bujk')
+                                @error('telepon')
                                     <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -549,7 +603,7 @@
                                     placeholder="Website"
                                     class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
                                 />
-                                @error('website_bujk')
+                                @error('website')
                                     <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -663,6 +717,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const tableContainer = document.getElementById('bujk-table-container');
     const openButtons = document.querySelectorAll('[data-modal-open]');
     const toastCloseButtons = document.querySelectorAll('[data-toast-close]');
+    const bujkImportForm = document.getElementById('bujk-import-form');
     const provinceSelect = document.getElementById('provinsi_bujk');
     const kabupatenSelect = document.getElementById('kab_kota_bujk');
     const filterKabupatenSelect = document.getElementById('filter_kabupaten');
@@ -681,7 +736,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const selectedProvince = String(scriptData.dataset.selectedProvince || '').trim();
     const selectedKabupaten = String(scriptData.dataset.selectedKabupaten || '').trim();
-    const selectedFilterKabupaten = String(scriptData.dataset.selectedFilterKabupaten || '').trim();
     const provincesEndpoint = scriptData.dataset.provincesEndpoint || '';
     const regenciesEndpoint = scriptData.dataset.regenciesEndpoint || '';
     const initialPanel = scriptData.dataset.initialPanel || 'closed';
@@ -695,6 +749,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let filterDebounce = null;
     let activeFilterController = null;
+
+    const resetImportForm = () => {
+        if (!bujkImportForm) return;
+
+        bujkImportForm.reset();
+
+        const fileInput = bujkImportForm.querySelector('#file_import');
+        const dateInput = bujkImportForm.querySelector('#tanggal_data_terbaru');
+
+        if (fileInput) {
+            fileInput.value = '';
+            fileInput.setCustomValidity('');
+        }
+
+        if (dateInput) {
+            dateInput.value = '';
+            dateInput.setCustomValidity('');
+        }
+    };
 
     const hasOpenModal = () => {
         return Object.values(modalElements).some((modal) => modal && modal.dataset.state === 'open');
@@ -775,6 +848,10 @@ document.addEventListener('DOMContentLoaded', function () {
             lockBody();
         }, 210);
 
+        if (modal === modalElements.upload) {
+            resetImportForm();
+        }
+
         if (writeQuery && (modal === modalElements.upload || modal === modalElements.manual)) {
             updateQuery(null);
         }
@@ -800,7 +877,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const getRowCheckboxes = () => Array.from(tableContainer.querySelectorAll('[data-row-checkbox]'));
     const getSelectAllRows = () => tableContainer.querySelector('#select-all-rows');
     const getBulkDeleteTrigger = () => tableContainer.querySelector('#bulk-delete-trigger');
-    const getDeleteAllTrigger = () => tableContainer.querySelector('#delete-all-trigger');
 
     const getSelectedIds = () => {
         return getRowCheckboxes()
@@ -972,6 +1048,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (target === 'upload') {
                 closeAllPrimaryModals(false);
+                resetImportForm();
                 showModal(modalElements.upload, 'upload', true);
             }
 
