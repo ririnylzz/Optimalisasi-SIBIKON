@@ -116,8 +116,8 @@
                                     </svg>
                                 </span>
                                 <input
-                                    type="email"
-                                    name="email"
+                                    type="search"
+                                    name="reg_surel_pendaftar"
                                     placeholder="nama@email.com"
                                     class="sibikon-input w-full h-10 rounded-lg pl-12 pr-4 text-sm font-medium">
                             </div>

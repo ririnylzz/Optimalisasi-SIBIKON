@@ -1,21 +1,62 @@
+@if(session('success'))
+    <div
+        id="login-toast-wrapper"
+        class="fixed right-6 top-6 z-[999999] w-full max-w-sm"
+        style="position: fixed !important; top: 24px !important; right: 24px !important; z-index: 999999 !important;"
+    >
+        <div
+            id="login-toast"
+            class="rounded-2xl border border-emerald-200 bg-emerald-500 px-4 py-3 text-white shadow-2xl transition-all duration-300"
+        >
+            <div class="flex items-start gap-3">
+                <div class="mt-0.5 shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+
+                <div class="min-w-0 flex-1">
+                    <p class="text-sm font-bold">Berhasil</p>
+                    <p class="mt-1 text-sm leading-5 text-white/95">
+                        {{ session('success') }}
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    id="login-toast-close"
+                    class="shrink-0 rounded-lg p-1 text-white/80 transition hover:bg-white/10 hover:text-white"
+                    aria-label="Tutup notifikasi"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+@endif
+
 <section class="min-h-screen relative overflow-hidden bg-[#1f315c]">
-    {{-- Background --}}
     <div
         class="absolute inset-0 bg-cover bg-center"
-        style="background-image: url('{{ asset('images/gedung-dinas-PUPR.jpg') }}');"></div>
+        style="background-image: url('{{ asset('images/gedung-dinas-PUPR.jpg') }}');"
+    ></div>
 
-    {{-- Overlay biru gelap --}}
     <div class="absolute inset-0 bg-[#1f315c]/90"></div>
 
     <div class="relative z-10 min-h-screen flex items-center justify-center px-6 py-10">
         <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 items-center gap-10">
-
-            {{-- Kiri --}}
             <div class="text-center lg:text-left flex flex-col items-center lg:items-start">
                 <img
                     src="{{ asset('images/logo-sibikon.png') }}"
                     alt="Logo SIBIKON"
-                    class="w-36 h-36 md:w-44 md:h-44 object-contain mb-6">
+                    class="w-36 h-36 md:w-44 md:h-44 object-contain mb-6"
+                >
 
                 <h1 class="text-white text-5xl md:text-7xl font-extrabold tracking-wide leading-none">
                     SIBIKON
@@ -26,28 +67,37 @@
                 </p>
             </div>
 
-            {{-- Card Login --}}
             <div class="w-full max-w-[520px] mx-auto bg-white rounded-[28px] shadow-2xl px-8 md:px-12 py-10">
                 <h2 class="text-center text-[#243966] text-2xl md:text-3xl font-extrabold mb-9">
                     Login to your account
                 </h2>
 
-                <a href="{{ route('beranda') }}"
-                    class="absolute top-8 left-8 flex items-center gap-2 text-white font-medium hover:opacity-80 transition">
-
+                <a
+                    href="{{ route('beranda') }}"
+                    class="absolute top-8 left-8 flex items-center gap-2 text-white font-medium hover:opacity-80 transition"
+                >
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M15.75 19.5L8.25 12l7.5-7.5" />
                     </svg>
-
                     <span>Kembali</span>
                 </a>
 
-                <form action="#" method="POST" class="space-y-6">
+                @if($errors->any())
+                    <div class="mb-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                        <p class="font-semibold">Login gagal</p>
+                        <ul class="mt-1 space-y-1">
+                            @foreach($errors->all() as $error)
+                                <li>• {{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form action="{{ route('login.post') }}" method="POST" class="space-y-6">
                     @csrf
 
-                    {{-- Email --}}
                     <div>
                         <label for="email" class="block text-[#243966] font-semibold mb-2">
                             Email/Username
@@ -63,15 +113,19 @@
                             </span>
 
                             <input
-                                type="email"
+                                type="text"
                                 id="email"
                                 name="email"
-                                placeholder="Massukkan email atau username"
-                                class="sibikon-input w-full h-12 rounded-lg pl-12 pr-4 text-sm font-medium">
+                                value="{{ old('email') }}"
+                                placeholder="Masukkan email atau username"
+                                required
+                                oninvalid="this.setCustomValidity('Email atau username wajib diisi.')"
+                                oninput="this.setCustomValidity('')"
+                                class="sibikon-input w-full h-12 rounded-lg pl-12 pr-4 text-sm font-medium"
+                            >
                         </div>
                     </div>
 
-                    {{-- Password --}}
                     <div>
                         <label for="password" class="block text-[#243966] font-semibold mb-2">
                             Password
@@ -91,27 +145,63 @@
                                 id="password"
                                 name="password"
                                 placeholder="Masukkan password"
-                                class="sibikon-input w-full h-12 rounded-lg pl-12 pr-12 text-sm font-medium">
+                                required
+                                oninvalid="this.setCustomValidity('Password wajib diisi.')"
+                                oninput="this.setCustomValidity('')"
+                                class="sibikon-input w-full h-12 rounded-lg pl-12 pr-14 text-sm font-medium"
+                            >
 
-                            <button type="button" class="absolute right-4 top-1/2 -translate-y-1/2 text-[#7182A8]">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <button
+                                type="button"
+                                id="toggle-password"
+                                class="absolute inset-y-0 right-0 z-20 flex w-12 items-center justify-center text-[#7182A8] transition hover:text-[#243966]"
+                                aria-label="Lihat password"
+                            >
+                                <svg
+                                    id="eye-open-icon"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="w-5 h-5"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
+
+                                <svg
+                                    id="eye-closed-icon"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="hidden w-5 h-5"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M3 3l18 18" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M10.584 10.587A2 2 0 0012 14a2 2 0 001.414-3.414" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M9.88 5.09A9.77 9.77 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.02 10.02 0 01-3.146 4.568M6.67 6.67A10.02 10.02 002.458 12C3.732 16.057 7.523 19 12 19a9.77 9.77 0 004.33-.998" />
+                                </svg>
                             </button>
                         </div>
                     </div>
 
-                    {{-- Remember + Forgot --}}
                     <div class="flex items-center justify-between text-sm">
-                        <label class="flex items-center gap-3 text-[#243966] font-medium">
+                        <label class="flex items-center gap-3 text-[#243966] font-medium cursor-pointer">
                             <input
                                 type="checkbox"
-                                checked
-                                class="w-4 h-4 rounded accent-[#243966]">
+                                id="remember"
+                                name="remember"
+                                value="1"
+                                @checked(old('remember', true))
+                                class="w-4 h-4 rounded accent-[#243966]"
+                            >
                             Ingat saya
                         </label>
 
@@ -120,14 +210,13 @@
                         </a>
                     </div>
 
-                    {{-- Button --}}
                     <button
                         type="submit"
-                        class="w-full h-12 rounded-lg bg-[#243966] text-white font-bold hover:bg-[#1d2f57] transition">
+                        class="w-full h-12 rounded-lg bg-[#243966] text-white font-bold hover:bg-[#1d2f57] transition"
+                    >
                         Masuk
                     </button>
 
-                    {{-- Register --}}
                     <p class="text-center text-sm text-[#6B7898]">
                         Belum punya akun?
                         <a href="{{ route('regist') }}" class="text-[#243966] font-semibold hover:underline">
@@ -138,4 +227,53 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toastWrapper = document.getElementById('login-toast-wrapper');
+            const toast = document.getElementById('login-toast');
+            const toastClose = document.getElementById('login-toast-close');
+
+            const dismissToast = () => {
+                if (!toast || !toastWrapper) return;
+
+                toast.classList.add('translate-y-2', 'opacity-0');
+
+                setTimeout(() => {
+                    toastWrapper.remove();
+                }, 300);
+            };
+
+            if (toast) {
+                setTimeout(dismissToast, 3000);
+            }
+
+            if (toastClose) {
+                toastClose.addEventListener('click', dismissToast);
+            }
+
+            const passwordInput = document.getElementById('password');
+            const togglePassword = document.getElementById('toggle-password');
+            const eyeOpenIcon = document.getElementById('eye-open-icon');
+            const eyeClosedIcon = document.getElementById('eye-closed-icon');
+
+            if (passwordInput && togglePassword) {
+                togglePassword.addEventListener('click', function () {
+                    const passwordIsHidden = passwordInput.type === 'password';
+
+                    passwordInput.type = passwordIsHidden ? 'text' : 'password';
+
+                    if (eyeOpenIcon && eyeClosedIcon) {
+                        eyeOpenIcon.classList.toggle('hidden', passwordIsHidden);
+                        eyeClosedIcon.classList.toggle('hidden', !passwordIsHidden);
+                    }
+
+                    togglePassword.setAttribute(
+                        'aria-label',
+                        passwordIsHidden ? 'Sembunyikan password' : 'Lihat password'
+                    );
+                });
+            }
+        });
+    </script>
 </section>
