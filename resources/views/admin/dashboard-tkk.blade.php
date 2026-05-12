@@ -133,7 +133,7 @@
 
         <div class="flex flex-col gap-3 border-t border-slate-100 bg-white px-6 py-4 text-sm sm:flex-row sm:items-center sm:justify-between">
             <p class="font-semibold text-slate-600">
-                Hal: <span class="font-extrabold text-slate-900">1 - 10</span> dari <span class="font-extrabold text-slate-900">8757</span>
+                Hal: <span class="font-extrabold text-slate-900">1 - {{ min(10, $totalTkk ?? 0) }}</span> dari <span class="font-extrabold text-slate-900">{{ $totalTkk ?? 0 }}</span>
             </p>
 
             <div class="flex gap-2">
