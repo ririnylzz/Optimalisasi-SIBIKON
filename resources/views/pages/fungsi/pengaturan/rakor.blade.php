@@ -24,7 +24,7 @@
 
                 <nav>
                     <a href="{{ route('rakor') }}"
-                        class="block border-y border-white/45 py-4 text-base transition hover:text-yellow-300">
+                        class="block border-b border-white/45 py-4 text-base text-yellow-300">
                         Rakor
                     </a>
 
