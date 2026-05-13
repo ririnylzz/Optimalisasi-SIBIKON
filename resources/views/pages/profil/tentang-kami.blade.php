@@ -96,15 +96,15 @@
                             </div>
 
                             <span class="mt-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#143B5D]">
-                                <svg class="arrow h-4 w-4 rotate-180 text-white transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 15l-7-7-7 7" />
+                                <svg class="arrow h-4 w-4 text-white transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </span>
                         </div>
 
                     </button>
 
-                    <div id="fungsi-card-1" class="accordion-content pt-5">
+                    <div id="fungsi-card-1" class="accordion-content hidden pt-5">
                         <ul class="list-disc space-y-2 pl-5 text-slate-600 leading-8">
                             <li>Penyiapan bahan perumusan kebijakan.</li>
                             <li>Penyusunan norma, standar, prosedur, dan kriteria.</li>
@@ -141,7 +141,7 @@
 
                             <span class="mt-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#143B5D]">
                                 <svg class="arrow h-4 w-4 text-white transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 15l-7-7-7 7" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </span>
                         </div>
@@ -185,7 +185,7 @@
 
                             <span class="mt-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#143B5D]">
                                 <svg class="arrow h-4 w-4 text-white transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 15l-7-7-7 7" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </span>
                         </div>
@@ -211,7 +211,7 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const buttons = document.querySelectorAll('.accordion-toggle');
+        const buttons = document.querySelectorAll('#fungsi-bikon .accordion-toggle');
 
         buttons.forEach((button) => {
             button.addEventListener('click', function() {
@@ -219,20 +219,10 @@
                 const targetContent = document.getElementById(targetId);
                 const arrow = this.querySelector('.arrow');
 
-                const isOpen = !targetContent.classList.contains('hidden');
+                if (!targetContent) return;
 
-                document.querySelectorAll('.accordion-content').forEach((content) => {
-                    content.classList.add('hidden');
-                });
-
-                document.querySelectorAll('.accordion-toggle .arrow').forEach((item) => {
-                    item.classList.remove('rotate-180');
-                });
-
-                if (!isOpen) {
-                    targetContent.classList.remove('hidden');
-                    arrow.classList.add('rotate-180');
-                }
+                targetContent.classList.toggle('hidden');
+                arrow.classList.toggle('rotate-180');
             });
         });
     });
