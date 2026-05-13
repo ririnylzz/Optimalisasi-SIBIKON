@@ -1,41 +1,42 @@
 @if(session('success'))
-    <div
-        id="login-toast-wrapper"
-        class="fixed right-6 top-6 z-[999999] w-full max-w-sm"
-        style="position: fixed !important; top: 24px !important; right: 24px !important; z-index: 999999 !important;"
-    >
+    <div id="login-toast-template" class="hidden">
         <div
-            id="login-toast"
-            class="rounded-2xl border border-emerald-200 bg-emerald-500 px-4 py-3 text-white shadow-2xl transition-all duration-300"
+            id="login-toast-wrapper"
+            style="position: fixed !important; top: 24px !important; right: 24px !important; z-index: 999999 !important; width: 100%; max-width: 360px;"
         >
-            <div class="flex items-start gap-3">
-                <div class="mt-0.5 shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M5 13l4 4L19 7" />
-                    </svg>
-                </div>
+            <div
+                id="login-toast"
+                class="rounded-2xl border border-emerald-200 bg-emerald-500 px-4 py-3 text-white shadow-2xl transition-all duration-300"
+            >
+                <div class="flex items-start gap-3">
+                    <div class="mt-0.5 shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
 
-                <div class="min-w-0 flex-1">
-                    <p class="text-sm font-bold">Berhasil</p>
-                    <p class="mt-1 text-sm leading-5 text-white/95">
-                        {{ session('success') }}
-                    </p>
-                </div>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-sm font-bold">Berhasil</p>
+                        <p class="mt-1 text-sm leading-5 text-white/95">
+                            {{ session('success') }}
+                        </p>
+                    </div>
 
-                <button
-                    type="button"
-                    id="login-toast-close"
-                    class="shrink-0 rounded-lg p-1 text-white/80 transition hover:bg-white/10 hover:text-white"
-                    aria-label="Tutup notifikasi"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+                    <button
+                        type="button"
+                        id="login-toast-close"
+                        class="shrink-0 rounded-lg p-1 text-white/80 transition hover:bg-white/10 hover:text-white"
+                        aria-label="Tutup notifikasi"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -71,18 +72,6 @@
                 <h2 class="text-center text-[#243966] text-2xl md:text-3xl font-extrabold mb-9">
                     Login to your account
                 </h2>
-
-                <a
-                    href="{{ route('beranda') }}"
-                    class="absolute top-8 left-8 flex items-center gap-2 text-white font-medium hover:opacity-80 transition"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M15.75 19.5L8.25 12l7.5-7.5" />
-                    </svg>
-                    <span>Kembali</span>
-                </a>
 
                 @if($errors->any())
                     <div class="mb-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
@@ -230,26 +219,34 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const toastWrapper = document.getElementById('login-toast-wrapper');
-            const toast = document.getElementById('login-toast');
-            const toastClose = document.getElementById('login-toast-close');
+            const toastTemplate = document.getElementById('login-toast-template');
 
-            const dismissToast = () => {
-                if (!toast || !toastWrapper) return;
+            if (toastTemplate) {
+                const toastWrapper = toastTemplate.querySelector('#login-toast-wrapper');
 
-                toast.classList.add('translate-y-2', 'opacity-0');
+                if (toastWrapper) {
+                    document.body.appendChild(toastWrapper);
+                    toastTemplate.remove();
 
-                setTimeout(() => {
-                    toastWrapper.remove();
-                }, 300);
-            };
+                    const toast = document.getElementById('login-toast');
+                    const toastClose = document.getElementById('login-toast-close');
 
-            if (toast) {
-                setTimeout(dismissToast, 3000);
-            }
+                    const dismissToast = () => {
+                        if (!toast || !toastWrapper) return;
 
-            if (toastClose) {
-                toastClose.addEventListener('click', dismissToast);
+                        toast.classList.add('translate-x-4', 'opacity-0');
+
+                        setTimeout(() => {
+                            toastWrapper.remove();
+                        }, 300);
+                    };
+
+                    setTimeout(dismissToast, 3000);
+
+                    if (toastClose) {
+                        toastClose.addEventListener('click', dismissToast);
+                    }
+                }
             }
 
             const passwordInput = document.getElementById('password');
