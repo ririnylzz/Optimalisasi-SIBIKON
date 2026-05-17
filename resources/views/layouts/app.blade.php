@@ -11,7 +11,7 @@
 
 <body class="font-sans bg-white">
     <!-- Navbar -->
-    <header class="fixed left-0 top-0 z-[999] w-full border-b border-white/10 bg-[#243B78] shadow-[0_8px_24px_rgba(15,23,42,0.14)]">
+    <header class="fixed left-0 top-0 z-[999] w-full border-b border-white/10 bg-[#142B67] shadow-[0_8px_24px_rgba(15,23,42,0.14)]">
 
         {{-- Top Bar Logo Instansi --}}
         <div class="hidden bg-white md:block">
@@ -257,7 +257,7 @@
         </div>
     </header>
 
-    <div class="w-full overflow-x-hidden">
+    <div class="w-full overflow-x-hidden pt-[100px] md:pt-[120px]">
         @yield('content')
     </div>
 
