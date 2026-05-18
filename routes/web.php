@@ -126,6 +126,9 @@ Route::get('/layanan/asosiasi-perusahaan', [AsosiasiPerusahaanController::class,
 Route::get('/layanan/asosiasi-profesi', [AsosiasiProfesiController::class, 'index'])
     ->name('asosiasi-profesi');
 
+Route::get('/layanan/penyedia-jasa/data', [PenyediaJasaController::class, 'data'])
+    ->name('penyedia-jasa.data');
+
 Route::get('/layanan/penyedia-jasa', [PenyediaJasaController::class, 'index'])
     ->name('penyedia-jasa');
 
