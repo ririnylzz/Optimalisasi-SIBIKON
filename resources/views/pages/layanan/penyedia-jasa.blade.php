@@ -21,15 +21,25 @@
         <div class="rounded-[24px] border border-[#dfe5ef] bg-white p-6 shadow-[0_12px_35px_rgba(15,23,42,0.08)]">
 
             {{-- Table Controls --}}
-            <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <form
+                id="penyedia-jasa-filter-form"
+                action="{{ route('penyedia-jasa') }}"
+                method="GET"
+                class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+            >
                 <div class="flex items-center gap-3 text-sm text-slate-500">
                     <span>Show</span>
 
                     <select
-                        class="rounded-lg border border-[#dfe5ef] bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-[#293F81]">
-                        <option>10</option>
-                        <option>25</option>
-                        <option>50</option>
+                        name="per_page"
+                        class="rounded-lg border border-[#dfe5ef] bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-[#293F81]"
+                        onchange="document.getElementById('penyedia-jasa-filter-form').submit()"
+                    >
+                        @foreach ($allowedPerPage as $option)
+                            <option value="{{ $option }}" @selected((int) $perPage === (int) $option)>
+                                {{ $option }}
+                            </option>
+                        @endforeach
                     </select>
 
                     <span>entries</span>
@@ -41,9 +51,12 @@
                     <input
                         id="search-penyedia-jasa"
                         type="text"
-                        class="w-full rounded-lg border border-[#dfe5ef] px-4 py-2 text-sm outline-none focus:border-[#293F81] md:w-72">
+                        name="search"
+                        value="{{ $search }}"
+                        class="w-full rounded-lg border border-[#dfe5ef] px-4 py-2 text-sm outline-none focus:border-[#293F81] md:w-72"
+                    >
                 </div>
-            </div>
+            </form>
 
             {{-- Table --}}
             <div class="overflow-x-auto">
@@ -59,28 +72,37 @@
                     </thead>
 
                     <tbody class="divide-y divide-[#e6ebf2] text-sm text-slate-600">
-                        @forelse ($penyediaJasaKonstruksi ?? [] as $penyedia)
+                        @forelse ($penyediaJasaKonstruksi as $penyedia)
                             <tr class="align-top">
                                 <td class="px-5 py-6 font-semibold">
-                                    {{ $loop->iteration }}.
+                                    {{ $penyediaJasaKonstruksi->firstItem() + $loop->index }}.
                                 </td>
 
                                 <td class="px-5 py-6">
                                     <span class="font-bold leading-7 text-blue-600">
-                                        {{ $penyedia['nama'] ?? '-' }}
+                                        {{ $penyedia->nama_bu ?: '-' }}
                                     </span>
                                 </td>
 
                                 <td class="px-5 py-6 leading-7">
-                                    {{ $penyedia['alamat'] ?? '-' }}
+                                    {{ $penyedia->alamat ?: '-' }}
                                 </td>
 
                                 <td class="px-5 py-6 leading-7">
-                                    {{ $penyedia['telp'] ?? '-' }}
+                                    {{ $penyedia->telepon ?: '-' }}
                                 </td>
 
                                 <td class="px-5 py-6 leading-7">
-                                    {{ $penyedia['email'] ?? '-' }}
+                                    @if (!blank($penyedia->email))
+                                        <a
+                                            href="mailto:{{ $penyedia->email }}"
+                                            class="text-blue-600 hover:underline"
+                                        >
+                                            {{ $penyedia->email }}
+                                        </a>
+                                    @else
+                                        -
+                                    @endif
                                 </td>
                             </tr>
                         @empty
@@ -97,21 +119,86 @@
             {{-- Footer Table --}}
             <div class="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <p class="text-sm text-slate-500">
-                    Showing 0 to 0 of 0 entries
+                    @if ($penyediaJasaKonstruksi->total() > 0)
+                        Showing {{ $penyediaJasaKonstruksi->firstItem() }}
+                        to {{ $penyediaJasaKonstruksi->lastItem() }}
+                        of {{ $penyediaJasaKonstruksi->total() }} entries
+                    @else
+                        Showing 0 to 0 of 0 entries
+                    @endif
                 </p>
 
                 <div class="flex items-center justify-end gap-1">
-                    <button class="rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500">
-                        Previous
-                    </button>
+                    @if ($penyediaJasaKonstruksi->onFirstPage())
+                        <span class="rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-400">
+                            Previous
+                        </span>
+                    @else
+                        <a
+                            href="{{ $penyediaJasaKonstruksi->previousPageUrl() }}"
+                            class="rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-200"
+                        >
+                            Previous
+                        </a>
+                    @endif
 
-                    <button class="rounded-lg bg-yellow-400 px-4 py-3 text-sm font-extrabold text-slate-900">
-                        1
-                    </button>
+                    @if ($penyediaJasaKonstruksi->lastPage() <= 7)
+                        @foreach ($penyediaJasaKonstruksi->getUrlRange(1, $penyediaJasaKonstruksi->lastPage()) as $page => $url)
+                            @if ($page === $penyediaJasaKonstruksi->currentPage())
+                                <span class="rounded-lg bg-yellow-400 px-4 py-3 text-sm font-extrabold text-slate-900">
+                                    {{ $page }}
+                                </span>
+                            @else
+                                <a
+                                    href="{{ $url }}"
+                                    class="rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-200"
+                                >
+                                    {{ $page }}
+                                </a>
+                            @endif
+                        @endforeach
+                    @else
+                        @foreach ($penyediaJasaKonstruksi->getUrlRange(1, $penyediaJasaKonstruksi->lastPage()) as $page => $url)
+                            @if (
+                                $page === 1 ||
+                                $page === $penyediaJasaKonstruksi->lastPage() ||
+                                abs($page - $penyediaJasaKonstruksi->currentPage()) <= 1
+                            )
+                                @if ($page === $penyediaJasaKonstruksi->currentPage())
+                                    <span class="rounded-lg bg-yellow-400 px-4 py-3 text-sm font-extrabold text-slate-900">
+                                        {{ $page }}
+                                    </span>
+                                @else
+                                    <a
+                                        href="{{ $url }}"
+                                        class="rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-200"
+                                    >
+                                        {{ $page }}
+                                    </a>
+                                @endif
+                            @elseif (
+                                ($page === 2 && $penyediaJasaKonstruksi->currentPage() > 3) ||
+                                ($page === $penyediaJasaKonstruksi->lastPage() - 1 && $penyediaJasaKonstruksi->currentPage() < $penyediaJasaKonstruksi->lastPage() - 2)
+                            )
+                                <span class="px-2 py-3 text-sm font-medium text-slate-400">
+                                    ...
+                                </span>
+                            @endif
+                        @endforeach
+                    @endif
 
-                    <button class="rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500">
-                        Next
-                    </button>
+                    @if ($penyediaJasaKonstruksi->hasMorePages())
+                        <a
+                            href="{{ $penyediaJasaKonstruksi->nextPageUrl() }}"
+                            class="rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-200"
+                        >
+                            Next
+                        </a>
+                    @else
+                        <span class="rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-400">
+                            Next
+                        </span>
+                    @endif
                 </div>
             </div>
 
@@ -119,4 +206,25 @@
 
     </div>
 </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('penyedia-jasa-filter-form');
+        const searchInput = document.getElementById('search-penyedia-jasa');
+
+        if (!form || !searchInput) {
+            return;
+        }
+
+        let searchTimer = null;
+
+        searchInput.addEventListener('input', function () {
+            clearTimeout(searchTimer);
+
+            searchTimer = setTimeout(function () {
+                form.submit();
+            }, 500);
+        });
+    });
+</script>
 @endsection
