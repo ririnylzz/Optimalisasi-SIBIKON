@@ -28,7 +28,7 @@
                     </a>
 
                     <a href="{{ route('sosialisasi') }}"
-                        class="block border-b border-white/45 py-4 text-base transition hover:text-yellow-300">
+                        class="block border-b border-white/45 py-4 text-base text-yellow-300">
                         Sosialisasi
                     </a>
 

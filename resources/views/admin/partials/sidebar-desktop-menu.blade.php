@@ -8,6 +8,7 @@
     $subItemIdle = 'text-blue-100/70 hover:bg-white/6 hover:text-white';
     $subItemActive = 'bg-[#28428B] text-[#F7E578] font-semibold';
 
+    // Check if the current route is within the specified ones for "Masyarakat Jasa Konstruksi"
     $mjkActive = request()->routeIs(
         'admin.masyarakat-jasa-konstruksi',
         'admin.pengguna-jasa',
@@ -23,63 +24,58 @@
     );
 @endphp
 
-<div class="relative z-10 flex-1 overflow-y-auto scrollbar-dark px-3 py-4">
-    <div class="mb-6">
-        <p
-            x-text="(sidebarPinned || sidebarHovered) ? 'Menu' : '•••'"
-            :class="(sidebarPinned || sidebarHovered) ? 'text-left px-2' : 'text-center justify-center'"
-            class="{{ $sectionTitleClass }}"
-        ></p>
+    <div class="relative z-10 flex-1 overflow-y-auto scrollbar-dark px-3 py-4">
+        <div class="mb-6">
+            <p
+                x-text="(sidebarPinned || sidebarHovered) ? 'Menu' : '•••'"
+                :class="(sidebarPinned || sidebarHovered) ? 'text-left px-2' : 'text-center justify-center'"
+                class="{{ $sectionTitleClass }}"
+            ></p>
 
-        <div x-data="{ open: {{ request()->routeIs('admin.dashboard') ? 'true' : 'false' }} }" class="space-y-1.5">
-            <button
-                type="button"
-                @click="open = !open"
-                class="{{ $menuBase }} {{ request()->routeIs('admin.dashboard') ? $menuActive : $menuIdle }} w-full justify-between"
-            >
-                <div class="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 12l9-9 9 9M4.5 10.5V20a1 1 0 001 1h4.5v-6h4v6H18.5a1 1 0 001-1v-9.5"/>
+            <div x-data="{ open: {{ request()->routeIs('admin.tenaga-kerja-konstruksi') || request()->routeIs('admin.bujk') || request()->routeIs('admin.dashboard') ? 'true' : 'false' }} }" class="space-y-1.5">
+                <button type="button" @click="open = !open" class="{{ $menuBase }} {{ request()->routeIs('admin.tenaga-kerja-konstruksi') || request()->routeIs('admin.bujk') || request()->routeIs('admin.dashboard') ? $menuActive : $menuIdle }} w-full justify-between">
+                    <div class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 12l9-9 9 9M4.5 10.5V20a1 1 0 001 1h4.5v-6h4v6H18.5a1 1 0 001-1v-9.5"/>
+                        </svg>
+                        <span x-show="sidebarPinned || sidebarHovered" x-transition>Dashboard</span>
+                    </div>
+                    <svg
+                        x-show="sidebarPinned || sidebarHovered"
+                        :class="open ? 'rotate-90' : ''"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 transition-transform duration-200"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
+                </button>
 
-                    <span x-show="sidebarPinned || sidebarHovered" x-transition>Dashboard</span>
-                </div>
+                <div x-show="open && (sidebarPinned || sidebarHovered)" x-transition class="relative ml-6 pl-4">
+                    <div class="absolute bottom-2 left-[6px] top-1 w-px bg-white/15"></div>
 
-                <svg
-                    x-show="sidebarPinned || sidebarHovered"
-                    :class="open ? 'rotate-90' : ''"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 transition-transform duration-200"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-            </button>
+                    <div class="space-y-1">
+                        <!-- Dashboard BUJK -->
+                        <a href="{{ route('admin.dashboard') }}"
+                            class="{{ $subItemBase }} {{ request()->routeIs('admin.dashboard') || request()->routeIs('admin.bujk') ? $subItemActive : $subItemIdle }}">
+                            <span class="absolute left-[-12px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full 
+                            {{ request()->routeIs('admin.dashboard') || request()->routeIs('admin.bujk') ? 'bg-[#F7E578]' : 'bg-white/30' }}"></span>
+                            Dashboard Badan Usaha Jasa Konstruksi
+                        </a>
 
-            <div x-show="open && (sidebarPinned || sidebarHovered)" x-transition class="relative ml-6 pl-4">
-                <div class="absolute bottom-2 left-[6px] top-1 w-px bg-white/15"></div>
-
-                <div class="space-y-1">
-                    <a href="{{ route('admin.dashboard') }}"
-                    class="{{ $subItemBase }} {{ request()->routeIs('admin.dashboard') ? $subItemActive : $subItemIdle }}">
-                        <span class="absolute left-[-12px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full {{ request()->routeIs('admin.dashboard') ? 'bg-[#F7E578]' : 'bg-white/30' }}"></span>
-                        Dashboard Badan Usaha Jasa Konstruksi
-                    </a>
-
-                    <a href="{{ route('admin.tenaga-kerja-konstruksi') }}"
-                        class="{{ $subItemBase }} {{ request()->routeIs('admin.tenaga-kerja-konstruksi') ? $subItemActive : $subItemIdle }}">
-                        <span class="absolute left-[-12px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full 
-                        {{ request()->routeIs('admin.tenaga-kerja-konstruksi') ? 'bg-[#F7E578]' : 'bg-white/30' }}"></span>
-
-                        Dashboard Tenaga Kerja Konstruksi
-                    </a>
+                        <!-- Dashboard Tenaga Kerja Konstruksi -->
+                        <a href="{{ route('admin.tenaga-kerja-konstruksi') }}" 
+                            class="{{ $subItemBase }} {{ request()->routeIs('admin.tenaga-kerja-konstruksi') ? $subItemActive : $subItemIdle }}">
+                            <span class="absolute left-[-12px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full 
+                            {{ request()->routeIs('admin.tenaga-kerja-konstruksi') ? 'bg-[#F7E578]' : 'bg-white/30' }}"></span>
+                            Dashboard Tenaga Kerja Konstruksi
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-
+            
     <div class="mb-6">
         <p
             x-text="(sidebarPinned || sidebarHovered) ? 'Data Master' : '•••'"

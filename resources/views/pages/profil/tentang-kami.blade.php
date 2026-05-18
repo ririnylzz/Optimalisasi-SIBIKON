@@ -26,7 +26,7 @@
                 </p>
 
                 <a href="#fungsi-bikon"
-                    class="mt-10 inline-flex rounded-xl bg-yellow-400 px-7 py-4 text-sm font-extrabold leading-tight text-slate-900 transition hover:bg-yellow-300">
+                    class="mt-10 inline-flex rounded-xl bg-yellow-400 px-7 py-4 text-sm font-bold leading-tight text-slate-900 transition hover:bg-yellow-300">
                     BACA<br>
                     SELENGKAPNYA
                 </a>
@@ -35,7 +35,7 @@
             {{-- Card Gambar --}}
             <div class="relative min-h-[360px] overflow-hidden rounded-[28px] bg-slate-200">
                 <img
-                    src="{{ asset('images/kantor-bikon.jpg') }}"
+                    src="{{ asset('images/gedung-dinas-PUPR.jpg') }}"
                     alt="Dinas PUPR Provinsi Kalimantan Timur"
                     class="h-full min-h-[360px] w-full object-cover">
 
@@ -71,11 +71,11 @@
             <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
 
                 {{-- Card Pengaturan --}}
-                <div class="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm">
-                    <button type="button" class="accordion-toggle w-full text-left" data-target="fungsi-card-1">
-                        <div class="flex items-start justify-between gap-4">
+                <div class="rounded-[18px] border border-slate-200 bg-white p-5 shadow-sm">
+                    <div class="w-full">
+                        <div class="flex items-start gap-4">
                             <div class="flex items-start gap-4">
-                                <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-slate-100">
+                                <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-slate-100">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#1E2E5A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M7 3.75h7.5L19.5 8.75V20.25a.75.75 0 0 1-.75.75H7a2.25 2.25 0 0 1-2.25-2.25V6A2.25 2.25 0 0 1 7 3.75Z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 3.75v4.5h4.5" />
@@ -86,25 +86,21 @@
                                 </div>
 
                                 <div class="pt-2">
-                                    <h3 class="text-2xl font-bold leading-none text-[#143B5D]">
+                                    <h3 class="text-xl font-bold leading-none text-[#143B5D]">
                                         Pengaturan
                                     </h3>
-                                    <p class="mt-4 max-w-[220px] text-base leading-8 text-slate-600">
+                                    <p class="mt-2 max-w-[220px] text-base leading-8 text-slate-600">
                                         Penetapan kebijakan dan standar dalam bina konstruksi.
                                     </p>
                                 </div>
                             </div>
 
-                            <span class="mt-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#143B5D]">
-                                <svg class="arrow h-4 w-4 rotate-180 text-white transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 15l-7-7-7 7" />
-                                </svg>
-                            </span>
                         </div>
 
-                    </button>
+                    </div>
 
-                    <div id="fungsi-card-1" class="accordion-content pt-5">
+                    <div id="fungsi-card-1" class="pt-5">
+                        <div class="mt-4 h-px w-full bg-slate-200 mb-4"></div>
                         <ul class="list-disc space-y-2 pl-5 text-slate-600 leading-8">
                             <li>Penyiapan bahan perumusan kebijakan.</li>
                             <li>Penyusunan norma, standar, prosedur, dan kriteria.</li>
@@ -114,11 +110,11 @@
                 </div>
 
                 {{-- Card Pengawasan --}}
-                <div class="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm">
-                    <button type="button" class="accordion-toggle w-full text-left" data-target="fungsi-card-2">
-                        <div class="flex items-start justify-between gap-4">
+                <div class="rounded-[18px] border border-slate-200 bg-white p-5 shadow-sm">
+                    <div class="w-full">
+                        <div class="flex items-start gap-4">
                             <div class="flex items-start gap-4">
-                                <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-slate-100">
+                                <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-slate-100">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#1E2E5A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 4.5h3A2.25 2.25 0 0 1 15.75 6.75v1.5h-7.5v-1.5A2.25 2.25 0 0 1 10.5 4.5Z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 8.25h9A2.25 2.25 0 0 1 18 10.5v7.5a2.25 2.25 0 0 1-2.25 2.25h-9A2.25 2.25 0 0 1 4.5 18v-7.5a2.25 2.25 0 0 1 2.25-2.25Z" />
@@ -130,25 +126,21 @@
                                 </div>
 
                                 <div class="pt-2">
-                                    <h3 class="text-2xl font-bold leading-none text-[#143B5D]">
+                                    <h3 class="text-xl font-bold leading-none text-[#143B5D]">
                                         Pengawasan
                                     </h3>
-                                    <p class="mt-4 max-w-[220px] text-base leading-8 text-slate-600">
+                                    <p class="mt-2 max-w-[220px] text-base leading-8 text-slate-600">
                                         Pengendalian dan evaluasi pelaksanaan konstruksi.
                                     </p>
                                 </div>
                             </div>
 
-                            <span class="mt-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#143B5D]">
-                                <svg class="arrow h-4 w-4 text-white transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 15l-7-7-7 7" />
-                                </svg>
-                            </span>
                         </div>
 
-                    </button>
+                    </div>
 
-                    <div id="fungsi-card-2" class="accordion-content hidden pt-5">
+                    <div id="fungsi-card-2" class="pt-5">
+                        <div class="mt-4 h-px w-full bg-slate-200 mb-4"></div>
                         <ul class="list-disc space-y-2 pl-5 text-slate-600 leading-8">
                             <li>Monitoring pelaksanaan kegiatan konstruksi.</li>
                             <li>Evaluasi penerapan kebijakan dan program bina konstruksi.</li>
@@ -158,11 +150,11 @@
                 </div>
 
                 {{-- Card Pemberdayaan --}}
-                <div class="rounded-[22px] border border-slate-200 bg-white p-5 shadow-sm">
-                    <button type="button" class="accordion-toggle w-full text-left" data-target="fungsi-card-3">
-                        <div class="flex items-start justify-between gap-4">
+                <div class="rounded-[18px] border border-slate-200 bg-white p-5 shadow-sm">
+                    <div class="w-full">
+                        <div class="flex items-start gap-4">
                             <div class="flex items-start gap-4">
-                                <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-slate-100">
+                                <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-slate-100">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#1E2E5A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75a5.25 5.25 0 0 0-9 0" />
                                         <circle cx="12" cy="11.25" r="3.75" />
@@ -174,25 +166,21 @@
                                 </div>
 
                                 <div class="pt-2">
-                                    <h3 class="text-2xl font-bold leading-none text-[#143B5D]">
+                                    <h3 class="text-xl font-bold leading-none text-[#143B5D]">
                                         Pemberdayaan
                                     </h3>
-                                    <p class="mt-4 max-w-[220px] text-base leading-8 text-slate-600">
+                                    <p class="mt-2 max-w-[220px] text-base leading-8 text-slate-600">
                                         Penguatan kapasitas dan kualitas SDM konstruksi.
                                     </p>
                                 </div>
                             </div>
 
-                            <span class="mt-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#143B5D]">
-                                <svg class="arrow h-4 w-4 text-white transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 15l-7-7-7 7" />
-                                </svg>
-                            </span>
                         </div>
 
-                    </button>
+                    </div>
 
-                    <div id="fungsi-card-3" class="accordion-content hidden pt-5">
+                    <div id="fungsi-card-3" class="pt-5">
+                        <div class="mt-4 h-px w-full bg-slate-200 mb-4"></div>
                         <ul class="list-disc space-y-2 pl-5 text-slate-600 leading-8">
                             <li>Peningkatan kapasitas sumber daya manusia jasa konstruksi.</li>
                             <li>Pembinaan pelaku usaha dan tenaga kerja konstruksi.</li>
@@ -207,34 +195,3 @@
     </div>
 </section>
 @endsection
-
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const buttons = document.querySelectorAll('.accordion-toggle');
-
-        buttons.forEach((button) => {
-            button.addEventListener('click', function() {
-                const targetId = this.dataset.target;
-                const targetContent = document.getElementById(targetId);
-                const arrow = this.querySelector('.arrow');
-
-                const isOpen = !targetContent.classList.contains('hidden');
-
-                document.querySelectorAll('.accordion-content').forEach((content) => {
-                    content.classList.add('hidden');
-                });
-
-                document.querySelectorAll('.accordion-toggle .arrow').forEach((item) => {
-                    item.classList.remove('rotate-180');
-                });
-
-                if (!isOpen) {
-                    targetContent.classList.remove('hidden');
-                    arrow.classList.add('rotate-180');
-                }
-            });
-        });
-    });
-</script>
-@endpush

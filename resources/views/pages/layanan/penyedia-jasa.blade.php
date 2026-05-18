@@ -26,10 +26,14 @@
                     <span>Show</span>
 
                     <select
-                        class="rounded-lg border border-[#dfe5ef] bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-[#293F81]">
-                        <option>10</option>
-                        <option>25</option>
-                        <option>50</option>
+                        id="penyedia-jasa-per-page"
+                        class="rounded-lg border border-[#dfe5ef] bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-[#293F81]"
+                    >
+                        @foreach ($allowedPerPage as $option)
+                            <option value="{{ $option }}" @selected((int) $perPage === (int) $option)>
+                                {{ $option }}
+                            </option>
+                        @endforeach
                     </select>
 
                     <span>entries</span>
@@ -41,7 +45,10 @@
                     <input
                         id="search-penyedia-jasa"
                         type="text"
-                        class="w-full rounded-lg border border-[#dfe5ef] px-4 py-2 text-sm outline-none focus:border-[#293F81] md:w-72">
+                        value="{{ $search }}"
+                        autocomplete="off"
+                        class="w-full rounded-lg border border-[#dfe5ef] px-4 py-2 text-sm outline-none focus:border-[#293F81] md:w-72"
+                    >
                 </div>
             </div>
 
@@ -58,29 +65,38 @@
                         </tr>
                     </thead>
 
-                    <tbody class="divide-y divide-[#e6ebf2] text-sm text-slate-600">
-                        @forelse ($penyediaJasaKonstruksi ?? [] as $penyedia)
+                    <tbody id="penyedia-jasa-table-body" class="divide-y divide-[#e6ebf2] text-sm text-slate-600">
+                        @forelse ($penyediaJasaKonstruksi as $penyedia)
                             <tr class="align-top">
                                 <td class="px-5 py-6 font-semibold">
-                                    {{ $loop->iteration }}.
+                                    {{ $penyediaJasaKonstruksi->firstItem() + $loop->index }}.
                                 </td>
 
                                 <td class="px-5 py-6">
                                     <span class="font-bold leading-7 text-blue-600">
-                                        {{ $penyedia['nama'] ?? '-' }}
+                                        {{ $penyedia->nama_bu ?: '-' }}
                                     </span>
                                 </td>
 
                                 <td class="px-5 py-6 leading-7">
-                                    {{ $penyedia['alamat'] ?? '-' }}
+                                    {{ $penyedia->alamat ?: '-' }}
                                 </td>
 
                                 <td class="px-5 py-6 leading-7">
-                                    {{ $penyedia['telp'] ?? '-' }}
+                                    {{ $penyedia->telepon ?: '-' }}
                                 </td>
 
                                 <td class="px-5 py-6 leading-7">
-                                    {{ $penyedia['email'] ?? '-' }}
+                                    @if (!blank($penyedia->email))
+                                        <a
+                                            href="mailto:{{ $penyedia->email }}"
+                                            class="text-blue-600 hover:underline"
+                                        >
+                                            {{ $penyedia->email }}
+                                        </a>
+                                    @else
+                                        -
+                                    @endif
                                 </td>
                             </tr>
                         @empty
@@ -96,22 +112,91 @@
 
             {{-- Footer Table --}}
             <div class="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <p class="text-sm text-slate-500">
-                    Showing 0 to 0 of 0 entries
+                <p id="penyedia-jasa-info" class="text-sm text-slate-500">
+                    @if ($penyediaJasaKonstruksi->total() > 0)
+                        Showing {{ $penyediaJasaKonstruksi->firstItem() }}
+                        to {{ $penyediaJasaKonstruksi->lastItem() }}
+                        of {{ $penyediaJasaKonstruksi->total() }} entries
+                    @else
+                        Showing 0 to 0 of 0 entries
+                    @endif
                 </p>
 
-                <div class="flex items-center justify-end gap-1">
-                    <button class="rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500">
-                        Previous
-                    </button>
+                <div id="penyedia-jasa-pagination" class="flex items-center justify-end gap-1">
+                    @if ($penyediaJasaKonstruksi->onFirstPage())
+                        <span class="rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-400">
+                            Previous
+                        </span>
+                    @else
+                        <button
+                            type="button"
+                            data-page="{{ $penyediaJasaKonstruksi->currentPage() - 1 }}"
+                            class="penyedia-page-btn rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-200"
+                        >
+                            Previous
+                        </button>
+                    @endif
 
-                    <button class="rounded-lg bg-yellow-400 px-4 py-3 text-sm font-extrabold text-slate-900">
-                        1
-                    </button>
+                    @if ($penyediaJasaKonstruksi->lastPage() <= 7)
+                        @foreach ($penyediaJasaKonstruksi->getUrlRange(1, $penyediaJasaKonstruksi->lastPage()) as $page => $url)
+                            @if ($page === $penyediaJasaKonstruksi->currentPage())
+                                <span class="rounded-lg bg-yellow-400 px-4 py-3 text-sm font-extrabold text-slate-900">
+                                    {{ $page }}
+                                </span>
+                            @else
+                                <button
+                                    type="button"
+                                    data-page="{{ $page }}"
+                                    class="penyedia-page-btn rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-200"
+                                >
+                                    {{ $page }}
+                                </button>
+                            @endif
+                        @endforeach
+                    @else
+                        @foreach ($penyediaJasaKonstruksi->getUrlRange(1, $penyediaJasaKonstruksi->lastPage()) as $page => $url)
+                            @if (
+                                $page === 1 ||
+                                $page === $penyediaJasaKonstruksi->lastPage() ||
+                                abs($page - $penyediaJasaKonstruksi->currentPage()) <= 1
+                            )
+                                @if ($page === $penyediaJasaKonstruksi->currentPage())
+                                    <span class="rounded-lg bg-yellow-400 px-4 py-3 text-sm font-extrabold text-slate-900">
+                                        {{ $page }}
+                                    </span>
+                                @else
+                                    <button
+                                        type="button"
+                                        data-page="{{ $page }}"
+                                        class="penyedia-page-btn rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-200"
+                                    >
+                                        {{ $page }}
+                                    </button>
+                                @endif
+                            @elseif (
+                                ($page === 2 && $penyediaJasaKonstruksi->currentPage() > 3) ||
+                                ($page === $penyediaJasaKonstruksi->lastPage() - 1 && $penyediaJasaKonstruksi->currentPage() < $penyediaJasaKonstruksi->lastPage() - 2)
+                            )
+                                <span class="px-2 py-3 text-sm font-medium text-slate-400">
+                                    ...
+                                </span>
+                            @endif
+                        @endforeach
+                    @endif
 
-                    <button class="rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500">
-                        Next
-                    </button>
+                    @if ($penyediaJasaKonstruksi->hasMorePages())
+                        <button
+                            type="button"
+                            data-page="{{ $penyediaJasaKonstruksi->currentPage() + 1 }}"
+                            class="penyedia-page-btn rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-200"
+                        >
+                            Next
+                        </button>
+                    @else
+                        <span class="rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-400">
+                            Next
+                        </span>
+                    @endif
                 </div>
             </div>
 
@@ -119,4 +204,276 @@
 
     </div>
 </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('search-penyedia-jasa');
+        const perPageSelect = document.getElementById('penyedia-jasa-per-page');
+        const tableBody = document.getElementById('penyedia-jasa-table-body');
+        const tableInfo = document.getElementById('penyedia-jasa-info');
+        const pagination = document.getElementById('penyedia-jasa-pagination');
+
+        const dataUrl = @json(route('penyedia-jasa.data'));
+
+        let currentPage = 1;
+        let searchTimer = null;
+        let activeController = null;
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function buildQueryParams(page = 1) {
+            const params = new URLSearchParams();
+
+            params.set('page', page);
+            params.set('per_page', perPageSelect.value || '10');
+            params.set('search', searchInput.value || '');
+
+            return params;
+        }
+
+        function updateBrowserUrl(page = 1) {
+            const params = buildQueryParams(page);
+            const newUrl = `${window.location.pathname}?${params.toString()}`;
+
+            window.history.replaceState({}, '', newUrl);
+        }
+
+        function renderTable(rows) {
+            if (!rows.length) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-5 py-10 text-center text-slate-500">
+                            Data penyedia jasa konstruksi belum tersedia.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tableBody.innerHTML = rows.map(function (row) {
+                const email = row.email && row.email !== '-'
+                    ? `<a href="mailto:${escapeHtml(row.email)}" class="text-blue-600 hover:underline">${escapeHtml(row.email)}</a>`
+                    : '-';
+
+                return `
+                    <tr class="align-top">
+                        <td class="px-5 py-6 font-semibold">
+                            ${escapeHtml(row.no)}.
+                        </td>
+
+                        <td class="px-5 py-6">
+                            <span class="font-bold leading-7 text-blue-600">
+                                ${escapeHtml(row.nama)}
+                            </span>
+                        </td>
+
+                        <td class="px-5 py-6 leading-7">
+                            ${escapeHtml(row.alamat)}
+                        </td>
+
+                        <td class="px-5 py-6 leading-7">
+                            ${escapeHtml(row.telp)}
+                        </td>
+
+                        <td class="px-5 py-6 leading-7">
+                            ${email}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderInfo(meta) {
+            if (!meta.total || meta.total < 1) {
+                tableInfo.textContent = 'Showing 0 to 0 of 0 entries';
+                return;
+            }
+
+            tableInfo.textContent = `Showing ${meta.from} to ${meta.to} of ${meta.total} entries`;
+        }
+
+        function getVisiblePages(current, last) {
+            const pages = [];
+
+            if (last <= 7) {
+                for (let page = 1; page <= last; page++) {
+                    pages.push(page);
+                }
+
+                return pages;
+            }
+
+            for (let page = 1; page <= last; page++) {
+                if (
+                    page === 1 ||
+                    page === last ||
+                    Math.abs(page - current) <= 1
+                ) {
+                    pages.push(page);
+                } else if (
+                    (page === 2 && current > 3) ||
+                    (page === last - 1 && current < last - 2)
+                ) {
+                    pages.push('...');
+                }
+            }
+
+            return pages.filter(function (page, index, array) {
+                return page !== '...' || array[index - 1] !== '...';
+            });
+        }
+
+        function renderPagination(meta) {
+            const current = Number(meta.current_page || 1);
+            const last = Number(meta.last_page || 1);
+            const pages = getVisiblePages(current, last);
+
+            let html = '';
+
+            if (meta.on_first_page) {
+                html += `
+                    <span class="rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-400">
+                        Previous
+                    </span>
+                `;
+            } else {
+                html += `
+                    <button
+                        type="button"
+                        data-page="${current - 1}"
+                        class="penyedia-page-btn rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-200"
+                    >
+                        Previous
+                    </button>
+                `;
+            }
+
+            pages.forEach(function (page) {
+                if (page === '...') {
+                    html += `
+                        <span class="px-2 py-3 text-sm font-medium text-slate-400">
+                            ...
+                        </span>
+                    `;
+                    return;
+                }
+
+                if (Number(page) === current) {
+                    html += `
+                        <span class="rounded-lg bg-yellow-400 px-4 py-3 text-sm font-extrabold text-slate-900">
+                            ${page}
+                        </span>
+                    `;
+                } else {
+                    html += `
+                        <button
+                            type="button"
+                            data-page="${page}"
+                            class="penyedia-page-btn rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-200"
+                        >
+                            ${page}
+                        </button>
+                    `;
+                }
+            });
+
+            if (meta.has_more_pages) {
+                html += `
+                    <button
+                        type="button"
+                        data-page="${current + 1}"
+                        class="penyedia-page-btn rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-200"
+                    >
+                        Next
+                    </button>
+                `;
+            } else {
+                html += `
+                    <span class="rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-400">
+                        Next
+                    </span>
+                `;
+            }
+
+            pagination.innerHTML = html;
+        }
+
+        async function fetchData(page = 1) {
+            currentPage = page;
+
+            if (activeController) {
+                activeController.abort();
+            }
+
+            activeController = new AbortController();
+
+            const params = buildQueryParams(page);
+
+            try {
+                const response = await fetch(`${dataUrl}?${params.toString()}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    signal: activeController.signal,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Gagal mengambil data.');
+                }
+
+                const payload = await response.json();
+
+                renderTable(payload.rows || []);
+                renderInfo(payload.pagination || {});
+                renderPagination(payload.pagination || {});
+                updateBrowserUrl(page);
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    return;
+                }
+
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-5 py-10 text-center text-red-500">
+                            Gagal memuat data penyedia jasa konstruksi.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        searchInput.addEventListener('input', function () {
+            clearTimeout(searchTimer);
+
+            searchTimer = setTimeout(function () {
+                fetchData(1);
+            }, 200);
+        });
+
+        perPageSelect.addEventListener('change', function () {
+            fetchData(1);
+        });
+
+        pagination.addEventListener('click', function (event) {
+            const button = event.target.closest('.penyedia-page-btn');
+
+            if (!button) {
+                return;
+            }
+
+            const page = Number(button.dataset.page || 1);
+
+            fetchData(page);
+        });
+    });
+</script>
 @endsection

@@ -18,6 +18,8 @@
 /public/storage
 /storage/*.key
 /storage/pail
+!/storage/app/imports/
+!/storage/app/imports/*.xlsx
 /vendor
 _ide_helper.php
 Homestead.json

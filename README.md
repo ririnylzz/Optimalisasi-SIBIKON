@@ -146,6 +146,7 @@ Optimalisasi-SIBIKON
 │     │  │  ├─ index.blade.php
 │     │  │  └─ partials
 │     │  │     └─ table.blade.php
+│     │  ├─ dashboard-tkk.blade.php
 │     │  ├─ dashboard.blade.php
 │     │  ├─ partials
 │     │  │  ├─ sidebar-desktop-menu.blade.php
@@ -169,30 +170,14 @@ Optimalisasi-SIBIKON
 │  ├─ framework
 │  │  ├─ cache
 │  │  │  └─ data
+│  │  │     ├─ 12
+│  │  │     │  └─ de
+│  │  │     │     └─ 12de811a5766d0010da619619bcf79af556dd131
 │  │  │     └─ 17
 │  │  │        └─ ac
 │  │  │           └─ 17ac641564bfe2eb176a10406a8490f0e2bc08e2
 │  │  ├─ sessions
-│  │  │  ├─ 5jp1X9SWHQQo7wXndByDfONQaNi2MaZVEOifv21F
-│  │  │  ├─ ALdgpwsyicV1FN4MRQVYq0mORchQpIaVFhdilv8V
-│  │  │  ├─ bN8mkGxD9OBTFlsFCxdFUPpvaJHMqVUeya3rxn8P
-│  │  │  ├─ cCDRXlQBicOYguNITzfWuNODoRXlJ1sjkcJC5vv4
-│  │  │  ├─ e7rBuAKkl4nyTeKdDlJJcqP4BtQJuOUjUeSNrJeb
-│  │  │  ├─ F7ekqYwdn8oD8sQKjnBW1bcD0FItFZO7bOUeyYTP
-│  │  │  ├─ geYoUX8yqQNQM4GNvW83T9i3ZYfEBy4bXWEPXvIb
-│  │  │  ├─ hjjjwil2WxGWs126pceYfbnG05qRAQeNHSjaBjgv
-│  │  │  ├─ hzLtNfApPCeUuhe62UjUtZhkwyyAPyGIHR8iBaQ4
-│  │  │  ├─ IUMWCPA1176CUZdAVLhVTR491oMW3rIjS3AyKliL
-│  │  │  ├─ lps90BO5hCyze2ZEqt6iBP0Chd3kCWqNlu3gtBya
-│  │  │  ├─ NuEKu7oeWPMcZdmczYqwVfz1brQ4rjXlLk6usGRm
-│  │  │  ├─ pHpFw1y3ofAXBT89OSraLNFVbglmPxY3FCQT1vhV
-│  │  │  ├─ qTueWHA37nwdUIky4iVJFEtmMMaY6BMjBhAwlCCP
-│  │  │  ├─ sh0KIur7opyA6UhsHmmj3zxc9lrpbeSDE28QhS2g
-│  │  │  ├─ teiSSeIxKCZDKSDJKgjbWifkmVhgZnploVH15WjK
-│  │  │  ├─ THxuj2UI0HpB3CccccPwWPUOO6mcYlMK1iyvwPH6
-│  │  │  ├─ wX2Xxw5sUEzY53sMqKM958yQnLbZ3i8c7jZ9xgNz
-│  │  │  ├─ xseVMAIuvxea48jzbdPfIWBZ3cW5zRCoah9UhWgW
-│  │  │  └─ Z2E2X8xrjTxkCWe9LxIfJSHymIJ9h88BcAwpvYCd
+│  │  │  └─ hjjjwil2WxGWs126pceYfbnG05qRAQeNHSjaBjgv
 │  │  ├─ testing
 │  │  └─ views
 │  │     ├─ 10be9791d51511d266e5d751628ad7e5.php
@@ -210,6 +195,7 @@ Optimalisasi-SIBIKON
 │  │     ├─ 3503f29695a5395f8446afe4ff037aa8.php
 │  │     ├─ 36fbf176aa24b358f1c382862625cfde.php
 │  │     ├─ 39c54b8bb51eb62d7e080e268674cdc0.php
+│  │     ├─ 3c27990ce378551cbb3bfe469b3e6ade.php
 │  │     ├─ 3fd498130ddb509e63c8bb8b61d18cca.php
 │  │     ├─ 40a79a229747a08f50def5375954af67.php
 │  │     ├─ 423cdc138621083748391b67a7809c74.php
@@ -265,7 +251,8 @@ Optimalisasi-SIBIKON
 ├─ app
 │  ├─ Console
 │  │  └─ Commands
-│  │     └─ ImportBujkSbuExcel.php
+│  │     ├─ ImportBujkSbuExcel.php
+│  │     └─ ImportTkk.php
 │  ├─ Http
 │  │  ├─ Controllers
 │  │  │  ├─ Admin
@@ -279,6 +266,7 @@ Optimalisasi-SIBIKON
 │  │           └─ BujkImportRequest.php
 │  ├─ Models
 │  │  ├─ Bujk.php
+│  │  ├─ Tkk.php
 │  │  └─ User.php
 │  ├─ Providers
 │  │  └─ AppServiceProvider.php
@@ -320,7 +308,10 @@ Optimalisasi-SIBIKON
 │  │  ├─ 2026_04_22_123008_create_bujk_table.php
 │  │  ├─ 2026_04_27_034140_create_bujk_sbu_table.php
 │  │  ├─ 2026_04_27_065022_add_snapshot_columns_to_bujk_sbu_table.php
-│  │  └─ 2026_04_27_073535_alter_bujk_location_columns_to_text.php
+│  │  ├─ 2026_04_27_073535_alter_bujk_location_columns_to_text.php
+│  │  ├─ 2026_04_30_074425_create_tkk_table.php
+│  │  ├─ 2026_05_11_053457_rebuild_bujk_columns_and_drop_bujk_sbu_table.php
+│  │  └─ 2026_05_11_072308_add_website_to_bujk_table.php
 │  └─ seeders
 │     └─ DatabaseSeeder.php
 ├─ package-lock.json
@@ -330,9 +321,35 @@ Optimalisasi-SIBIKON
 ├─ public
 │  ├─ .htaccess
 │  ├─ favicon.ico
+│  ├─ files
+│  │  ├─ renja.pdf
+│  │  └─ sop-bikon.pdf
 │  ├─ images
+│  │  ├─ berita-1.png
+│  │  ├─ berita-2.png
+│  │  ├─ berita-3.png
+│  │  ├─ berita-utama.jpg
+│  │  ├─ beritagrid-1.png
+│  │  ├─ beritagrid-2.png
+│  │  ├─ beritagrid-3.png
+│  │  ├─ beritagrid-4.png
+│  │  ├─ beritagrid-5.png
+│  │  ├─ beritagrid-6.png
 │  │  ├─ gedung-dinas-PUPR.jpg
-│  │  └─ logo-sibikon.png
+│  │  ├─ layanan-1.png
+│  │  ├─ layanan-10.png
+│  │  ├─ layanan-11.png
+│  │  ├─ layanan-2.png
+│  │  ├─ layanan-3.png
+│  │  ├─ layanan-4.png
+│  │  ├─ layanan-5.png
+│  │  ├─ layanan-6.png
+│  │  ├─ layanan-7.png
+│  │  ├─ layanan-8.png
+│  │  ├─ layanan-9.png
+│  │  ├─ logo-sibikon.png
+│  │  ├─ poster-pelatihan.jpg
+│  │  └─ struktur.png
 │  ├─ index.php
 │  └─ robots.txt
 ├─ README.md
@@ -347,6 +364,7 @@ Optimalisasi-SIBIKON
 │     │  │  ├─ index.blade.php
 │     │  │  └─ partials
 │     │  │     └─ table.blade.php
+│     │  ├─ dashboard-tkk.blade.php
 │     │  ├─ dashboard.blade.php
 │     │  ├─ partials
 │     │  │  ├─ sidebar-desktop-menu.blade.php
@@ -355,7 +373,37 @@ Optimalisasi-SIBIKON
 │     ├─ components
 │     │  └─ dashboard-chart-card.blade.php
 │     ├─ layouts
-│     │  └─ admin.blade.php
+│     │  ├─ admin.blade.php
+│     │  └─ app.blade.php
+│     ├─ pages
+│     │  ├─ beranda.blade.php
+│     │  ├─ berita.blade.php
+│     │  ├─ detail-berita.blade.php
+│     │  ├─ fungsi
+│     │  │  ├─ pemberdayaan
+│     │  │  │  ├─ pelatihan-ahli.blade.php
+│     │  │  │  └─ tabel-tkk.blade.php
+│     │  │  ├─ pengaturan
+│     │  │  │  ├─ daftar-sosil.blade.php
+│     │  │  │  ├─ forum.blade.php
+│     │  │  │  ├─ rakor.blade.php
+│     │  │  │  ├─ rantai-pasok.blade.php
+│     │  │  │  └─ sosialisasi.blade.php
+│     │  │  └─ pengawasan
+│     │  │     ├─ tertib-pemanfaatan.blade.php
+│     │  │     ├─ tertib-penyelenggaraan.blade.php
+│     │  │     └─ tertib-usaha.blade.php
+│     │  ├─ kontak.blade.php
+│     │  ├─ layanan
+│     │  │  ├─ asosiasi-perusahaan.blade.php
+│     │  │  ├─ asosiasi-profesi.blade.php
+│     │  │  └─ penyedia-jasa.blade.php
+│     │  ├─ login.blade.php
+│     │  ├─ profil
+│     │  │  ├─ sop-renja.blade.php
+│     │  │  ├─ struktur.blade.php
+│     │  │  └─ tentang-kami.blade.php
+│     │  └─ regist.blade.php
 │     └─ welcome.blade.php
 ├─ routes
 │  ├─ console.php
@@ -364,36 +412,27 @@ Optimalisasi-SIBIKON
 │  ├─ app
 │  │  ├─ imports
 │  │  │  ├─ Data BUJK dan SBU Kaltim (2Sept25).xlsx
-│  │  │  └─ data BUJK dan SBU KALTIM 2025 (19Juni2025).xlsx
+│  │  │  ├─ data BUJK dan SBU KALTIM 2025 (19Juni2025).xlsx
+│  │  │  └─ tkk_data.xlsx
 │  │  ├─ private
 │  │  └─ public
 │  ├─ framework
 │  │  ├─ cache
 │  │  │  └─ data
+│  │  │     ├─ 12
+│  │  │     │  └─ de
+│  │  │     │     └─ 12de811a5766d0010da619619bcf79af556dd131
 │  │  │     └─ 17
 │  │  │        └─ ac
 │  │  │           └─ 17ac641564bfe2eb176a10406a8490f0e2bc08e2
 │  │  ├─ sessions
-│  │  │  ├─ 5jp1X9SWHQQo7wXndByDfONQaNi2MaZVEOifv21F
-│  │  │  ├─ ALdgpwsyicV1FN4MRQVYq0mORchQpIaVFhdilv8V
-│  │  │  ├─ bN8mkGxD9OBTFlsFCxdFUPpvaJHMqVUeya3rxn8P
-│  │  │  ├─ cCDRXlQBicOYguNITzfWuNODoRXlJ1sjkcJC5vv4
-│  │  │  ├─ e7rBuAKkl4nyTeKdDlJJcqP4BtQJuOUjUeSNrJeb
-│  │  │  ├─ F7ekqYwdn8oD8sQKjnBW1bcD0FItFZO7bOUeyYTP
-│  │  │  ├─ geYoUX8yqQNQM4GNvW83T9i3ZYfEBy4bXWEPXvIb
-│  │  │  ├─ hjjjwil2WxGWs126pceYfbnG05qRAQeNHSjaBjgv
-│  │  │  ├─ hzLtNfApPCeUuhe62UjUtZhkwyyAPyGIHR8iBaQ4
-│  │  │  ├─ IUMWCPA1176CUZdAVLhVTR491oMW3rIjS3AyKliL
-│  │  │  ├─ lps90BO5hCyze2ZEqt6iBP0Chd3kCWqNlu3gtBya
-│  │  │  ├─ NuEKu7oeWPMcZdmczYqwVfz1brQ4rjXlLk6usGRm
-│  │  │  ├─ pHpFw1y3ofAXBT89OSraLNFVbglmPxY3FCQT1vhV
-│  │  │  ├─ qTueWHA37nwdUIky4iVJFEtmMMaY6BMjBhAwlCCP
-│  │  │  ├─ sh0KIur7opyA6UhsHmmj3zxc9lrpbeSDE28QhS2g
-│  │  │  ├─ teiSSeIxKCZDKSDJKgjbWifkmVhgZnploVH15WjK
-│  │  │  ├─ THxuj2UI0HpB3CccccPwWPUOO6mcYlMK1iyvwPH6
-│  │  │  ├─ wX2Xxw5sUEzY53sMqKM958yQnLbZ3i8c7jZ9xgNz
-│  │  │  ├─ xseVMAIuvxea48jzbdPfIWBZ3cW5zRCoah9UhWgW
-│  │  │  └─ Z2E2X8xrjTxkCWe9LxIfJSHymIJ9h88BcAwpvYCd
+│  │  │  ├─ 57H8pxap4AcBtkhmv7kJDBwXWacKTev9sCw5hdIM
+│  │  │  ├─ 66NgkU58IvqLkp0SYHDxY5zYMHY45dloBew4vCJT
+│  │  │  ├─ cx4tnx4R8MCdlceczcBzA2YSiM81XYkRmuVX2Itx
+│  │  │  ├─ SeAvwPGSS478wZGAM12ZCbqNXjHn5NZvk59JKcT0
+│  │  │  ├─ tAscC1OYixvIVEz8nG1Cwc9GyxR8tIkqQB4K4RS1
+│  │  │  ├─ vJjkCj5Vh7jN4n5LuxZ7bE1isJNh8OqE5rcwqzdt
+│  │  │  └─ Z1lXDmT02UIstf8H0RJW6EHhWAdgZywQ5v4Bwt9E
 │  │  ├─ testing
 │  │  └─ views
 │  │     ├─ 10be9791d51511d266e5d751628ad7e5.php
@@ -411,6 +450,7 @@ Optimalisasi-SIBIKON
 │  │     ├─ 3503f29695a5395f8446afe4ff037aa8.php
 │  │     ├─ 36fbf176aa24b358f1c382862625cfde.php
 │  │     ├─ 39c54b8bb51eb62d7e080e268674cdc0.php
+│  │     ├─ 3c27990ce378551cbb3bfe469b3e6ade.php
 │  │     ├─ 3fd498130ddb509e63c8bb8b61d18cca.php
 │  │     ├─ 40a79a229747a08f50def5375954af67.php
 │  │     ├─ 423cdc138621083748391b67a7809c74.php
@@ -418,12 +458,270 @@ Optimalisasi-SIBIKON
 │  │     ├─ 45a6e8547c5bdc1095d694873cd56f66.php
 │  │     ├─ 4b054ad4cecb0924f285bf4c102a6b64.php
 │  │     ├─ 4dee1c02cc560c0c60fa16fbcda3b784.php
+│  │     ├─ 51a3b08c327adfc50a1dd9e7aa5fb643.php
 │  │     ├─ 523dfd42abadc0c4532bb61037aecd76.php
+│  │     ├─ 52afdbbf9f712bb40ba063819f020ab4.php
 │  │     ├─ 5659dfc7b45dcaa6e0149afe34ad58b2.php
 │  │     ├─ 568ff530236c926b66f325034a031fe2.php
 │  │     ├─ 5ea343be162095cae340d797ab811dc7.php
 │  │     ├─ 64201025f008e1556735cc7cf291eb1b.php
 │  │     ├─ 67ff661f13d0067a900510d532ce870d.php
+│  │     ├─ 71bfaba899c27c70e7a7f839f5b6a7d4.php
+│  │     ├─ 82f874c7f7b912504cfdefcbba0497f3.php
+│  │     ├─ 89732885253f59eaa66ba9f64c847276.php
+│  │     ├─ 8b7fe62e07ef77b6f5863723df0cf2a7.php
+│  │     ├─ 98e9485c238dadc603061ab01d908d38.php
+│  │     ├─ 9a46eb299241f5bfd8ce5f3fd5787498.php
+│  │     ├─ 9ada882d0e2a00d6f087e7e2413fa37c.php
+│  │     ├─ 9ee1f594419b5152ab1e38f54cb12324.php
+│  │     ├─ a420cae43e4314ae828a091a0b8d51ca.php
+│  │     ├─ a9dcdde068894a7dd6c2e633733e1c14.php
+│  │     ├─ aff79c8aa739a82e9b0e82abadcbe214.php
+│  │     ├─ b09631cc40fec155cbd6fe962d6335cb.php
+│  │     ├─ b8b2e1121f0e22d5ac9fcbbf6e223e5c.php
+│  │     ├─ bfccf226d6efb4714f2d15ba53c8085c.php
+│  │     ├─ c02bbf5a5aa7b1e320433682f2929800.php
+│  │     ├─ c56e602126d0d0d74648ccf12526dabc.php
+│  │     ├─ c5bd53970249912dac89eff7b87dc588.php
+│  │     ├─ d121be29b396c13724e0f49115ac398c.php
+│  │     ├─ d1cd00aab2a75c4d922134d157c12c9e.php
+│  │     ├─ d2ef25df0c36ebb60ce39e48388a15d4.php
+│  │     ├─ d417fb981bb43c1c5c76c298e68e5781.php
+│  │     ├─ e21c4f1d804a9025bd70626353c98654.php
+│  │     ├─ e25b0135aa736f1f99ae839abc45e5e9.php
+│  │     ├─ e56b5263ea506d2b481d909c94a7d397.php
+│  │     ├─ eaff4365b6bcc51dd40087cd4edfa6fe.php
+│  │     ├─ eb90f3149ce67c8f897087de8ce8fae7.php
+│  │     ├─ f124f4245b86202975999b048745a4d8.php
+│  │     └─ f6a36d80d87267be4d1ad5123acca7c3.php
+│  └─ logs
+├─ tailwind.config.js
+├─ tests
+│  ├─ Feature
+│  │  └─ ExampleTest.php
+│  ├─ TestCase.php
+│  └─ Unit
+│     └─ ExampleTest.php
+└─ vite.config.js
+
+```
+```
+Optimalisasi-SIBIKON
+├─ .editorconfig
+├─ .npmrc
+├─ app
+│  ├─ Console
+│  │  └─ Commands
+│  │     ├─ ImportBujkSbuExcel.php
+│  │     └─ ImportTkk.php
+│  ├─ Http
+│  │  ├─ Controllers
+│  │  │  ├─ Admin
+│  │  │  │  ├─ BujkController.php
+│  │  │  │  └─ DashboardController.php
+│  │  │  ├─ Auth
+│  │  │  │  └─ AuthController.php
+│  │  │  └─ Controller.php
+│  │  └─ Requests
+│  │     └─ Admin
+│  │        └─ Bujk
+│  │           ├─ BujkFormRequest.php
+│  │           └─ BujkImportRequest.php
+│  ├─ Models
+│  │  ├─ Bujk.php
+│  │  ├─ Tkk.php
+│  │  └─ User.php
+│  ├─ Providers
+│  │  └─ AppServiceProvider.php
+│  ├─ Services
+│  │  └─ Bujk
+│  │     └─ BujkImportService.php
+│  └─ Support
+│     ├─ BujkDataNormalizer.php
+│     └─ SimpleSpreadsheetReader.php
+├─ artisan
+├─ bootstrap
+│  ├─ app.php
+│  ├─ cache
+│  │  ├─ packages.php
+│  │  └─ services.php
+│  └─ providers.php
+├─ composer.json
+├─ composer.lock
+├─ config
+│  ├─ app.php
+│  ├─ auth.php
+│  ├─ bujk.php
+│  ├─ cache.php
+│  ├─ database.php
+│  ├─ filesystems.php
+│  ├─ logging.php
+│  ├─ mail.php
+│  ├─ queue.php
+│  ├─ services.php
+│  └─ session.php
+├─ database
+│  ├─ database.sqlite
+│  ├─ factories
+│  │  └─ UserFactory.php
+│  ├─ migrations
+│  │  ├─ 0001_01_01_000000_create_users_table.php
+│  │  ├─ 0001_01_01_000001_create_cache_table.php
+│  │  ├─ 0001_01_01_000002_create_jobs_table.php
+│  │  ├─ 2026_04_22_123008_create_bujk_table.php
+│  │  ├─ 2026_04_27_034140_create_bujk_sbu_table.php
+│  │  ├─ 2026_04_27_065022_add_snapshot_columns_to_bujk_sbu_table.php
+│  │  ├─ 2026_04_27_073535_alter_bujk_location_columns_to_text.php
+│  │  ├─ 2026_04_30_074425_create_tkk_table.php
+│  │  ├─ 2026_05_11_053457_rebuild_bujk_columns_and_drop_bujk_sbu_table.php
+│  │  └─ 2026_05_11_072308_add_website_to_bujk_table.php
+│  └─ seeders
+│     └─ DatabaseSeeder.php
+├─ database_sibikon.sql
+├─ package-lock.json
+├─ package.json
+├─ phpunit.xml
+├─ postcss.config.js
+├─ public
+│  ├─ .htaccess
+│  ├─ favicon.ico
+│  ├─ files
+│  │  ├─ renja.pdf
+│  │  └─ sop-bikon.pdf
+│  ├─ images
+│  │  ├─ berita-1.png
+│  │  ├─ berita-2.png
+│  │  ├─ berita-3.png
+│  │  ├─ berita-utama.jpg
+│  │  ├─ beritagrid-1.png
+│  │  ├─ beritagrid-2.png
+│  │  ├─ beritagrid-3.png
+│  │  ├─ beritagrid-4.png
+│  │  ├─ beritagrid-5.png
+│  │  ├─ beritagrid-6.png
+│  │  ├─ gedung-dinas-PUPR.jpg
+│  │  ├─ layanan-1.png
+│  │  ├─ layanan-10.png
+│  │  ├─ layanan-11.png
+│  │  ├─ layanan-2.png
+│  │  ├─ layanan-3.png
+│  │  ├─ layanan-4.png
+│  │  ├─ layanan-5.png
+│  │  ├─ layanan-6.png
+│  │  ├─ layanan-7.png
+│  │  ├─ layanan-8.png
+│  │  ├─ layanan-9.png
+│  │  ├─ logo-sibikon.png
+│  │  ├─ poster-pelatihan.jpg
+│  │  └─ struktur.png
+│  ├─ index.php
+│  └─ robots.txt
+├─ README.md
+├─ resources
+│  ├─ css
+│  │  └─ app.css
+│  ├─ js
+│  │  └─ app.js
+│  └─ views
+│     ├─ admin
+│     │  ├─ bujk
+│     │  │  ├─ index.blade.php
+│     │  │  └─ partials
+│     │  │     └─ table.blade.php
+│     │  ├─ dashboard-tkk.blade.php
+│     │  ├─ dashboard.blade.php
+│     │  ├─ partials
+│     │  │  ├─ sidebar-desktop-menu.blade.php
+│     │  │  └─ sidebar-mobile-menu.blade.php
+│     │  └─ placeholder.blade.php
+│     ├─ components
+│     │  └─ dashboard-chart-card.blade.php
+│     ├─ layouts
+│     │  ├─ admin.blade.php
+│     │  └─ app.blade.php
+│     ├─ pages
+│     │  ├─ beranda.blade.php
+│     │  ├─ berita.blade.php
+│     │  ├─ detail-berita.blade.php
+│     │  ├─ fungsi
+│     │  │  ├─ pemberdayaan
+│     │  │  │  ├─ pelatihan-ahli.blade.php
+│     │  │  │  └─ tabel-tkk.blade.php
+│     │  │  ├─ pengaturan
+│     │  │  │  ├─ daftar-sosil.blade.php
+│     │  │  │  ├─ forum.blade.php
+│     │  │  │  ├─ rakor.blade.php
+│     │  │  │  ├─ rantai-pasok.blade.php
+│     │  │  │  └─ sosialisasi.blade.php
+│     │  │  └─ pengawasan
+│     │  │     ├─ tertib-pemanfaatan.blade.php
+│     │  │     ├─ tertib-penyelenggaraan.blade.php
+│     │  │     └─ tertib-usaha.blade.php
+│     │  ├─ kontak.blade.php
+│     │  ├─ layanan
+│     │  │  ├─ asosiasi-perusahaan.blade.php
+│     │  │  ├─ asosiasi-profesi.blade.php
+│     │  │  └─ penyedia-jasa.blade.php
+│     │  ├─ login.blade.php
+│     │  ├─ profil
+│     │  │  ├─ sop-renja.blade.php
+│     │  │  ├─ struktur.blade.php
+│     │  │  └─ tentang-kami.blade.php
+│     │  └─ regist.blade.php
+│     └─ welcome.blade.php
+├─ routes
+│  ├─ console.php
+│  └─ web.php
+├─ storage
+│  ├─ app
+│  │  ├─ imports
+│  │  │  ├─ Data BUJK dan SBU Kaltim (2Sept25).xlsx
+│  │  │  └─ tkk_data.xlsx
+│  │  ├─ private
+│  │  │  └─ bujk
+│  │  │     └─ latest-data-date.txt
+│  │  └─ public
+│  ├─ framework
+│  │  ├─ cache
+│  │  │  └─ data
+│  │  │     └─ 17
+│  │  │        └─ ac
+│  │  │           └─ 17ac641564bfe2eb176a10406a8490f0e2bc08e2
+│  │  ├─ sessions
+│  │  │  ├─ 0mvRubasaSapxJEX9med7YKuz8Jme4Gl0dZgtUUa
+│  │  │  ├─ mIU8BFYecimr7HLACGS43ddBtA1A7RsmknUp49aM
+│  │  │  ├─ sI1OKVsZv0xqqIRhqXKdSCLPOvF3jOyWY5JNcZqI
+│  │  │  └─ Y5JxvJ8LT77efbmEikkX9mpQyLqLR0bn2g95ipif
+│  │  ├─ testing
+│  │  └─ views
+│  │     ├─ 10be9791d51511d266e5d751628ad7e5.php
+│  │     ├─ 151e28a0c1dcfc2f65a0c75279a6d7c7.php
+│  │     ├─ 156e474ee2ffe88eb36e4e9b903aea31.php
+│  │     ├─ 1e39d3d4bbee8490b4dc3e3c23aa861b.php
+│  │     ├─ 212d2643a9577c6861e5fd8b3d0d9147.php
+│  │     ├─ 26be0db4eb47158f259fdbad66176fdb.php
+│  │     ├─ 2e6b6c1ad7ff6d071af9b173e78b92bd.php
+│  │     ├─ 2ff031ee636993a7b7bea36d8023eb18.php
+│  │     ├─ 33a69ad861bd4963881a8515f512ba6f.php
+│  │     ├─ 3503f29695a5395f8446afe4ff037aa8.php
+│  │     ├─ 36fbf176aa24b358f1c382862625cfde.php
+│  │     ├─ 39c54b8bb51eb62d7e080e268674cdc0.php
+│  │     ├─ 3a103ad09bdd56bc18de399b3f93f0cd.php
+│  │     ├─ 3c27990ce378551cbb3bfe469b3e6ade.php
+│  │     ├─ 3fd498130ddb509e63c8bb8b61d18cca.php
+│  │     ├─ 40a79a229747a08f50def5375954af67.php
+│  │     ├─ 423cdc138621083748391b67a7809c74.php
+│  │     ├─ 43bea8d76053989a215e099d9ae47391.php
+│  │     ├─ 45a6e8547c5bdc1095d694873cd56f66.php
+│  │     ├─ 4b054ad4cecb0924f285bf4c102a6b64.php
+│  │     ├─ 4dee1c02cc560c0c60fa16fbcda3b784.php
+│  │     ├─ 51a3b08c327adfc50a1dd9e7aa5fb643.php
+│  │     ├─ 523dfd42abadc0c4532bb61037aecd76.php
+│  │     ├─ 52afdbbf9f712bb40ba063819f020ab4.php
+│  │     ├─ 5659dfc7b45dcaa6e0149afe34ad58b2.php
+│  │     ├─ 64201025f008e1556735cc7cf291eb1b.php
+│  │     ├─ 67ff661f13d0067a900510d532ce870d.php
+│  │     ├─ 71bfaba899c27c70e7a7f839f5b6a7d4.php
 │  │     ├─ 82f874c7f7b912504cfdefcbba0497f3.php
 │  │     ├─ 89732885253f59eaa66ba9f64c847276.php
 │  │     ├─ 8b7fe62e07ef77b6f5863723df0cf2a7.php
@@ -443,6 +741,7 @@ Optimalisasi-SIBIKON
 │  │     ├─ d2ef25df0c36ebb60ce39e48388a15d4.php
 │  │     ├─ d417fb981bb43c1c5c76c298e68e5781.php
 │  │     ├─ e21c4f1d804a9025bd70626353c98654.php
+│  │     ├─ e25b0135aa736f1f99ae839abc45e5e9.php
 │  │     ├─ e56b5263ea506d2b481d909c94a7d397.php
 │  │     ├─ eaff4365b6bcc51dd40087cd4edfa6fe.php
 │  │     ├─ eb90f3149ce67c8f897087de8ce8fae7.php
