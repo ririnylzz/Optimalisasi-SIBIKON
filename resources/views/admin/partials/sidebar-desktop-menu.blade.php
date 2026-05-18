@@ -75,22 +75,7 @@
                     </div>
                 </div>
             </div>
-
-        <div class="mb-6">
-            <p
-                x-text="(sidebarPinned || sidebarHovered) ? 'Data Master' : '•••'"
-                :class="(sidebarPinned || sidebarHovered) ? 'text-left px-2' : 'text-center justify-center'"
-                class="{{ $sectionTitleClass }} "
-            ></p>
-
-            <div class="space-y-1.5">
-                <a href="{{ route('admin.pengguna') }}" class="{{ $menuBase }} {{ request()->routeIs('admin.pengguna') ? $menuActive : $menuIdle }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5V18a4 4 0 00-5-3.87M17 20H7m10 0v-2a5.002 5.002 0 00-9.288 0M15 7a3 3 0 11-6 0" /></svg>
-                    <span x-show="sidebarPinned || sidebarHovered">Pengguna</span>
-                </a>
-            </div>
-        </div>
-    </div>
+            
     <div class="mb-6">
         <p
             x-text="(sidebarPinned || sidebarHovered) ? 'Data Master' : '•••'"
