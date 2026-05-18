@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\BujkController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Frontend\PenyediaJasaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -121,11 +122,7 @@ Route::get('/layanan/asosiasi-profesi', function () {
     ]);
 })->name('asosiasi-profesi');
 
-Route::get('/layanan/penyedia-jasa', function () {
-    return view('pages.layanan.penyedia-jasa', [
-        'penyediaJasa' => [],
-    ]);
-})->name('penyedia-jasa');
+Route::get('/layanan/penyedia-jasa', [PenyediaJasaController::class, 'index'])->name('penyedia-jasa');
 
 Route::prefix('admin')
     ->name('admin.')
