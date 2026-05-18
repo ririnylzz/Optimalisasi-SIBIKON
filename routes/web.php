@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\BujkController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Layanan\AsosiasiPerusahaanController;
+use App\Http\Controllers\Layanan\AsosiasiProfesiController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -109,17 +111,11 @@ Route::get('/fungsi/pengawasan/tertib-pemanfaatan', function () {
     ]);
 })->name('tertib-pemanfaatan');
 
-Route::get('/layanan/asosiasi-perusahaan', function () {
-    return view('pages.layanan.asosiasi-perusahaan', [
-        'asosiasiPerusahaan' => [],
-    ]);
-})->name('asosiasi-perusahaan');
+Route::get('/layanan/asosiasi-perusahaan', [AsosiasiPerusahaanController::class, 'index'])
+    ->name('asosiasi-perusahaan');
 
-Route::get('/layanan/asosiasi-profesi', function () {
-    return view('pages.layanan.asosiasi-profesi', [
-        'asosiasiProfesi' => [],
-    ]);
-})->name('asosiasi-profesi');
+Route::get('/layanan/asosiasi-profesi', [AsosiasiProfesiController::class, 'index'])
+    ->name('asosiasi-profesi');
 
 Route::get('/layanan/penyedia-jasa', function () {
     return view('pages.layanan.penyedia-jasa', [
