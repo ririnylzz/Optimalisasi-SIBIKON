@@ -3,10 +3,86 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\BujkController;
 use App\Http\Controllers\Admin\DashboardController;
+use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
+    $kodeKabupaten = [
+        '64.01' => 'Paser',
+        '64.02' => 'Kutai Kartanegara',
+        '64.03' => 'Berau',
+        '64.07' => 'Kutai Barat',
+        '64.08' => 'Kutai Timur',
+        '64.09' => 'Penajam Paser Utara',
+        '64.11' => 'Mahakam Ulu',
+        '64.71' => 'Kota Balikpapan',
+        '64.72' => 'Kota Samarinda',
+        '64.74' => 'Kota Bontang',
+    ];
+
+    $bujkRows = DB::table('bujk')
+        ->select([
+            'id',
+            'nib',
+            'nama_bujk',
+            'jenis_bujk',
+            'alamat_bujk',
+            'kab_kota_bujk',
+            'provinsi_bujk',
+            'telp_bujk',
+            'email_bujk',
+            'website_bujk',
+            'is_deleted',
+        ])
+        ->where('is_deleted', 0)
+        ->whereIn('kab_kota_bujk', array_keys($kodeKabupaten))
+        ->get()
+        ->map(function ($row) use ($kodeKabupaten) {
+            return [
+                'id' => $row->id,
+                'nib' => $row->nib,
+                'nama_bu' => $row->nama_bujk,
+                'jenis_usaha' => $row->jenis_bujk,
+                'alamat' => $row->alamat_bujk,
+                'kabupaten' => $kodeKabupaten[$row->kab_kota_bujk] ?? $row->kab_kota_bujk,
+                'kode_kabupaten' => $row->kab_kota_bujk,
+                'provinsi' => 'Kalimantan Timur',
+                'telepon' => $row->telp_bujk,
+                'email' => $row->email_bujk,
+                'website' => $row->website_bujk,
+            ];
+        })
+        ->values();
+
+    $gisSummary = $bujkRows
+        ->groupBy('kabupaten')
+        ->map(function ($items, $kabupaten) {
+            return [
+                'kabupaten' => $kabupaten,
+                'total' => $items->count(),
+            ];
+        })
+        ->values();
+
+    $kabupatenOptions = collect($kodeKabupaten)->values()->sort()->values();
+
+    $jenisUsahaOptions = $bujkRows
+        ->pluck('jenis_usaha')
+        ->filter()
+        ->flatMap(function ($jenis) {
+            return collect(explode(',', $jenis))
+                ->map(fn($item) => trim($item))
+                ->filter();
+        })
+        ->unique()
+        ->sort()
+        ->values();
+
     return view('welcome', [
-        'page' => 'beranda'
+        'page' => 'beranda',
+        'gisSummary' => $gisSummary,
+        'bujkData' => $bujkRows,
+        'kabupatenOptions' => $kabupatenOptions,
+        'jenisUsahaOptions' => $jenisUsahaOptions,
     ]);
 })->name('beranda');
 
@@ -175,7 +251,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::view('/peraturan', 'admin.placeholder', ['title' => 'Peraturan'])->name('peraturan');
 
     Route::get('/tenaga-kerja-konstruksi', [DashboardController::class, 'tkk'])
-    ->name('tenaga-kerja-konstruksi');
+        ->name('tenaga-kerja-konstruksi');
     Route::view('/pelatihan-sertifikasi', 'admin.placeholder', ['title' => 'Pelatihan / Sertifikasi'])->name('pelatihan-sertifikasi');
 
     Route::view('/tertib-usaha', 'admin.placeholder', ['title' => 'Tertib Usaha'])->name('tertib-usaha');

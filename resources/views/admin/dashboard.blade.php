@@ -28,44 +28,44 @@
 
     <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
         @foreach ($kpi as $index => $item)
-            <div class="group relative overflow-hidden rounded-[26px] border border-white/10 bg-gradient-to-br from-[#142B67] via-[#1E3A7A] to-[#2F49A8] p-6 text-white shadow-[0_18px_45px_rgba(20,43,103,0.16)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(20,43,103,0.22)]">
-                <div class="absolute -right-12 -top-12 h-36 w-36 rounded-full bg-white/10 transition duration-300 group-hover:scale-125"></div>
-                <div class="absolute -bottom-14 left-8 h-32 w-32 rounded-full {{ $index === 0 ? 'bg-[#FACC15]/20' : 'bg-[#22C55E]/20' }} blur-2xl"></div>
+        <div class="group relative overflow-hidden rounded-[26px] border border-white/10 bg-gradient-to-br from-[#142B67] via-[#1E3A7A] to-[#2F49A8] p-6 text-white shadow-[0_18px_45px_rgba(20,43,103,0.16)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(20,43,103,0.22)]">
+            <div class="absolute -right-12 -top-12 h-36 w-36 rounded-full bg-white/10 transition duration-300 group-hover:scale-125"></div>
+            <div class="absolute -bottom-14 left-8 h-32 w-32 rounded-full {{ $index === 0 ? 'bg-[#FACC15]/20' : 'bg-[#22C55E]/20' }} blur-2xl"></div>
 
-                <div class="relative z-10 flex items-center justify-between gap-6">
-                    <div class="flex items-center gap-4">
-                        <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/12 ring-1 ring-white/15">
-                            @if($item['label'] === 'BUJK')
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-[#FACC15]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 21V5a2 2 0 012-2h8a2 2 0 012 2v16M4 21h16M8 7h2m-2 4h2m-2 4h2m6-8h2m-2 4h2m-2 4h2" />
-                                </svg>
-                            @else
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-[#FACC15]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6M7 4h10a2 2 0 012 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 012-2z" />
-                                </svg>
-                            @endif
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-bold uppercase tracking-[0.22em] text-blue-100/65">
-                                {{ $item['label'] }}
-                            </p>
-                            <h3 class="mt-1 text-lg font-extrabold text-white">
-                                {{ $item['title'] }}
-                            </h3>
-                        </div>
+            <div class="relative z-10 flex items-center justify-between gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/12 ring-1 ring-white/15">
+                        @if($item['label'] === 'BUJK')
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-[#FACC15]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 21V5a2 2 0 012-2h8a2 2 0 012 2v16M4 21h16M8 7h2m-2 4h2m-2 4h2m6-8h2m-2 4h2m-2 4h2" />
+                        </svg>
+                        @else
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-[#FACC15]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6M7 4h10a2 2 0 012 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 012-2z" />
+                        </svg>
+                        @endif
                     </div>
 
-                    <div class="text-right">
-                        <p class="text-3xl font-black tracking-tight text-[#FACC15] md:text-4xl">
-                            {{ $item['value'] }}
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-[0.22em] text-blue-100/65">
+                            {{ $item['label'] }}
                         </p>
-                        <p class="mt-1 text-xs font-medium text-blue-100/70">
-                            total data
-                        </p>
+                        <h3 class="mt-1 text-lg font-extrabold text-white">
+                            {{ $item['title'] }}
+                        </h3>
                     </div>
                 </div>
+
+                <div class="text-right">
+                    <p class="text-3xl font-black tracking-tight text-[#FACC15] md:text-4xl">
+                        {{ $item['value'] }}
+                    </p>
+                    <p class="mt-1 text-xs font-medium text-blue-100/70">
+                        total data
+                    </p>
+                </div>
             </div>
+        </div>
         @endforeach
     </div>
     {{-- Row 1 --}}
@@ -130,7 +130,9 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false },
+                    legend: {
+                        display: false
+                    },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
@@ -143,7 +145,9 @@
                     x: {
                         ticks: {
                             color: textColor,
-                            font: { size: 11 },
+                            font: {
+                                size: 11
+                            },
                             maxRotation: 0,
                             minRotation: 0,
                             callback: function(value) {
@@ -153,13 +157,17 @@
                                 return label.length > 9 ? label.substring(0, 9) + '…' : label;
                             }
                         },
-                        grid: { color: gridColor }
+                        grid: {
+                            color: gridColor
+                        }
                     },
                     y: {
                         beginAtZero: true,
                         ticks: {
                             color: textColor,
-                            font: { size: 11 },
+                            font: {
+                                size: 11
+                            },
                             callback: function(value) {
                                 return horizontal ? this.getLabelForValue(value) : formatNumber(value);
                             }
@@ -199,7 +207,9 @@
                             usePointStyle: true,
                             pointStyle: 'circle',
                             padding: 14,
-                            font: { size: 12 }
+                            font: {
+                                size: 12
+                            }
                         }
                     },
                     tooltip: {
@@ -218,55 +228,56 @@
 
     barChart(
         'associationChart',
-        @json(collect($association)->pluck('label')),
-        @json(collect($association)->pluck('value')),
+        @json(collect($association) - > pluck('label')),
+        @json(collect($association) - > pluck('value')),
         true
     );
 
     pieChart(
         'jenisBujkChart',
-        @json(collect($jenisBujk)->pluck('label')),
-        @json(collect($jenisBujk)->pluck('value'))
+        @json(collect($jenisBujk) - > pluck('label')),
+        @json(collect($jenisBujk) - > pluck('value'))
     );
 
     pieChart(
         'jenisSbuChart',
-        @json(collect($jenisSbu)->pluck('label')),
-        @json(collect($jenisSbu)->pluck('value'))
+        @json(collect($jenisSbu) - > pluck('label')),
+        @json(collect($jenisSbu) - > pluck('value'))
     );
 
     barChart(
         'pelaksanaChart',
-        @json(collect($pelaksanaSbu)->pluck('label')),
-        @json(collect($pelaksanaSbu)->pluck('value')),
+        @json(collect($pelaksanaSbu) - > pluck('label')),
+        @json(collect($pelaksanaSbu) - > pluck('value')),
         false
     );
 
     barChart(
         'kbliChart',
-        @json(collect($kbliSbu)->pluck('label')),
-        @json(collect($kbliSbu)->pluck('value')),
+        @json(collect($kbliSbu) - > pluck('label')),
+        @json(collect($kbliSbu) - > pluck('value')),
         false
     );
 
     pieChart(
         'qualificationChart',
-        @json(collect($kualifikasiSbu)->pluck('label')),
-        @json(collect($kualifikasiSbu)->pluck('value'))
+        @json(collect($kualifikasiSbu) - > pluck('label')),
+        @json(collect($kualifikasiSbu) - > pluck('value'))
     );
 
     barChart(
         'subKlasifikasiChart',
-        @json(collect($subKlasifikasiSbu)->pluck('label')),
-        @json(collect($subKlasifikasiSbu)->pluck('value')),
+        @json(collect($subKlasifikasiSbu) - > pluck('label')),
+        @json(collect($subKlasifikasiSbu) - > pluck('value')),
         false
     );
 
     barChart(
         'sifatChart',
-        @json(collect($sifatSbu)->pluck('label')),
-        @json(collect($sifatSbu)->pluck('value')),
+        @json(collect($sifatSbu) - > pluck('label')),
+        @json(collect($sifatSbu) - > pluck('value')),
         false
     );
+
 </script>
 @endpush
