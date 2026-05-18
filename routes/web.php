@@ -120,19 +120,6 @@ Route::get('/fungsi/pengawasan/tertib-pemanfaatan', function () {
     ]);
 })->name('tertib-pemanfaatan');
 
-/*
-|--------------------------------------------------------------------------
-| Layanan Publik
-|--------------------------------------------------------------------------
-|
-| Catatan:
-| - Route asosiasi tetap diarahkan ke controller kalau controller-nya tersedia.
-| - Kalau controller asosiasi dari branch lain memang sudah dibuat, data/logic-nya aman.
-| - Route penyedia jasa diarahkan ke PenyediaJasaController supaya ambil data BUJK
-|   dari tabel yang sama dengan halaman admin.
-|
-*/
-
 Route::get('/layanan/asosiasi-perusahaan', [AsosiasiPerusahaanController::class, 'index'])
     ->name('asosiasi-perusahaan');
 
