@@ -3,12 +3,26 @@
 namespace App\Http\Controllers\Layanan;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class AsosiasiProfesiController extends Controller
 {
-    public function index()
+    protected array $allowedPerPage = [10, 25, 50];
+
+    public function index(Request $request)
     {
-        $asosiasiProfesi = [
+        // TAMBAHKAN INI
+        $search = strtolower(trim($request->query('search', '')));
+
+        // TAMBAHKAN INI
+        $perPage = (int) $request->query('per_page', 10);
+
+        if (!in_array($perPage, $this->allowedPerPage)) {
+            $perPage = 10;
+        }
+
+        // collect()
+        $asosiasiProfesi = collect([
             [
                 'nama_asosiasi' => 'Ikatan Arsitek Indonesia',
                 'singkatan' => 'IAI',
@@ -30,8 +44,27 @@ class AsosiasiProfesiController extends Controller
                 'telepon' => '(0541) 556677',
                 'email' => 'haki@gmail.com',
             ],
-        ];
+        ]);
 
-        return view('pages.layanan.asosiasi-profesi', compact('asosiasiProfesi'));
+        // FILTER SEARCH
+        if ($search !== '') {
+            $asosiasiProfesi = $asosiasiProfesi->filter(function ($item) use ($search) {
+                return str_contains(strtolower($item['nama_asosiasi']), $search)
+                    || str_contains(strtolower($item['singkatan']), $search)
+                    || str_contains(strtolower($item['alamat']), $search)
+                    || str_contains(strtolower($item['telepon']), $search)
+                    || str_contains(strtolower($item['email']), $search);
+            });
+        }
+
+        // LIMIT DATA
+        $asosiasiProfesi = $asosiasiProfesi->take($perPage);
+
+        return view('pages.layanan.asosiasi-profesi', [
+            'asosiasiProfesi' => $asosiasiProfesi,
+            'allowedPerPage' => $this->allowedPerPage,
+            'perPage' => $perPage,
+            'search' => $request->query('search', ''),
+        ]);
     }
 }

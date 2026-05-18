@@ -28,9 +28,12 @@
                     <select
                         id="entries-select"
                         class="rounded-lg border border-[#dfe5ef] bg-white px-3 py-2 text-sm text-slate-600 outline-none focus:border-[#293F81]">
-                        <option value="10">10</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
+
+                        @foreach ($allowedPerPage as $option)
+                        <option value="{{ $option }}" @selected($perPage==$option)>
+                            {{ $option }}
+                        </option>
+                        @endforeach
                     </select>
 
                     <span>entries</span>
@@ -42,6 +45,7 @@
                     <input
                         id="search-input"
                         type="text"
+                        value="{{ $search }}"
                         class="w-full rounded-lg border border-[#dfe5ef] px-4 py-2 text-sm outline-none focus:border-[#293F81] md:w-72">
                 </div>
             </div>
@@ -62,39 +66,39 @@
 
                     <tbody id="asosiasi-table-body" class="divide-y divide-[#e6ebf2] text-sm text-slate-600">
                         @forelse ($asosiasiPerusahaan ?? [] as $asosiasi)
-                            <tr class="asosiasi-row align-top">
-                                <td class="px-5 py-6 font-semibold text-slate-600">
-                                    {{ $loop->iteration }}.
-                                </td>
+                        <tr class="asosiasi-row align-top">
+                            <td class="px-5 py-6 font-semibold text-slate-600">
+                                {{ $loop->iteration }}.
+                            </td>
 
-                                <td class="px-5 py-6">
-                                    <span class="font-bold leading-7 text-blue-600">
-                                        {{ data_get($asosiasi, 'nama_asosiasi') }}
-                                    </span>
-                                </td>
+                            <td class="px-5 py-6">
+                                <span class="font-bold leading-7 text-blue-600">
+                                    {{ data_get($asosiasi, 'nama_asosiasi') }}
+                                </span>
+                            </td>
 
-                                <td class="px-5 py-6 font-bold uppercase text-slate-600">
-                                    {{ data_get($asosiasi, 'singkatan') }}
-                                </td>
+                            <td class="px-5 py-6 font-bold uppercase text-slate-600">
+                                {{ data_get($asosiasi, 'singkatan') }}
+                            </td>
 
-                                <td class="px-5 py-6 leading-7">
-                                    {{ data_get($asosiasi, 'alamat') }}
-                                </td>
+                            <td class="px-5 py-6 leading-7">
+                                {{ data_get($asosiasi, 'alamat') }}
+                            </td>
 
-                                <td class="px-5 py-6 leading-7">
-                                    {{ data_get($asosiasi, 'telepon') }}
-                                </td>
+                            <td class="px-5 py-6 leading-7">
+                                {{ data_get($asosiasi, 'telepon') }}
+                            </td>
 
-                                <td class="px-5 py-6 leading-7">
-                                    {{ data_get($asosiasi, 'email') }}
-                                </td>
-                            </tr>
+                            <td class="px-5 py-6 leading-7">
+                                {{ data_get($asosiasi, 'email') }}
+                            </td>
+                        </tr>
                         @empty
-                            <tr id="empty-row">
-                                <td colspan="6" class="px-5 py-10 text-center text-slate-500">
-                                    Data asosiasi perusahaan belum tersedia.
-                                </td>
-                            </tr>
+                        <tr id="empty-row">
+                            <td colspan="6" class="px-5 py-10 text-center text-slate-500">
+                                Data asosiasi perusahaan belum tersedia.
+                            </td>
+                        </tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -134,47 +138,27 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.getElementById('search-input');
-        const tableInfo = document.getElementById('table-info');
-        const rows = Array.from(document.querySelectorAll('.asosiasi-row'));
-        const emptyRow = document.getElementById('empty-row');
+        const entriesSelect = document.getElementById('entries-select');
 
-        function updateTableInfo(visibleRows) {
-            if (rows.length === 0) {
-                tableInfo.textContent = 'Showing 0 to 0 of 0 entries';
-                return;
-            }
+        function updateUrl() {
+            const params = new URLSearchParams();
 
-            const visibleCount = visibleRows.length;
+            params.set('search', searchInput.value);
+            params.set('per_page', entriesSelect.value);
 
-            if (visibleCount === 0) {
-                tableInfo.textContent = `Showing 0 to 0 of ${rows.length} entries`;
-            } else {
-                tableInfo.textContent = `Showing 1 to ${visibleCount} of ${rows.length} entries`;
-            }
+            window.location.href =
+                `${window.location.pathname}?${params.toString()}`;
         }
 
-        function filterTable() {
-            const keyword = searchInput.value.toLowerCase();
+        let searchTimer;
 
-            const visibleRows = rows.filter(function (row) {
-                const rowText = row.textContent.toLowerCase();
-                const isMatch = rowText.includes(keyword);
+        searchInput.addEventListener('input', function () {
+            clearTimeout(searchTimer);
 
-                row.classList.toggle('hidden', !isMatch);
+            searchTimer = setTimeout(updateUrl, 300);
+        });
 
-                return isMatch;
-            });
-
-            if (emptyRow) {
-                emptyRow.classList.toggle('hidden', rows.length !== 0);
-            }
-
-            updateTableInfo(visibleRows);
-        }
-
-        filterTable();
-
-        searchInput.addEventListener('input', filterTable);
+        entriesSelect.addEventListener('change', updateUrl);
     });
 </script>
 @endpush
