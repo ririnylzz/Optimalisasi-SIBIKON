@@ -23,11 +23,29 @@ class DashboardController extends Controller
         $duplicateNib = $activeRows
             ->whereNotNull('nib')
             ->groupBy('nib')
-            ->filter(fn ($items) => $items->count() > 1)
+            ->filter(fn($items) => $items->count() > 1)
             ->count();
 
-        $konstruksiCount = $activeRows->filter(fn ($row) => str_contains(strtolower($row->jenis_usaha ?? ''), 'konstruksi'))->count();
-        $konsultanCount = $activeRows->filter(fn ($row) => str_contains(strtolower($row->jenis_usaha ?? ''), 'konsultan'))->count();
+        $konstruksiCount = $activeRows->filter(fn($row) => str_contains(strtolower($row->jenis_usaha ?? ''), 'konstruksi'))->count();
+        $konsultanCount = $activeRows->filter(fn($row) => str_contains(strtolower($row->jenis_usaha ?? ''), 'konsultan'))->count();
+
+        $gisBujk = $activeRows
+            ->filter(fn($row) => filled($row->kabupaten))
+            ->groupBy(fn($row) => trim($row->kabupaten))
+            ->map(function ($items, $kabupaten) {
+                return [
+                    'kabupaten' => $kabupaten,
+                    'total' => $items->count(),
+                    'items' => $items->map(fn($row) => [
+                        'nama_bu' => $row->nama_bu,
+                        'nib' => $row->nib,
+                        'jenis_usaha' => $row->jenis_usaha,
+                        'kabupaten' => $row->kabupaten,
+                        'propinsi' => $row->propinsi,
+                    ])->values(),
+                ];
+            })
+            ->values();
 
         $bujkStats = [
             [
@@ -61,7 +79,7 @@ class DashboardController extends Controller
         });
 
         $registrationChart = [
-            'labels' => $months->map(fn ($month) => $month->translatedFormat('M y'))->values(),
+            'labels' => $months->map(fn($month) => $month->translatedFormat('M y'))->values(),
             'values' => $months->map(function ($month) use ($activeRows) {
                 return $activeRows->filter(function ($row) use ($month) {
                     if (!$row->created_at) return false;
