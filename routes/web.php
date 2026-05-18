@@ -3,9 +3,9 @@
 use App\Http\Controllers\Admin\BujkController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Frontend\PenyediaJasaController;
 use App\Http\Controllers\Layanan\AsosiasiPerusahaanController;
 use App\Http\Controllers\Layanan\AsosiasiProfesiController;
+use App\Http\Controllers\Layanan\PenyediaJasaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -119,6 +119,12 @@ Route::get('/fungsi/pengawasan/tertib-pemanfaatan', function () {
         'page' => 'tertib-pemanfaatan',
     ]);
 })->name('tertib-pemanfaatan');
+
+/*
+|--------------------------------------------------------------------------
+| Layanan Publik
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/layanan/asosiasi-perusahaan', [AsosiasiPerusahaanController::class, 'index'])
     ->name('asosiasi-perusahaan');
