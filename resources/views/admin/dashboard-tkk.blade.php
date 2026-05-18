@@ -9,48 +9,96 @@
     <div class="sibikon-card overflow-hidden rounded-[24px] border border-slate-200 bg-white">
         <div class="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-blue-50/60 px-6 py-4">
             <h3 class="text-lg font-extrabold text-slate-900">Filter Dashboard TKK</h3>
-            <p class="text-sm text-slate-500">Gunakan filter untuk melihat data tenaga kerja konstruksi berdasarkan wilayah dan jenjang.</p>
+            <p class="text-sm text-slate-500">
+                Gunakan filter untuk melihat data tenaga kerja konstruksi berdasarkan wilayah dan jenjang.
+            </p>
         </div>
 
-        <div class="grid grid-cols-1 gap-4 p-6 xl:grid-cols-12">
-            <div class="xl:col-span-4">
-                <label class="mb-2 block text-xs font-extrabold uppercase tracking-[0.16em] text-slate-500">Filter Kabupaten</label>
-                <select class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10">
-                    <option>Semua Kabupaten</option>
+        <form method="GET"
+            action="{{ route('admin.tenaga-kerja-konstruksi') }}"
+            class="flex flex-wrap items-end gap-5 p-6"
+        >
+            {{-- Kabupaten --}}
+            <div class="min-w-[220px] flex-1">
+                <label class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
+                    Filter Kabupaten
+                </label>
+
+                <select
+                    name="kabupaten"
+                    class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
+                >
+                    <option value="semua">Semua Kabupaten</option>
+
                     @foreach ($kabupatenOptions as $kabupaten)
-                        <option>{{ $kabupaten }}</option>
+                        <option
+                            value="{{ $kabupaten }}"
+                            {{ $selectedKabupaten === $kabupaten ? 'selected' : '' }}
+                        >
+                            {{ $kabupaten }}
+                        </option>
                     @endforeach
                 </select>
             </div>
 
-            <div class="xl:col-span-4">
-                <label class="mb-2 block text-xs font-extrabold uppercase tracking-[0.16em] text-slate-500">Mode Tampilan Data</label>
-                <select class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10">
-                    <option>TKK Ahli (Semua SKK)</option>
-                    <option>TKK Aktif</option>
-                    <option>SKK Kadaluarsa Tahun Ini</option>
-                    <option>Distribusi Kabupaten</option>
+            {{-- Mode --}}
+            <div class="min-w-[260px] flex-1">
+                <label class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
+                    Mode Tampilan Data
+                </label>
+
+                <select
+                    name="mode"
+                    class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
+                >
+                    <option value="semua_skk" {{ $selectedMode === 'semua_skk' ? 'selected' : '' }}>
+                        TKK Ahli (Semua SKK)
+                    </option>
+
+                    <option value="aktif" {{ $selectedMode === 'aktif' ? 'selected' : '' }}>
+                        TKK Aktif
+                    </option>
+
+                    <option value="kadaluarsa_tahun_ini" {{ $selectedMode === 'kadaluarsa_tahun_ini' ? 'selected' : '' }}>
+                        SKK Kadaluarsa Tahun Ini
+                    </option>
                 </select>
             </div>
 
-            <div class="xl:col-span-3">
-                <label class="mb-2 block text-xs font-extrabold uppercase tracking-[0.16em] text-slate-500">Pilih Jenjang</label>
+            {{-- Jenjang --}}
+            <div class="min-w-[240px]">
+                <label class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
+                    Pilih Jenjang
+                </label>
+
                 <div class="flex flex-wrap gap-2">
                     @foreach ([7, 8, 9] as $jenjang)
-                        <label class="inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-[#3A4FAC]/15 bg-[#3A4FAC]/10 px-4 py-3 text-sm font-extrabold text-[#142B67] transition hover:bg-[#3A4FAC]/15">
-                            <input type="checkbox" checked class="h-4 w-4 rounded border-slate-300 text-[#3A4FAC] focus:ring-[#3A4FAC]">
+                        <label class="inline-flex items-center gap-2 rounded-2xl border border-[#3A4FAC]/15 bg-[#EEF2FF] px-4 py-3 text-sm font-semibold text-[#142B67] transition hover:bg-[#E0E7FF]">
+
+                            <input
+                                type="checkbox"
+                                name="jenjang[]"
+                                value="{{ $jenjang }}"
+                                {{ in_array((string) $jenjang, $selectedJenjang) ? 'checked' : '' }}
+                                class="h-4 w-4 rounded border-slate-300 text-[#3A4FAC] focus:ring-[#3A4FAC]"
+                            >
+
                             {{ $jenjang }}
                         </label>
                     @endforeach
                 </div>
             </div>
 
-            <div class="flex items-end xl:col-span-1">
-                <button class="w-full rounded-2xl bg-gradient-to-br from-[#142B67] via-[#1E3A7A] to-[#2F49A8] px-5 py-3 text-sm font-extrabold text-white shadow-[0_12px_30px_rgba(20,43,103,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(20,43,103,0.24)]">
-                    Terapkan
+            {{-- Button --}}
+            <div>
+                <button
+                    type="submit"
+                    class="rounded-2xl bg-gradient-to-br from-[#142B67] via-[#1E3A7A] to-[#2F49A8] px-6 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(20,43,103,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(20,43,103,0.24)]"
+                >
+                    Terapkan Filter
                 </button>
             </div>
-        </div>
+        </form>
     </div>
 
     {{-- Charts Row 1 --}}
