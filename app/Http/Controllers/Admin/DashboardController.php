@@ -277,7 +277,8 @@ class DashboardController extends Controller
             'kualifikasiSbu',
             'subKlasifikasiSbu',
             'sifatSbu',
-            'kpi'
+            'kpi',
+            'gisBujk'
         ));
     }
 

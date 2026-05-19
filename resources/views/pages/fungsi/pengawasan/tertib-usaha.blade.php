@@ -27,17 +27,17 @@
 
                 <nav>
                     <a href="{{ route('tertib-usaha') }}"
-                        class="{{ request()->routeIs('tertib-usaha') ? 'text-yellow-300' : 'text-white' }} block border-y border-white/45 py-4 text-base font-bold transition hover:text-yellow-300">
+                        class="{{ request()->routeIs('tertib-usaha') ? 'text-yellow-300' : 'text-white' }} block border-y border-white/45 py-4 text-base transition hover:text-yellow-300">
                         Tertib Usaha
                     </a>
 
                     <a href="{{ route('tertib-pemanfaatan') }}"
-                        class="{{ request()->routeIs('tertib-pemanfaatan') ? 'text-yellow-300' : 'text-white' }} block border-b border-white/45 py-4 text-base font-bold leading-relaxed transition hover:text-yellow-300">
+                        class="{{ request()->routeIs('tertib-pemanfaatan') ? 'text-yellow-300' : 'text-white' }} block border-b border-white/45 py-4 text-base leading-relaxed transition hover:text-yellow-300">
                         Tertib Pemanfaatan
                     </a>
 
                     <a href="{{ route('tertib-penyelenggaraan') }}"
-                        class="{{ request()->routeIs('tertib-penyelenggaraan') ? 'text-yellow-300' : 'text-white' }} block border-b border-white/45 py-4 text-base font-bold leading-relaxed transition hover:text-yellow-300">
+                        class="{{ request()->routeIs('tertib-penyelenggaraan') ? 'text-yellow-300' : 'text-white' }} block border-b border-white/45 py-4 text-base leading-relaxed transition hover:text-yellow-300">
                         Tertib Penyelenggaraan
                     </a>
                 </nav>

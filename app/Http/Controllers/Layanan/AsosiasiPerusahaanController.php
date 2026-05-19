@@ -3,12 +3,24 @@
 namespace App\Http\Controllers\Layanan;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class AsosiasiPerusahaanController extends Controller
 {
-    public function index()
+    protected array $allowedPerPage = [10, 25, 50];
+
+    public function index(Request $request)
     {
-        $asosiasiPerusahaan = [
+        $perPage = (int) $request->query('per_page', 10);
+
+        if (! in_array($perPage, $this->allowedPerPage, true)) {
+            $perPage = 10;
+        }
+
+        $search = strtolower(trim($request->query('search', '')));
+
+        $asosiasiPerusahaan = collect([
             [
                 'nama_asosiasi' => 'Gabungan Pelaksana Konstruksi Nasional Indonesia',
                 'singkatan' => 'GAPENSI',
@@ -30,8 +42,27 @@ class AsosiasiPerusahaanController extends Controller
                 'telepon' => '(0541) 998877',
                 'email' => 'aki@yahoo.com',
             ],
-        ];
+        ]);
 
-        return view('pages.layanan.asosiasi-perusahaan', compact('asosiasiPerusahaan'));
+        // FILTER SEARCH
+        if ($search !== '') {
+            $asosiasiPerusahaan = $asosiasiPerusahaan->filter(function ($item) use ($search) {
+                return str_contains(strtolower($item['nama_asosiasi']), $search)
+                    || str_contains(strtolower($item['singkatan']), $search)
+                    || str_contains(strtolower($item['alamat']), $search)
+                    || str_contains(strtolower($item['telepon']), $search)
+                    || str_contains(strtolower($item['email']), $search);
+            });
+        }
+
+        // LIMIT DATA
+        $asosiasiPerusahaan = $asosiasiPerusahaan->take($perPage);
+
+        return view('pages.layanan.asosiasi-perusahaan', [
+            'asosiasiPerusahaan' => $asosiasiPerusahaan,
+            'allowedPerPage' => $this->allowedPerPage,
+            'perPage' => $perPage,
+            'search' => $request->query('search', ''),
+        ]);
     }
 }
