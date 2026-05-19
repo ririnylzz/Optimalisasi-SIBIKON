@@ -387,8 +387,8 @@
             <div class="grid grid-cols-1 gap-0 lg:grid-cols-[1.35fr_0.65fr]">
 
                 {{-- MAP --}}
-                <div class="relative min-h-[560px] border-b border-slate-200 lg:border-b-0 lg:border-r">
-                    <div id="bujkPublicMap" class="h-[560px] w-full"></div>
+                <div class="relative h-[640px] overflow-hidden border-b border-slate-200 lg:border-b-0 lg:border-r">
+                    <div id="bujkPublicMap" class="absolute inset-0 h-full w-full"></div>
 
                     <div class="absolute bottom-4 left-4 z-[500] rounded-2xl bg-white/95 p-4 text-xs shadow-lg">
                         <p class="mb-2 font-bold text-slate-800">Legenda Jumlah BUJK</p>
@@ -423,7 +423,7 @@
                 </div>
 
                 {{-- CARD HASIL DATA --}}
-                <div class="bg-slate-50 p-5">
+                <div class="h-[640px] overflow-hidden bg-slate-50 p-5">
                     <div class="flex items-center justify-between gap-3">
                         <div>
                             <h4 class="text-base font-extrabold text-[#21325e]">
@@ -439,7 +439,7 @@
                         </span>
                     </div>
 
-                    <div id="bujkCardList" class="mt-4 max-h-[670px] space-y-3 overflow-y-auto pr-1">
+                    <div id="bujkCardList" class="mt-4 h-[555px] space-y-3 overflow-y-auto pr-1">
                         <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center text-sm text-slate-500">
                             Cari nama BUJK atau pilih filter untuk menampilkan data.
                         </div>
@@ -570,6 +570,12 @@
 
         renderBujkCards(filtered);
         updateMapByFilteredData(filtered);
+
+        setTimeout(() => {
+            if (bujkMap) {
+                bujkMap.invalidateSize();
+            }
+        }, 100);
     }
 
     function renderBujkCards(items) {
@@ -804,6 +810,11 @@
                 }).addTo(bujkMap);
 
                 bujkMap.fitBounds(geojsonLayer.getBounds());
+                setTimeout(() => {
+                    if (bujkMap) {
+                        bujkMap.invalidateSize();
+                    }
+                }, 100);
                 updateMapByFilteredData(bujkData);
             })
             .catch(error => {
