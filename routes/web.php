@@ -7,6 +7,7 @@ use App\Http\Controllers\Layanan\AsosiasiPerusahaanController;
 use App\Http\Controllers\Layanan\AsosiasiProfesiController;
 use App\Http\Controllers\Layanan\PenyediaJasaController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
     $kodeKabupaten = [
@@ -68,20 +69,16 @@ Route::get('/', function () {
 
     $kabupatenOptions = collect($kodeKabupaten)->values()->sort()->values();
 
-    $jenisUsahaOptions = $bujkRows
-        ->pluck('jenis_usaha')
-        ->filter()
-        ->flatMap(function ($jenis) {
-            return collect(explode(',', $jenis))
-                ->map(fn($item) => trim($item))
-                ->filter();
-        })
-        ->unique()
-        ->sort()
-        ->values();
-
     return view('welcome', [
         'page' => 'beranda',
+        'gisSummary' => $gisSummary,
+        'bujkData' => $bujkRows,
+        'kabupatenOptions' => $kabupatenOptions,
+        'jenisUsahaOptions' => collect([
+            'Pekerjaan Konstruksi',
+            'Jasa Konsultasi Konstruksi',
+            'Pekerjaan Konstruksi Terintegrasi',
+        ]),
     ]);
 })->name('beranda');
 
