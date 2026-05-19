@@ -344,7 +344,7 @@
                         </p>
                     </div>
 
-                    <div class="grid w-full grid-cols-1 gap-3 md:grid-cols-2 xl:w-[760px] xl:grid-cols-[1.3fr_1fr_1fr_auto]">
+                    <div class="grid w-full grid-cols-1 gap-3 md:grid-cols-2 xl:w-[600px] xl:grid-cols-[1.4fr_1fr_auto]">
                         <div>
                             <label class="mb-1 block text-[11px] font-bold uppercase tracking-wide text-slate-500">
                                 Cari Nama BU
@@ -365,24 +365,11 @@
                                 class="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none transition focus:border-[#2596BE] focus:ring-2 focus:ring-[#2596BE]/20">
                                 <option value="">Semua Wilayah</option>
                                 @foreach (($kabupatenOptions ?? []) as $kabupaten)
-                                    <option value="{{ $kabupaten }}">{{ $kabupaten }}</option>
+                                <option value="{{ $kabupaten }}">{{ $kabupaten }}</option>
                                 @endforeach
                             </select>
                         </div>
 
-                        <div>
-                            <label class="mb-1 block text-[11px] font-bold uppercase tracking-wide text-slate-500">
-                                Jenis Usaha
-                            </label>
-                            <select
-                                id="bujkJenisFilter"
-                                class="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none transition focus:border-[#2596BE] focus:ring-2 focus:ring-[#2596BE]/20">
-                                <option value="">Semua Jenis</option>
-                                <option value="Pekerjaan Konstruksi">Pekerjaan Konstruksi</option>
-                                <option value="Jasa Konsultasi Konstruksi">Jasa Konsultasi Konstruksi</option>
-                                <option value="Pekerjaan Konstruksi Terintegrasi">Pekerjaan Konstruksi Terintegrasi</option>
-                            </select>
-                        </div>
 
                         <div class="flex items-end">
                             <button
@@ -534,10 +521,9 @@
     function initBujkFilters() {
         const searchInput = document.getElementById('bujkSearchInput');
         const kabupatenFilter = document.getElementById('bujkKabupatenFilter');
-        const jenisFilter = document.getElementById('bujkJenisFilter');
         const resetButton = document.getElementById('bujkResetFilter');
 
-        [searchInput, kabupatenFilter, jenisFilter].forEach((el) => {
+        [searchInput, kabupatenFilter].forEach((el) => {
             if (!el) return;
             el.addEventListener('input', applyBujkFilters);
             el.addEventListener('change', applyBujkFilters);
@@ -547,7 +533,6 @@
             resetButton.addEventListener('click', function() {
                 if (searchInput) searchInput.value = '';
                 if (kabupatenFilter) kabupatenFilter.value = '';
-                if (jenisFilter) jenisFilter.value = '';
 
                 activeRegionName = null;
                 renderBujkCards([]);
@@ -563,9 +548,8 @@
     function applyBujkFilters() {
         const searchValue = normalizeText(document.getElementById('bujkSearchInput')?.value);
         const kabupatenValue = normalizeText(document.getElementById('bujkKabupatenFilter')?.value);
-        const jenisValue = normalizeText(document.getElementById('bujkJenisFilter')?.value);
 
-        const hasFilter = searchValue || kabupatenValue || jenisValue;
+        const hasFilter = searchValue || kabupatenValue;
 
         if (!hasFilter) {
             activeRegionName = null;
@@ -577,13 +561,11 @@
         const filtered = bujkData.filter((item) => {
             const nama = normalizeText(item.nama_bu);
             const kabupaten = normalizeText(item.kabupaten);
-            const jenis = normalizeText(item.jenis_usaha);
 
             const matchSearch = !searchValue || nama.includes(searchValue);
             const matchKabupaten = !kabupatenValue || kabupaten === kabupatenValue;
-            const matchJenis = !jenisValue || jenis.includes(jenisValue);
 
-            return matchSearch && matchKabupaten && matchJenis;
+            return matchSearch && matchKabupaten;
         });
 
         renderBujkCards(filtered);
@@ -712,8 +694,7 @@
         }).length;
 
         layer.bindTooltip(
-            `${regionName}: ${totalInRegion.toLocaleString('id-ID')} BUJK`,
-            {
+            `${regionName}: ${totalInRegion.toLocaleString('id-ID')} BUJK`, {
                 sticky: true,
                 direction: 'top'
             }
@@ -782,8 +763,7 @@
                         const total = data ? Number(data.total) : 0;
 
                         layer.bindTooltip(
-                            `${regionName}: ${total.toLocaleString('id-ID')} BUJK`,
-                            {
+                            `${regionName}: ${total.toLocaleString('id-ID')} BUJK`, {
                                 sticky: true,
                                 direction: 'top'
                             }
