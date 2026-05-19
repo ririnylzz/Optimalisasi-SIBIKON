@@ -8,30 +8,9 @@ use App\Http\Controllers\Layanan\AsosiasiProfesiController;
 use App\Http\Controllers\Layanan\PenyediaJasaController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
-use App\Models\Visitor;
-use Carbon\Carbon;
+
 
 Route::get('/', function () {
-    // Simpan visitor sekali per session
-    if (!Session::has('visitor_recorded')) {
-
-        Visitor::create([
-            'ip_address' => request()->ip(),
-            'session_id' => Session::getId(),
-        ]);
-
-        Session::put('visitor_recorded', true);
-    }
-
-    // Statistik visitor
-    $onlineVisitors = Visitor::where('updated_at', '>=', now()->subMinutes(5))
-        ->count();
-
-    $todayVisitors = Visitor::whereDate('created_at', Carbon::today())
-        ->count();
-
-    $totalVisitors = Visitor::count();
 
     $kodeKabupaten = [
         '64.01' => 'Paser',
@@ -50,32 +29,32 @@ Route::get('/', function () {
         ->select([
             'id',
             'nib',
-            'nama_bu',
-            'jenis_usaha',
-            'alamat',
-            'kabupaten',
-            // 'provinsi',
-            'telepon',
-            'email',
-            'website',
+            'nama_bujk',
+            'jenis_bujk',
+            'alamat_bujk',
+            'kab_kota_bujk',
+            'provinsi_bujk',
+            'telp_bujk',
+            'email_bujk',
+            'website_bujk',
             'is_deleted',
         ])
         ->where('is_deleted', 0)
-        ->whereIn('kabupaten', array_keys($kodeKabupaten))
+        ->whereIn('kab_kota_bujk', array_keys($kodeKabupaten))
         ->get()
         ->map(function ($row) use ($kodeKabupaten) {
             return [
                 'id' => $row->id,
                 'nib' => $row->nib,
-                'nama_bu' => $row->nama_bu,
-                'jenis_usaha' => $row->jenis_usaha,
-                'alamat' => $row->alamat,
-                'kabupaten' => $row->kabupaten,
-                'kode_kabupaten' => $row->kabupaten,
-                // 'provinsi' => $row->provinsi,
-                'telepon' => $row->telepon,
-                'email' => $row->email,
-                'website' => $row->website,
+                'nama_bu' => $row->nama_bujk,
+                'jenis_usaha' => $row->jenis_bujk,
+                'alamat' => $row->alamat_bujk,
+                'kabupaten' => $kodeKabupaten[$row->kab_kota_bujk] ?? $row->kab_kota_bujk,
+                'kode_kabupaten' => $row->kab_kota_bujk,
+                'provinsi' => 'Kalimantan Timur',
+                'telepon' => $row->telp_bujk,
+                'email' => $row->email_bujk,
+                'website' => $row->website_bujk,
             ];
         })
         ->values();
@@ -94,10 +73,9 @@ Route::get('/', function () {
 
     return view('welcome', [
         'page' => 'beranda',
-
-        'onlineVisitors' => $onlineVisitors,
-        'todayVisitors' => $todayVisitors,
-        'totalVisitors' => $totalVisitors,
+        'gisSummary' => $gisSummary,
+        'bujkData' => $bujkRows,
+        'kabupatenOptions' => $kabupatenOptions,
     ]);
 })->name('beranda');
 
