@@ -92,18 +92,6 @@ Route::get('/', function () {
 
     $kabupatenOptions = collect($kodeKabupaten)->values()->sort()->values();
 
-    $jenisUsahaOptions = $bujkRows
-        ->pluck('jenis_usaha')
-        ->filter()
-        ->flatMap(function ($jenis) {
-            return collect(explode(',', $jenis))
-                ->map(fn($item) => trim($item))
-                ->filter();
-        })
-        ->unique()
-        ->sort()
-        ->values();
-
     return view('welcome', [
         'page' => 'beranda',
 
