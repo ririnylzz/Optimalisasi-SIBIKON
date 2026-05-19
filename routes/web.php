@@ -26,32 +26,32 @@ Route::get('/', function () {
         ->select([
             'id',
             'nib',
-            'nama_bujk',
-            'jenis_bujk',
-            'alamat_bujk',
-            'kab_kota_bujk',
-            'provinsi_bujk',
-            'telp_bujk',
-            'email_bujk',
-            'website_bujk',
+            'nama_bu',
+            'jenis_usaha',
+            'alamat',
+            'kabupaten',
+            // 'provinsi',
+            'telepon',
+            'email',
+            'website',
             'is_deleted',
         ])
         ->where('is_deleted', 0)
-        ->whereIn('kab_kota_bujk', array_keys($kodeKabupaten))
+        ->whereIn('kabupaten', array_keys($kodeKabupaten))
         ->get()
         ->map(function ($row) use ($kodeKabupaten) {
             return [
                 'id' => $row->id,
                 'nib' => $row->nib,
-                'nama_bu' => $row->nama_bujk,
-                'jenis_usaha' => $row->jenis_bujk,
-                'alamat' => $row->alamat_bujk,
-                'kabupaten' => $kodeKabupaten[$row->kab_kota_bujk] ?? $row->kab_kota_bujk,
-                'kode_kabupaten' => $row->kab_kota_bujk,
-                'provinsi' => 'Kalimantan Timur',
-                'telepon' => $row->telp_bujk,
-                'email' => $row->email_bujk,
-                'website' => $row->website_bujk,
+                'nama_bu' => $row->nama_bu,
+                'jenis_usaha' => $row->jenis_usaha,
+                'alamat' => $row->alamat,
+                'kabupaten' => $row->kabupaten,
+                'kode_kabupaten' => $row->kabupaten,
+                // 'provinsi' => $row->provinsi,
+                'telepon' => $row->telepon,
+                'email' => $row->email,
+                'website' => $row->website,
             ];
         })
         ->values();

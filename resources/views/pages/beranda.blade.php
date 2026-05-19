@@ -37,12 +37,23 @@
                 </p>
             </div>
 
-            {{-- Logo Hero --}}
+            {{-- Logo Hero Slider --}}
             <div class="hidden justify-center lg:flex">
-                <img
-                    src="{{ asset('images/logo-sibikon.png') }}"
-                    alt="Logo Bina Konstruksi"
-                    class="w-[330px] max-w-full drop-shadow-2xl">
+                <div class="relative h-[360px] w-[360px]">
+
+                    {{-- Logo 1 --}}
+                    <img
+                        src="{{ asset('images/logo-sibikon.png') }}"
+                        alt="Logo SIBIKON"
+                        class="hero-logo absolute inset-0 m-auto w-[330px] max-w-full drop-shadow-2xl opacity-100">
+
+                    {{-- Logo 2 --}}
+                    <img
+                        src="{{ asset('images/logo-kaltim.png') }}"
+                        alt="Logo Kalimantan Timur"
+                        class="hero-logo absolute inset-0 m-auto w-[250px] scale-110 max-w-full drop-shadow-2xl opacity-0">
+
+                </div>
             </div>
 
         </div>
@@ -365,8 +376,17 @@
         </div>
     </div>
 </section>
-
 @endsection
+
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+    .hero-logo {
+        transition: opacity 1s ease-in-out;
+    }
+</style>
+@endpush
 
 @push('scripts')
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -473,7 +493,7 @@
                             </div>
                         `);
 
-                        layer.on({  
+                        layer.on({
                             mouseover: function(e) {
                                 e.target.setStyle({
                                     weight: 3,
@@ -496,5 +516,19 @@
                 console.error('Gagal memuat GeoJSON:', error);
             });
     }
+
+    // SLIDER LOGO HERO
+    const heroLogos = document.querySelectorAll('.hero-logo');
+    let currentLogo = 0;
+
+    setInterval(() => {
+        heroLogos[currentLogo].classList.remove('opacity-100');
+        heroLogos[currentLogo].classList.add('opacity-0');
+
+        currentLogo = (currentLogo + 1) % heroLogos.length;
+
+        heroLogos[currentLogo].classList.remove('opacity-0');
+        heroLogos[currentLogo].classList.add('opacity-100');
+    }, 7000);
 </script>
 @endpush
