@@ -357,17 +357,23 @@
                     <div class="mt-5 space-y-4 text-base text-white/75">
                         <div class="flex items-center justify-between gap-6 border-b border-white/10 pb-3">
                             <span>Online</span>
-                            <span class="font-bold text-white">0</span>
+                            <span class="font-bold text-white">
+                                {{ number_format($onlineVisitors ?? 0) }}
+                            </span>
                         </div>
 
                         <div class="flex items-center justify-between gap-6 border-b border-white/10 pb-3">
                             <span>Hari Ini</span>
-                            <span class="font-bold text-white">0</span>
+                            <span class="font-bold text-white">
+                                {{ number_format($todayVisitors ?? 0) }}
+                            </span>
                         </div>
 
                         <div class="flex items-center justify-between gap-6 border-b border-white/10 pb-3">
                             <span>Total</span>
-                            <span class="font-bold text-white">0</span>
+                            <span class="font-bold text-white">
+                                {{ number_format($totalVisitors ?? 0) }}
+                            </span>
                         </div>
                     </div>
                 </div>
