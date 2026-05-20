@@ -179,7 +179,11 @@ Route::prefix('admin')
         Route::view('/acara-kegiatan', 'admin.placeholder', ['title' => 'Acara / Kegiatan'])->name('acara-kegiatan');
         Route::view('/peraturan', 'admin.placeholder', ['title' => 'Peraturan'])->name('peraturan');
 
-        Route::get('/tenaga-kerja-konstruksi', [DashboardController::class, 'tkk'])->name('tenaga-kerja-konstruksi');
+        Route::get('/tenaga-kerja-konstruksi', [DashboardController::class, 'tkk'])
+            ->name('tenaga-kerja-konstruksi');
+
+        Route::get('/tenaga-kerja-konstruksi/search', [DashboardController::class, 'searchTkk'])
+            ->name('tenaga-kerja-konstruksi.search');
         Route::view('/pelatihan-sertifikasi', 'admin.placeholder', ['title' => 'Pelatihan / Sertifikasi'])->name('pelatihan-sertifikasi');
 
         Route::view('/tertib-usaha', 'admin.placeholder', ['title' => 'Tertib Usaha'])->name('tertib-usaha');
