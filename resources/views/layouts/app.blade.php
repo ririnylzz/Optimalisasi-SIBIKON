@@ -463,25 +463,40 @@
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
 
+        // Toggle menu utama mobile
         mobileMenuButton.addEventListener('click', function() {
             mobileMenu.classList.toggle('hidden');
         });
 
-        function toggleMobileDropdown(id) {
-            const dropdown = document.getElementById(id);
-            const icon = id === 'profil-dropdown' ? document.getElementById('profil-dropdown-icon') : document.getElementById('fungsi-dropdown-icon');
-            dropdown.classList.toggle('hidden');
-            icon.classList.toggle('rotate-180');
-        }
+        // Dropdown mobile
+        const mobileDropdownButtons = document.querySelectorAll('.mobile-dropdown-button');
 
-        // Tutup semua dropdown jika klik di luar
+        mobileDropdownButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.dataset.target;
+                const dropdown = document.getElementById(targetId);
+                const icon = this.querySelector('.mobile-dropdown-icon');
+
+                dropdown.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+        });
+
+        // Tutup menu jika klik luar
         document.addEventListener('click', function(e) {
-            if (!mobileMenu.contains(e.target) && !mobileMenuButton.contains(e.target)) {
+            if (
+                !mobileMenu.contains(e.target) &&
+                !mobileMenuButton.contains(e.target)
+            ) {
                 mobileMenu.classList.add('hidden');
-                document.getElementById('profil-dropdown').classList.add('hidden');
-                document.getElementById('profil-dropdown-icon').classList.remove('rotate-180');
-                document.getElementById('fungsi-dropdown').classList.add('hidden');
-                document.getElementById('fungsi-dropdown-icon').classList.remove('rotate-180');
+
+                document.querySelectorAll('[id^="mobile-"][id$="-dropdown"]').forEach(dropdown => {
+                    dropdown.classList.add('hidden');
+                });
+
+                document.querySelectorAll('.mobile-dropdown-icon').forEach(icon => {
+                    icon.classList.remove('rotate-180');
+                });
             }
         });
     </script>
