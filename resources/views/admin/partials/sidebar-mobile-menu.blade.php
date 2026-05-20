@@ -48,7 +48,60 @@
         <a href="{{ route('admin.acara-kegiatan') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.acara-kegiatan') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Acara/Kegiatan</a>
         <a href="{{ route('admin.peraturan') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.peraturan') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Peraturan</a>
         <a href="{{ route('admin.tenaga-kerja-konstruksi') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.tenaga-kerja-konstruksi') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Tenaga Kerja Konstruksi</a>
-        <a href="{{ route('admin.pelatihan-sertifikasi') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.pelatihan-sertifikasi') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Pelatihan/Sertifikasi</a>
+        <div x-data="{ openPelatihan: {{ request()->routeIs('admin.pelatihan-sertifikasi.*') ? 'true' : 'false' }} }" class="space-y-1">
+
+            <button
+                type="button"
+                @click="openPelatihan = !openPelatihan"
+                class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm transition
+                {{ request()->routeIs('admin.pelatihan-sertifikasi.*')
+                    ? 'bg-[#28428B] text-[#F7E578] font-semibold'
+                    : 'text-blue-100/85 hover:bg-white/7' }}"
+            >
+                <span>Pelatihan/Sertifikasi</span>
+
+                <svg
+                    :class="openPelatihan ? 'rotate-90' : ''"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 transition-transform duration-200"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+
+            <div
+                x-show="openPelatihan"
+                x-transition
+                class="ml-4 space-y-1 border-l border-white/10 pl-4"
+            >
+                <a href="#"
+                class="block rounded-lg px-3 py-2 text-sm text-blue-100/70 hover:bg-white/5 hover:text-white">
+                    Rencana Pelatihan (TNA)
+                </a>
+
+                <a href="{{ route('admin.pelatihan-sertifikasi.index') }}"
+                class="block rounded-lg px-3 py-2 text-sm
+                {{ request()->routeIs('admin.pelatihan-sertifikasi.index')
+                        ? 'bg-[#28428B] text-[#F7E578] font-semibold'
+                        : 'text-blue-100/70 hover:bg-white/5 hover:text-white' }}">
+                    Pelatihan dan Sertifikasi TKK Ahli
+                </a>
+
+                <a href="#"
+                class="block rounded-lg px-3 py-2 text-sm text-blue-100/70 hover:bg-white/5 hover:text-white">
+                    Bimbingan Teknis/Pelatihan
+                </a>
+
+                <a href="#"
+                class="block rounded-lg px-3 py-2 text-sm text-blue-100/70 hover:bg-white/5 hover:text-white">
+                    Pelatihan dan Sertifikasi Instruktur/Asesor
+                </a>
+            </div>
+
+        </div>
         <a href="{{ route('admin.tertib-usaha') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.tertib-usaha') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Tertib Usaha</a>
         <a href="{{ route('admin.tertib-penyelenggaraan') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.tertib-penyelenggaraan') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Tertib Penyelenggaraan</a>
         <a href="{{ route('admin.tertib-pemanfaatan') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.tertib-pemanfaatan') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Tertib Pemanfaatan</a>
