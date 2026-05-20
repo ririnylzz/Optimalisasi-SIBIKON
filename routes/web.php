@@ -319,9 +319,9 @@ Route::prefix('admin')
         Route::get('/tenaga-kerja-konstruksi', [DashboardController::class, 'tkk'])
             ->name('tenaga-kerja-konstruksi');
 
-        Route::view('/pelatihan-sertifikasi', 'admin.placeholder', [
-            'title' => 'Pelatihan / Sertifikasi',
-        ])->name('pelatihan-sertifikasi');
+        Route::get('/tenaga-kerja-konstruksi/search', [DashboardController::class, 'searchTkk'])
+            ->name('tenaga-kerja-konstruksi.search');
+        Route::view('/pelatihan-sertifikasi', 'admin.placeholder', ['title' => 'Pelatihan / Sertifikasi'])->name('pelatihan-sertifikasi');
 
         Route::view('/tertib-usaha', 'admin.placeholder', [
             'title' => 'Tertib Usaha',
