@@ -477,6 +477,23 @@
     let bujkMap = null;
     let geojsonLayer = null;
     let activeRegionName = null;
+    let currentMapItems = [];
+
+    function isDetailZoom() {
+        return bujkMap && bujkMap.getZoom() >= 9;
+    }
+
+    function getFillOpacityByZoom(total) {
+        total = Number(total) || 0;
+
+        // Saat zoom dekat, heatmap dibuat hampir hilang agar nama jalan terlihat
+        if (isDetailZoom()) {
+            return 0.08;
+        }
+
+        // Saat zoom normal, heatmap tetap terlihat
+        return total > 0 ? 0.78 : 0.28;
+    }
 
     function normalizeRegionName(name) {
         return String(name || '')
@@ -655,6 +672,8 @@
     function updateMapByFilteredData(items) {
         if (!geojsonLayer) return;
 
+        currentMapItems = items;
+
         const countMap = {};
 
         items.forEach((item) => {
@@ -673,7 +692,7 @@
                 color: isActive ? '#FCCC01' : '#21325E',
                 weight: isActive ? 4 : 1.5,
                 fillColor: getColor(total),
-                fillOpacity: total > 0 ? 0.82 : 0.35
+                fillOpacity: getFillOpacityByZoom(total)
             });
         });
     }
@@ -735,8 +754,15 @@
         if (!mapEl) return;
 
         bujkMap = L.map('bujkPublicMap', {
-            scrollWheelZoom: false
+            scrollWheelZoom: true,
+            zoomControl: true,
+            doubleClickZoom: true,
+            dragging: true
         }).setView([-0.5, 116.5], 6);
+
+        bujkMap.on('zoomend', function() {
+            updateMapByFilteredData(currentMapItems.length ? currentMapItems : bujkData);
+        });
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
@@ -756,7 +782,7 @@
                             color: '#21325E',
                             weight: 1.5,
                             fillColor: getColor(total),
-                            fillOpacity: 0.78
+                            fillOpacity: getFillOpacityByZoom(total)
                         };
                     },
                     onEachFeature: function(feature, layer) {
@@ -794,14 +820,17 @@
                             mouseover: function(e) {
                                 e.target.setStyle({
                                     weight: 3,
-                                    fillOpacity: 0.9
+                                    fillOpacity: isDetailZoom() ? 0.18 : 0.9
                                 });
                             },
                             mouseout: function(e) {
                                 if (normalizeRegionName(activeRegionName) !== key) {
+                                    const data = regionDataMap[key];
+                                    const total = data ? Number(data.total) : 0;
+
                                     e.target.setStyle({
                                         weight: 1.5,
-                                        fillOpacity: 0.78
+                                        fillOpacity: getFillOpacityByZoom(total)
                                     });
                                 }
                             }
