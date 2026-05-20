@@ -78,18 +78,14 @@ class PublicDashboardController extends Controller
         ));
     }
 
-    public function badanUsaha()
+    // DASHBOARD BUJK
+    public function bujk()
     {
         $kpi = [
             [
                 'label' => 'BUJK',
                 'title' => 'Badan Usaha Jasa Konstruksi',
                 'value' => 747,
-            ],
-            [
-                'label' => 'SBU',
-                'title' => 'Sertifikat Badan Usaha',
-                'value' => 172,
             ],
         ];
 
@@ -102,6 +98,24 @@ class PublicDashboardController extends Controller
             ['label' => 'Kecil', 'value' => 200],
             ['label' => 'Menengah', 'value' => 120],
         ]);
+
+        return view('pages.dashboard-bujk-publik', compact(
+            'kpi',
+            'association',
+            'jenisBujk'
+        ));
+    }
+
+    // DASHBOARD SBU
+    public function sbu()
+    {
+        $kpi = [
+            [
+                'label' => 'SBU',
+                'title' => 'Sertifikat Badan Usaha',
+                'value' => 172,
+            ],
+        ];
 
         $jenisSbu = collect([
             ['label' => 'JK', 'value' => 150],
@@ -133,10 +147,8 @@ class PublicDashboardController extends Controller
             ['label' => 'Spesialis', 'value' => 50],
         ]);
 
-        return view('pages.dashboard-bujk-publik', compact(
+        return view('pages.dashboard-sbu-publik', compact(
             'kpi',
-            'association',
-            'jenisBujk',
             'jenisSbu',
             'pelaksanaSbu',
             'kbliSbu',

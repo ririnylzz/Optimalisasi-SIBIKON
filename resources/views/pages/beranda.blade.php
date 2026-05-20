@@ -190,13 +190,13 @@
         'angka' => '747',
         'label' => 'BUJK',
         'icon' => 'nib',
-        'url' => '#'
+        'url' => route('dashboard.bujk.publik')
         ],
         [
         'angka' => '172',
         'label' => 'SBU',
         'icon' => 'sbu',
-        'url' => route('dashboard.badan-usaha')
+        'url' => route('dashboard.sbu.publik')
         ],
         ];
         @endphp

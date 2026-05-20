@@ -219,8 +219,11 @@ Route::get('/layanan/penyedia-jasa', [PenyediaJasaController::class, 'index'])
 Route::get('/dashboard/tenaga-kerja-konstruksi', [PublicDashboardController::class, 'tenagaKerja'])
     ->name('dashboard.tenaga-kerja');
 
-Route::get('/dashboard/badan-usaha-jasa-konstruksi', [PublicDashboardController::class, 'badanUsaha'])
-    ->name('dashboard.badan-usaha');
+Route::get('/dashboard/bujk', [PublicDashboardController::class, 'bujk'])
+    ->name('dashboard.bujk.publik');
+
+Route::get('/dashboard/sbu', [PublicDashboardController::class, 'sbu'])
+    ->name('dashboard.sbu.publik');
 
 Route::prefix('admin')
     ->name('admin.')
