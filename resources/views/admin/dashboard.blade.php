@@ -228,54 +228,54 @@
 
     barChart(
         'associationChart',
-        @json(collect($association) - > pluck('label')),
-        @json(collect($association) - > pluck('value')),
+        @json(collect($association) -> pluck('label')),
+        @json(collect($association) -> pluck('value')),
         true
     );
 
     pieChart(
         'jenisBujkChart',
-        @json(collect($jenisBujk) - > pluck('label')),
-        @json(collect($jenisBujk) - > pluck('value'))
+        @json(collect($jenisBujk) -> pluck('label')),
+        @json(collect($jenisBujk) -> pluck('value'))
     );
 
     pieChart(
         'jenisSbuChart',
-        @json(collect($jenisSbu) - > pluck('label')),
-        @json(collect($jenisSbu) - > pluck('value'))
+        @json(collect($jenisSbu) -> pluck('label')),
+        @json(collect($jenisSbu) -> pluck('value'))
     );
 
     barChart(
         'pelaksanaChart',
-        @json(collect($pelaksanaSbu) - > pluck('label')),
-        @json(collect($pelaksanaSbu) - > pluck('value')),
+        @json(collect($pelaksanaSbu) -> pluck('label')),
+        @json(collect($pelaksanaSbu) -> pluck('value')),
         false
     );
 
     barChart(
         'kbliChart',
-        @json(collect($kbliSbu) - > pluck('label')),
-        @json(collect($kbliSbu) - > pluck('value')),
+        @json(collect($kbliSbu) -> pluck('label')),
+        @json(collect($kbliSbu) -> pluck('value')),
         false
     );
 
     pieChart(
         'qualificationChart',
-        @json(collect($kualifikasiSbu) - > pluck('label')),
-        @json(collect($kualifikasiSbu) - > pluck('value'))
+        @json(collect($kualifikasiSbu) -> pluck('label')),
+        @json(collect($kualifikasiSbu) -> pluck('value'))
     );
 
     barChart(
         'subKlasifikasiChart',
-        @json(collect($subKlasifikasiSbu) - > pluck('label')),
-        @json(collect($subKlasifikasiSbu) - > pluck('value')),
+        @json(collect($subKlasifikasiSbu) -> pluck('label')),
+        @json(collect($subKlasifikasiSbu) -> pluck('value')),
         false
     );
 
     barChart(
         'sifatChart',
-        @json(collect($sifatSbu) - > pluck('label')),
-        @json(collect($sifatSbu) - > pluck('value')),
+        @json(collect($sifatSbu) -> pluck('label')),
+        @json(collect($sifatSbu) -> pluck('value')),
         false
     );
 
