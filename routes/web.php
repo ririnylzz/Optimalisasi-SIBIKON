@@ -8,31 +8,8 @@ use App\Http\Controllers\Layanan\AsosiasiProfesiController;
 use App\Http\Controllers\Layanan\PenyediaJasaController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
-use App\Models\Visitor;
-use Carbon\Carbon;
 
 Route::get('/', function () {
-    // Simpan visitor sekali per session
-    if (!Session::has('visitor_recorded')) {
-
-        Visitor::create([
-            'ip_address' => request()->ip(),
-            'session_id' => Session::getId(),
-        ]);
-
-        Session::put('visitor_recorded', true);
-    }
-
-    // Statistik visitor
-    $onlineVisitors = Visitor::where('updated_at', '>=', now()->subMinutes(5))
-        ->count();
-
-    $todayVisitors = Visitor::whereDate('created_at', Carbon::today())
-        ->count();
-
-    $totalVisitors = Visitor::count();
-
     $kodeKabupaten = [
         '64.01' => 'Paser',
         '64.02' => 'Kutai Kartanegara',
@@ -94,10 +71,6 @@ Route::get('/', function () {
 
     return view('welcome', [
         'page' => 'beranda',
-
-        'onlineVisitors' => $onlineVisitors,
-        'todayVisitors' => $todayVisitors,
-        'totalVisitors' => $totalVisitors,
     ]);
 })->name('beranda');
 
