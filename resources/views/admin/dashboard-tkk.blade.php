@@ -74,7 +74,6 @@
                 <div class="flex flex-wrap gap-2">
                     @foreach ([7, 8, 9] as $jenjang)
                         <label class="inline-flex items-center gap-2 rounded-2xl border border-[#3A4FAC]/15 bg-[#EEF2FF] px-4 py-3 text-sm font-semibold text-[#142B67] transition hover:bg-[#E0E7FF]">
-
                             <input
                                 type="checkbox"
                                 name="jenjang[]"
@@ -214,11 +213,16 @@
 
                 <tbody id="tkkTableBody" class="divide-y divide-slate-100 bg-white">
                     @foreach ($tkkRows as $row)
+                        @php
+                            $statusRaw = $row['status'] ?? '-';
+                            $statusText = ucfirst(strtolower($statusRaw));
+                        @endphp
+
                         <tr
                             class="transition hover:bg-blue-50/30"
-                            data-nama="{{ strtolower($row['nama']) }}"
-                            data-kabupaten="{{ strtolower($row['kabupaten']) }}"
-                            data-jabatan="{{ strtolower($row['jabatan']) }}"
+                            data-nama="{{ strtolower($row['nama'] ?? '') }}"
+                            data-kabupaten="{{ strtolower($row['kabupaten'] ?? '') }}"
+                            data-jabatan="{{ strtolower($row['jabatan'] ?? '') }}"
                         >
                             <td class="whitespace-nowrap px-4 py-2 text-[13px] font-semibold text-slate-700">
                                 {{ $row['nama'] }}
@@ -238,12 +242,12 @@
 
                             <td class="whitespace-nowrap px-4 py-2 text-center">
                                 <span class="
-                                    inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-[0.06em]
-                                    {{ strtolower($row['status']) === 'aktif'
+                                    inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-[0.06em]
+                                    {{ strtolower($statusRaw) === 'aktif'
                                         ? 'bg-emerald-100 text-emerald-700'
                                         : 'bg-red-100 text-red-700' }}
                                 ">
-                                    {{ $row['status'] }}
+                                    {{ $statusText }}
                                 </span>
                             </td>
                         </tr>
@@ -323,6 +327,25 @@
 
     function formatNumber(value) {
         return new Intl.NumberFormat('id-ID').format(value);
+    }
+
+    function formatStatusText(status) {
+        if (!status) {
+            return '-';
+        }
+
+        const normalized = String(status).toLowerCase();
+
+        return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '-')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
     }
 
     function truncateLabel(label, max = 18) {
@@ -637,8 +660,8 @@
     const tableBody = document.getElementById('tkkTableBody');
     const tableInfo = document.getElementById('tableInfo');
 
-    let currentPage = 1;
-    let debounceTimer;
+    var currentPage = 1;
+    var debounceTimer;
 
     async function fetchSearchData(page = 1) {
 
@@ -687,8 +710,11 @@
 
         rows.forEach((row) => {
 
+            const rawStatus = row.status ?? '-';
+            const statusText = formatStatusText(rawStatus);
+
             const statusClass =
-                row.status.toLowerCase() === 'aktif'
+                String(rawStatus).toLowerCase() === 'aktif'
                     ? 'bg-emerald-100 text-emerald-700'
                     : 'bg-red-100 text-red-700';
 
@@ -696,24 +722,24 @@
                 <tr class="transition hover:bg-blue-50/30">
 
                     <td class="whitespace-nowrap px-4 py-2 text-[13px] font-semibold text-slate-700">
-                        ${row.nama ?? '-'}
+                        ${escapeHtml(row.nama)}
                     </td>
 
                     <td class="whitespace-nowrap px-4 py-2 text-[13px] text-slate-600">
-                        ${row.kabupaten ?? '-'}
+                        ${escapeHtml(row.kabupaten)}
                     </td>
 
                     <td class="min-w-[260px] px-4 py-2 text-[13px] text-slate-600">
-                        ${row.jabatan ?? '-'}
+                        ${escapeHtml(row.jabatan)}
                     </td>
 
                     <td class="whitespace-nowrap px-4 py-2 text-center text-[13px] font-extrabold text-[#142B67]">
-                        ${row.jenjang ?? '-'}
+                        ${escapeHtml(row.jenjang)}
                     </td>
 
                     <td class="whitespace-nowrap px-4 py-2 text-center">
-                        <span class="inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-[0.06em] ${statusClass}">
-                            ${row.status}
+                        <span class="inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-[0.06em] ${statusClass}">
+                            ${escapeHtml(statusText)}
                         </span>
                     </td>
                 </tr>
@@ -741,7 +767,7 @@
         clearTimeout(debounceTimer);
 
         debounceTimer = setTimeout(() => {
-            fetchSearchData();
+            fetchSearchData(1);
         }, 300);
     });
 
@@ -764,11 +790,11 @@
             </span>
         `;
 
-        document.getElementById('prevBtn').disabled = currentPage === 1;
+        document.getElementById('prevBtn').disabled = currentPage <= 1;
 
-        document.getElementById('nextBtn').disabled = currentPage === lastPage;
+        document.getElementById('nextBtn').disabled = currentPage >= lastPage;
 
-       const paginationNumbers = document.getElementById('paginationNumbers');
+        const paginationNumbers = document.getElementById('paginationNumbers');
 
         let paginationHtml = '';
 
@@ -805,7 +831,6 @@
 
         } else {
 
-            // Awal
             if (currentPage <= 3) {
 
                 for (let i = 1; i <= 3; i++) {
@@ -820,10 +845,7 @@
                     paginationHtml += createPageButton(i);
                 }
 
-            }
-
-            // Tengah
-            else if (currentPage > 3 && currentPage < lastPage - 2) {
+            } else if (currentPage > 3 && currentPage < lastPage - 2) {
 
                 paginationHtml += createPageButton(1);
 
@@ -841,10 +863,7 @@
 
                 paginationHtml += createPageButton(lastPage);
 
-            }
-
-            // Akhir
-            else {
+            } else {
 
                 paginationHtml += createPageButton(1);
 
@@ -860,11 +879,15 @@
 
         paginationNumbers.innerHTML = paginationHtml;
     }
-searchCategory.addEventListener('change', fetchSearchData);
-updatePagination(
-    {{ $totalTkk ?? 0 }},
-    1,
-    {{ ceil(($totalTkk ?? 0) / 10) }}
-);
+
+    searchCategory.addEventListener('change', function () {
+        fetchSearchData(1);
+    });
+
+    updatePagination(
+        {{ $totalTkk ?? 0 }},
+        1,
+        {{ ceil(($totalTkk ?? 0) / 10) }}
+    );
 </script>
 @endpush

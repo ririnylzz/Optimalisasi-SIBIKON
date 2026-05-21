@@ -349,14 +349,6 @@
                             <p>4. Data dengan NIB sama akan digabung dan di-update, bukan ditambahkan duplikat baru.</p>
                         </div>
 
-                        <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4">
-                            <a
-                                href="{{ asset('templates/bujk-template.csv') }}"
-                                class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-indigo-500 hover:text-indigo-600"
-                            >
-                                Download Template
-                            </a>
-
                             <div class="flex items-center gap-2">
                                 <button
                                     type="button"
