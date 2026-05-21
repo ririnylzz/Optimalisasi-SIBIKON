@@ -6,6 +6,20 @@
         font-family: inherit;
     }
 
+    .leaflet-pane {
+        z-index: 10 !important;
+    }
+
+    .leaflet-control-container {
+        position: relative;
+        z-index: 30 !important;
+    }
+
+    .leaflet-top,
+    .leaflet-bottom {
+        z-index: 30 !important;
+    }
+
     .gis-card-scroll::-webkit-scrollbar {
         width: 6px;
     }
@@ -130,32 +144,7 @@
                     <div class="absolute bottom-4 left-4 z-[500] rounded-2xl bg-white/95 p-4 text-xs shadow-lg">
                         <p class="mb-2 font-bold text-slate-800">Legenda Jumlah Data</p>
 
-                        <div class="space-y-1 text-slate-600">
-                            <div>
-                                <span class="mr-2 inline-block h-3 w-3 rounded-sm" style="background-color:#F3F4F6;"></span>
-                                0 data
-                            </div>
-                            <div>
-                                <span class="mr-2 inline-block h-3 w-3 rounded-sm" style="background-color:#BFE6F3;"></span>
-                                1 - 100
-                            </div>
-                            <div>
-                                <span class="mr-2 inline-block h-3 w-3 rounded-sm" style="background-color:#2596BE;"></span>
-                                101 - 250
-                            </div>
-                            <div>
-                                <span class="mr-2 inline-block h-3 w-3 rounded-sm" style="background-color:#91C42B;"></span>
-                                251 - 500
-                            </div>
-                            <div>
-                                <span class="mr-2 inline-block h-3 w-3 rounded-sm" style="background-color:#FCCC01;"></span>
-                                501 - 1000
-                            </div>
-                            <div>
-                                <span class="mr-2 inline-block h-3 w-3 rounded-sm" style="background-color:#B88700;"></span>
-                                &gt; 1000
-                            </div>
-                        </div>
+                        <div id="gisLegendList" class="space-y-1 text-slate-600"></div>
                     </div>
                 </div>
 
@@ -255,18 +244,19 @@
             .trim();
     }
 
+
     function isDetailZoom() {
-        return gisMap && gisMap.getZoom() >= 11;
+        return gisMap && gisMap.getZoom() >= 10;
     }
 
     function getFillOpacityByZoom(total) {
         total = Number(total) || 0;
 
         if (isDetailZoom()) {
-            return total > 0 ? 0.18 : 0.05;
+            return 0;
         }
 
-        return total > 0 ? 0.65 : 0.22;
+        return total > 0 ? 1 : 0.35;
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -348,6 +338,7 @@
         activeRegionName = null;
 
         updateGisHeaderByCategory(category);
+        renderGisLegend();
         renderGisLoading();
 
         const config = GIS_CATEGORY_CONFIG[category];
@@ -668,13 +659,142 @@
     function getColor(total) {
         total = Number(total) || 0;
 
-        if (total > 1000) return '#B88700';
-        if (total > 500) return '#FCCC01';
-        if (total > 250) return '#91C42B';
-        if (total > 100) return '#2596BE';
-        if (total > 0) return '#BFE6F3';
+        if (currentCategory === 'tkk') {
+            if (total > 160) return '#7A1F00';
+            if (total > 140) return '#D94A1E';
+            if (total > 120) return '#FF8C42';
+            if (total > 100) return '#FCCC01';
+            if (total > 50) return '#91C42B';
+            if (total > 0) return '#BFE6F3';
+
+            return '#F3F4F6';
+        }
+
+        if (currentCategory === 'rantai-pasok') {
+            if (total > 20) return '#7A1F00';
+            if (total > 15) return '#D94A1E';
+            if (total > 10) return '#FF8C42';
+            if (total > 5) return '#FCCC01';
+            if (total > 2) return '#91C42B';
+            if (total > 0) return '#BFE6F3';
+
+            return '#F3F4F6';
+        }
+
+        if (total > 1000) return '#7A1F00';
+        if (total > 500) return '#D94A1E';
+        if (total > 250) return '#FF8C42';
+        if (total > 100) return '#FCCC01';
+        if (total > 0) return '#91C42B';
 
         return '#F3F4F6';
+    }
+
+    function getLegendItems() {
+        if (currentCategory === 'tkk') {
+            return [{
+                    label: '0 data',
+                    color: '#F3F4F6'
+                },
+                {
+                    label: '1 - 50',
+                    color: '#BFE6F3'
+                },
+                {
+                    label: '51 - 100',
+                    color: '#91C42B'
+                },
+                {
+                    label: '101 - 120',
+                    color: '#FCCC01'
+                },
+                {
+                    label: '121 - 140',
+                    color: '#FF8C42'
+                },
+                {
+                    label: '141 - 160',
+                    color: '#D94A1E'
+                },
+                {
+                    label: '> 160',
+                    color: '#7A1F00'
+                },
+            ];
+        }
+
+        if (currentCategory === 'rantai-pasok') {
+            return [{
+                    label: '0 data',
+                    color: '#F3F4F6'
+                },
+                {
+                    label: '1 - 2',
+                    color: '#BFE6F3'
+                },
+                {
+                    label: '3 - 5',
+                    color: '#91C42B'
+                },
+                {
+                    label: '6 - 10',
+                    color: '#FCCC01'
+                },
+                {
+                    label: '11 - 15',
+                    color: '#FF8C42'
+                },
+                {
+                    label: '16 - 20',
+                    color: '#D94A1E'
+                },
+                {
+                    label: '> 20',
+                    color: '#7A1F00'
+                },
+            ];
+        }
+
+        return [{
+                label: '0 data',
+                color: '#F3F4F6'
+            },
+            {
+                label: '1 - 100',
+                color: '#91C42B'
+            },
+            {
+                label: '101 - 250',
+                color: '#FCCC01'
+            },
+            {
+                label: '251 - 500',
+                color: '#FF8C42'
+            },
+            {
+                label: '501 - 1000',
+                color: '#D94A1E'
+            },
+            {
+                label: '> 1000',
+                color: '#7A1F00'
+            },
+        ];
+    }
+
+    function renderGisLegend() {
+        const legend = document.getElementById('gisLegendList');
+
+        if (!legend) return;
+
+        legend.innerHTML = getLegendItems().map((item) => {
+            return `
+            <div>
+                <span class="mr-2 inline-block h-3 w-3 rounded-sm" style="background-color:${item.color};"></span>
+                ${item.label}
+            </div>
+        `;
+        }).join('');
     }
 
     function getRegionName(feature) {
