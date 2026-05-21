@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Response;
 
 class DashboardController extends Controller
 {
@@ -18,11 +17,11 @@ class DashboardController extends Controller
                 'id_izin',
                 'nib',
                 'asosiasi',
-                'nama_bujk as nama_bu',
+                'nama_bu',
                 'bentuk_usaha',
                 'propinsi',
-                'kab_kota_bujk as kabupaten',
-                'jenis_bujk as jenis_usaha',
+                'kabupaten',
+                'jenis_usaha',
                 'sifat',
                 'kbli_bener',
                 'kbli_inputan',
@@ -59,7 +58,7 @@ class DashboardController extends Controller
 
                 return 'id:' . $row->id;
             })
-            ->map(fn($items) => $items->first())
+            ->map(fn ($items) => $items->first())
             ->values();
 
         $totalBujk = $uniqueBujkRows->count();
@@ -87,8 +86,8 @@ class DashboardController extends Controller
                 ->map(function ($row) use ($field) {
                     return trim((string) ($row->{$field} ?? ''));
                 })
-                ->filter(fn($value) => $value !== '')
-                ->groupBy(fn($value) => $value)
+                ->filter(fn ($value) => $value !== '')
+                ->groupBy(fn ($value) => $value)
                 ->map(function ($items, $label) {
                     return [
                         'label' => $label,
@@ -114,7 +113,7 @@ class DashboardController extends Controller
                     return null;
                 })
                 ->filter()
-                ->groupBy(fn($value) => $value)
+                ->groupBy(fn ($value) => $value)
                 ->map(function ($items, $label) {
                     return [
                         'label' => $label,
@@ -148,7 +147,7 @@ class DashboardController extends Controller
             }
 
             return $values
-                ->groupBy(fn($value) => $value)
+                ->groupBy(fn ($value) => $value)
                 ->map(function ($items, $label) {
                     return [
                         'label' => $label,
@@ -191,7 +190,7 @@ class DashboardController extends Controller
                 return null;
             })
             ->filter()
-            ->groupBy(fn($value) => $value)
+            ->groupBy(fn ($value) => $value)
             ->map(function ($items, $label) {
                 return [
                     'label' => $label,
@@ -296,7 +295,7 @@ class DashboardController extends Controller
         }
 
         $selectedJenjang = collect($selectedJenjang)
-            ->map(fn($item) => (string) $item)
+            ->map(fn ($item) => (string) $item)
             ->values()
             ->all();
 
@@ -372,6 +371,7 @@ class DashboardController extends Controller
                     );
                 }
             }
+
             $matchKabupaten = $selectedKabupaten === 'semua'
                 || $selectedKabupaten === ''
                 || $row->kabupaten === $selectedKabupaten;
@@ -441,7 +441,7 @@ class DashboardController extends Controller
             ->values();
 
         $topAsosiasi = $filteredRows
-            ->filter(fn($row) => !empty($row->asosiasi))
+            ->filter(fn ($row) => !empty($row->asosiasi))
             ->groupBy('asosiasi')
             ->map(function ($items, $label) {
                 return [
@@ -468,7 +468,7 @@ class DashboardController extends Controller
             ->values();
 
         $perbandinganKabupaten = $filteredRows
-            ->filter(fn($row) => !empty($row->kabupaten))
+            ->filter(fn ($row) => !empty($row->kabupaten))
             ->groupBy('kabupaten')
             ->map(function ($items, $label) {
                 return [
@@ -542,6 +542,7 @@ class DashboardController extends Controller
             'selectedJenjang'
         ));
     }
+
     public function searchTkk(Request $request)
     {
         $keyword = strtolower($request->query('keyword', ''));
@@ -557,7 +558,7 @@ class DashboardController extends Controller
             'jabatan',
         ];
 
-        if (!in_array($category, $allowedCategories)) {
+        if (!in_array($category, $allowedCategories, true)) {
             $category = 'nama';
         }
 
@@ -623,7 +624,7 @@ class DashboardController extends Controller
             'data' => $data,
             'total' => $total,
             'current_page' => $page,
-            'last_page' => ceil($total / $perPage),
+            'last_page' => (int) ceil($total / $perPage),
         ]);
     }
 }
