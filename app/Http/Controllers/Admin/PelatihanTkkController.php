@@ -23,8 +23,30 @@ class PelatihanTkkController extends Controller
         return view('admin.pelatihan-sertifikasi.index', compact('pelatihan'));
     }
 
-    public function create()
+    public function store(Request $request)
     {
-        return view('admin.pelatihan-sertifikasi.create');
+        $validated = $request->validate([
+            'tahun' => 'nullable',
+            'status' => 'nullable',
+            'jenis_peserta' => 'nullable',
+            'metode_kegiatan' => 'nullable',
+            'nama_kegiatan' => 'required',
+            'waktu_kegiatan' => 'nullable',
+            'realisasi_peserta' => 'nullable',
+            'sumber_dana' => 'nullable',
+            'standar_kompetensi' => 'nullable',
+            'tuk' => 'nullable',
+            'lsp' => 'nullable',
+            'tempat_kegiatan' => 'nullable',
+            'provinsi' => 'nullable',
+            'kabupaten_kota' => 'nullable',
+            'syarat_tambahan' => 'nullable',
+        ]);
+
+        PelatihanTkk::create($validated);
+
+        return redirect()
+            ->route('admin.pelatihan-sertifikasi.index')
+            ->with('success', 'Data berhasil ditambahkan');
     }
 }

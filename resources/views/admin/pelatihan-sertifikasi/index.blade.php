@@ -113,10 +113,6 @@
                         </th>
 
                         <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500">
-                            Status
-                        </th>
-
-                        <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500">
                             Aksi
                         </th>
 
@@ -135,59 +131,31 @@
                         </td>
 
                         <td class="px-6 py-5">
-
                             <div class="max-w-[350px]">
-
                                 <p class="font-semibold text-slate-800">
                                     {{ $item->nama_kegiatan }}
                                 </p>
-
                             </div>
-
                         </td>
 
                         <td class="px-6 py-5 text-sm text-slate-600 whitespace-nowrap">
-
-                            {{ \Carbon\Carbon::parse($item->tanggal_mulai)->translatedFormat('d M Y') }}
-
-                            -
-
-                            {{ \Carbon\Carbon::parse($item->tanggal_selesai)->translatedFormat('d M Y') }}
-
+                            {{ \Carbon\Carbon::parse($item->waktu_kegiatan)->translatedFormat('d M Y') }}
                         </td>
 
                         <td class="px-6 py-5 text-sm font-semibold text-slate-700">
-                            {{ $item->peserta }}
+                            {{ $item->realisasi_peserta }}
                         </td>
 
                         <td class="px-6 py-5 text-sm text-slate-600">
-                            {{ $item->jabatan_kerja }}
+                            {{ $item->standar_kompetensi }}
                         </td>
 
                         <td class="px-6 py-5 text-sm text-slate-600">
-                            {{ $item->tempat ?? '-' }}
+                            {{ $item->tempat_kegiatan }}
                         </td>
 
                         <td class="px-6 py-5 text-sm text-slate-600">
-                            {{ $item->lokasi ?? '-' }}
-                        </td>
-
-                        <td class="px-6 py-5 text-center">
-
-                            @if($item->status == 'draft')
-                                <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-                                    Draft
-                                </span>
-                            @elseif($item->status == 'dibuka')
-                                <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
-                                    Dibuka
-                                </span>
-                            @else
-                                <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
-                                    Selesai
-                                </span>
-                            @endif
-
+                            {{ $item->kabupaten_kota }}
                         </td>
 
                         <td class="px-6 py-5">

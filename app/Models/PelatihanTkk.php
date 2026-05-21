@@ -10,15 +10,15 @@ class PelatihanTkk extends Model
 
     protected $fillable = [
         'tahun',
-        'status_kegiatan',
+        'status',
         'jenis_peserta',
         'metode_kegiatan',
         'nama_kegiatan',
         'waktu_kegiatan',
-        'realisasi_jumlah_peserta',
+        'realisasi_peserta',
         'sumber_dana',
         'standar_kompetensi',
-        'tempat_uji_kompetensi',
+        'tuk',
         'lsp',
         'tempat_kegiatan',
         'provinsi',
