@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\BujkController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PelatihanTkkController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Layanan\AsosiasiPerusahaanController;
 use App\Http\Controllers\Layanan\AsosiasiProfesiController;
@@ -95,7 +96,9 @@ Route::get('/profil/sop-renja', function () {
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
 
 Route::get('/registrasi', function () {
     return view('welcome', [
@@ -218,7 +221,9 @@ Route::prefix('admin')
     ->name('admin.')
     ->middleware('auth')
     ->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        Route::get('/dashboard', [DashboardController::class, 'index'])
+            ->name('dashboard');
 
         Route::view('/pengaturan', 'admin.placeholder', [
             'title' => 'Pengaturan Akun',
@@ -276,16 +281,31 @@ Route::prefix('admin')
             'title' => 'Rantai Pasok',
         ])->name('rantai-pasok');
 
-        Route::get('/bujk', [BujkController::class, 'index'])->name('bujk');
-        Route::post('/bujk', [BujkController::class, 'store'])->name('bujk.store');
-        Route::post('/bujk/import', [BujkController::class, 'import'])->name('bujk.import');
+        Route::get('/bujk', [BujkController::class, 'index'])
+            ->name('bujk');
+
+        Route::post('/bujk', [BujkController::class, 'store'])
+            ->name('bujk.store');
+
+        Route::post('/bujk/import', [BujkController::class, 'import'])
+            ->name('bujk.import');
 
         Route::delete('/bujk/bulk-destroy', [BujkController::class, 'bulkDestroy'])
             ->name('bujk.bulk-destroy');
 
         Route::delete('/bujk/destroy-all', [BujkController::class, 'destroyAll'])
             ->name('bujk.destroy-all');
+        Route::delete('/bujk/bulk-destroy', [BujkController::class, 'bulkDestroy'])
+            ->name('bujk.bulk-destroy');
 
+        Route::delete('/bujk/destroy-all', [BujkController::class, 'destroyAll'])
+            ->name('bujk.destroy-all');
+
+        Route::get('/bujk/regions/provinces', [BujkController::class, 'provinceOptions'])
+            ->name('bujk.regions.provinces');
+
+        Route::get('/bujk/regions/regencies', [BujkController::class, 'regencyOptions'])
+            ->name('bujk.regions.regencies');
         Route::get('/bujk/regions/provinces', [BujkController::class, 'provinceOptions'])
             ->name('bujk.regions.provinces');
 
@@ -337,7 +357,21 @@ Route::prefix('admin')
 
         Route::get('/tenaga-kerja-konstruksi/search', [DashboardController::class, 'searchTkk'])
             ->name('tenaga-kerja-konstruksi.search');
-        Route::view('/pelatihan-sertifikasi', 'admin.placeholder', ['title' => 'Pelatihan / Sertifikasi'])->name('pelatihan-sertifikasi');
+        
+        Route::get('/pelatihan-sertifikasi', [PelatihanTkkController::class, 'index'])
+            ->name('pelatihan-sertifikasi.index');
+
+        Route::get('/pelatihan-sertifikasi/create', [PelatihanTkkController::class, 'create'])
+            ->name('pelatihan-sertifikasi.create');
+
+        Route::post('/pelatihan-sertifikasi', [PelatihanTkkController::class, 'store'])
+            ->name('pelatihan-sertifikasi.store');
+
+        Route::put('/pelatihan-sertifikasi/{pelatihan}', [PelatihanTkkController::class, 'update'])
+            ->name('pelatihan-sertifikasi.update');
+
+        Route::delete('/pelatihan-sertifikasi/{pelatihan}', [PelatihanTkkController::class, 'destroy'])
+            ->name('pelatihan-sertifikasi.destroy');
 
         Route::view('/tertib-usaha', 'admin.placeholder', [
             'title' => 'Tertib Usaha',
