@@ -263,3 +263,225 @@ Optimalisasi-SIBIKON
 └─ vite.config.js
 
 ```
+```
+Optimalisasi-SIBIKON
+├─ .editorconfig
+├─ .npmrc
+├─ app
+│  ├─ Console
+│  │  └─ Commands
+│  │     ├─ ImportBujkSbuExcel.php
+│  │     └─ ImportTkk.php
+│  ├─ Http
+│  │  ├─ Controllers
+│  │  │  ├─ Admin
+│  │  │  │  ├─ BujkController.php
+│  │  │  │  ├─ DashboardController.php
+│  │  │  │  └─ PelatihanTkkController.php
+│  │  │  ├─ Auth
+│  │  │  │  └─ AuthController.php
+│  │  │  ├─ Controller.php
+│  │  │  ├─ GisController.php
+│  │  │  ├─ Layanan
+│  │  │  │  ├─ AsosiasiPerusahaanController.php
+│  │  │  │  ├─ AsosiasiProfesiController.php
+│  │  │  │  └─ PenyediaJasaController.php
+│  │  │  └─ PublicDashboardController.php
+│  │  └─ Requests
+│  │     └─ Admin
+│  │        └─ Bujk
+│  │           ├─ BujkFormRequest.php
+│  │           └─ BujkImportRequest.php
+│  ├─ Models
+│  │  ├─ Bujk.php
+│  │  ├─ PelatihanTkk.php
+│  │  ├─ Tkk.php
+│  │  └─ User.php
+│  ├─ Providers
+│  │  └─ AppServiceProvider.php
+│  ├─ Services
+│  │  └─ Bujk
+│  │     └─ BujkImportService.php
+│  └─ Support
+│     ├─ BujkDataNormalizer.php
+│     └─ SimpleSpreadsheetReader.php
+├─ artisan
+├─ bootstrap
+│  ├─ app.php
+│  ├─ cache
+│  │  ├─ packages.php
+│  │  └─ services.php
+│  └─ providers.php
+├─ composer.json
+├─ composer.lock
+├─ config
+│  ├─ app.php
+│  ├─ auth.php
+│  ├─ bujk.php
+│  ├─ cache.php
+│  ├─ database.php
+│  ├─ filesystems.php
+│  ├─ logging.php
+│  ├─ mail.php
+│  ├─ queue.php
+│  ├─ services.php
+│  └─ session.php
+├─ database
+│  ├─ factories
+│  │  └─ UserFactory.php
+│  ├─ migrations
+│  │  ├─ 0001_01_01_000000_create_users_table.php
+│  │  ├─ 0001_01_01_000001_create_cache_table.php
+│  │  ├─ 0001_01_01_000002_create_jobs_table.php
+│  │  ├─ 2026_04_22_123008_create_bujk_table.php
+│  │  ├─ 2026_04_27_034140_create_bujk_sbu_table.php
+│  │  ├─ 2026_04_27_065022_add_snapshot_columns_to_bujk_sbu_table.php
+│  │  ├─ 2026_04_27_073535_alter_bujk_location_columns_to_text.php
+│  │  ├─ 2026_04_30_074425_create_tkk_table.php
+│  │  ├─ 2026_05_11_053457_rebuild_bujk_columns_and_drop_bujk_sbu_table.php
+│  │  ├─ 2026_05_11_072308_add_website_to_bujk_table.php
+│  │  ├─ 2026_05_20_062541_create_pelatihan_tkk_table.php
+│  │  └─ 2026_05_21_060746_add_new_form_columns_to_pelatihan_tkk_table.php
+│  └─ seeders
+│     └─ DatabaseSeeder.php
+├─ package-lock.json
+├─ package.json
+├─ phpunit.xml
+├─ postcss.config.js
+├─ public
+│  ├─ .htaccess
+│  ├─ favicon.ico
+│  ├─ files
+│  │  ├─ renja.pdf
+│  │  └─ sop-bikon.pdf
+│  ├─ geojson
+│  │  └─ kaltim-kabupaten-kota.geojson
+│  ├─ images
+│  │  ├─ berita-1.png
+│  │  ├─ berita-2.png
+│  │  ├─ berita-3.png
+│  │  ├─ berita-utama.jpg
+│  │  ├─ beritagrid-1.png
+│  │  ├─ beritagrid-2.png
+│  │  ├─ beritagrid-3.png
+│  │  ├─ beritagrid-4.png
+│  │  ├─ beritagrid-5.png
+│  │  ├─ beritagrid-6.png
+│  │  ├─ gedung-dinas-PUPR.jpg
+│  │  ├─ layanan-1.png
+│  │  ├─ layanan-10.png
+│  │  ├─ layanan-11.png
+│  │  ├─ layanan-2.png
+│  │  ├─ layanan-3.png
+│  │  ├─ layanan-4.png
+│  │  ├─ layanan-5.png
+│  │  ├─ layanan-6.png
+│  │  ├─ layanan-7.png
+│  │  ├─ layanan-8.png
+│  │  ├─ layanan-9.png
+│  │  ├─ logo-berakhlak.png
+│  │  ├─ logo-dinas.png
+│  │  ├─ logo-gubernur.png
+│  │  ├─ logo-kaltim.png
+│  │  ├─ logo-sibikon.png
+│  │  ├─ poster-pelatihan.jpg
+│  │  └─ struktur.png
+│  ├─ index.php
+│  └─ robots.txt
+├─ README.md
+├─ resources
+│  ├─ css
+│  │  └─ app.css
+│  ├─ js
+│  │  └─ app.js
+│  └─ views
+│     ├─ admin
+│     │  ├─ bujk
+│     │  │  ├─ index.blade.php
+│     │  │  └─ partials
+│     │  │     └─ table.blade.php
+│     │  ├─ dashboard-tkk.blade.php
+│     │  ├─ dashboard.blade.php
+│     │  ├─ partials
+│     │  │  ├─ sidebar-desktop-menu.blade.php
+│     │  │  └─ sidebar-mobile-menu.blade.php
+│     │  ├─ pelatihan-sertifikasi
+│     │  │  └─ index.blade.php
+│     │  ├─ pelatihan-tkk
+│     │  │  └─ index.blade.php
+│     │  └─ placeholder.blade.php
+│     ├─ components
+│     │  └─ dashboard-chart-card.blade.php
+│     ├─ layouts
+│     │  ├─ admin.blade.php
+│     │  └─ app.blade.php
+│     ├─ pages
+│     │  ├─ beranda.blade.php
+│     │  ├─ berita.blade.php
+│     │  ├─ dashboard-bujk-publik.blade.php
+│     │  ├─ dashboard-sbu-publik.blade.php
+│     │  ├─ dashboard-tkk-publik.blade.php
+│     │  ├─ detail-berita.blade.php
+│     │  ├─ fungsi
+│     │  │  ├─ pemberdayaan
+│     │  │  │  ├─ pelatihan-ahli.blade.php
+│     │  │  │  └─ tabel-tkk.blade.php
+│     │  │  ├─ pengaturan
+│     │  │  │  ├─ daftar-sosil.blade.php
+│     │  │  │  ├─ forum.blade.php
+│     │  │  │  ├─ rakor.blade.php
+│     │  │  │  ├─ rantai-pasok.blade.php
+│     │  │  │  └─ sosialisasi.blade.php
+│     │  │  └─ pengawasan
+│     │  │     ├─ tertib-pemanfaatan.blade.php
+│     │  │     ├─ tertib-penyelenggaraan.blade.php
+│     │  │     └─ tertib-usaha.blade.php
+│     │  ├─ gis-map.blade.php
+│     │  ├─ kontak.blade.php
+│     │  ├─ layanan
+│     │  │  ├─ asosiasi-perusahaan.blade.php
+│     │  │  ├─ asosiasi-profesi.blade.php
+│     │  │  └─ penyedia-jasa.blade.php
+│     │  ├─ login.blade.php
+│     │  ├─ profil
+│     │  │  ├─ sop-renja.blade.php
+│     │  │  ├─ struktur.blade.php
+│     │  │  └─ tentang-kami.blade.php
+│     │  └─ regist.blade.php
+│     └─ welcome.blade.php
+├─ routes
+│  ├─ console.php
+│  └─ web.php
+├─ storage
+│  ├─ app
+│  │  ├─ imports
+│  │  │  ├─ Data BUJK dan SBU Kaltim (2Sept25).xlsx
+│  │  │  └─ tkk_data.xlsx
+│  │  ├─ private
+│  │  │  └─ bujk
+│  │  │     └─ latest-data-date.txt
+│  │  └─ public
+│  ├─ framework
+│  │  ├─ cache
+│  │  │  └─ data
+│  │  ├─ sessions
+│  │  ├─ testing
+│  │  └─ views
+│  │     ├─ 151e28a0c1dcfc2f65a0c75279a6d7c7.php
+│  │     ├─ 212d2643a9577c6861e5fd8b3d0d9147.php
+│  │     ├─ 568ff530236c926b66f325034a031fe2.php
+│  │     ├─ 64201025f008e1556735cc7cf291eb1b.php
+│  │     ├─ 756ec64a602d80f09c607cdcd97436ac.php
+│  │     ├─ 82f874c7f7b912504cfdefcbba0497f3.php
+│  │     └─ c56e602126d0d0d74648ccf12526dabc.php
+│  └─ logs
+├─ tailwind.config.js
+├─ tests
+│  ├─ Feature
+│  │  └─ ExampleTest.php
+│  ├─ TestCase.php
+│  └─ Unit
+│     └─ ExampleTest.php
+└─ vite.config.js
+
+```

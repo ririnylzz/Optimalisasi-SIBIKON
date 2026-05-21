@@ -19,7 +19,7 @@
         <button
             type="button"
             data-modal-target="modalPelatihan"
-            class="inline-flex items-center rounded-xl bg-[#28428B] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1d3270] transition">
+            class="inline-flex items-center rounded-xl bg-[#28428B] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1d3270]">
 
             <svg xmlns="http://www.w3.org/2000/svg"
                 class="mr-2 h-4 w-4"
@@ -36,14 +36,32 @@
         </button>
     </div>
 
+    {{-- ALERT --}}
+    @if (session('success'))
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-semibold text-emerald-700">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="rounded-2xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm text-rose-700">
+            <p class="mb-2 font-bold">Data gagal disimpan:</p>
+
+            <ul class="list-inside list-disc space-y-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     {{-- CARD TABLE --}}
-    <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+    <div class="rounded-3xl border border-slate-200 bg-white shadow-sm">
 
         {{-- FILTER --}}
         <div class="border-b border-slate-200 px-6 py-5">
 
-            <form method="GET"
-                action="{{ route('admin.pelatihan-sertifikasi.index') }}">
+            <form method="GET" action="{{ route('admin.pelatihan-sertifikasi.index') }}">
 
                 <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
@@ -83,7 +101,6 @@
                 <thead class="bg-slate-50">
 
                     <tr>
-
                         <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
                             No
                         </th>
@@ -115,7 +132,6 @@
                         <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500">
                             Aksi
                         </th>
-
                     </tr>
 
                 </thead>
@@ -124,92 +140,129 @@
 
                     @forelse($pelatihan as $item)
 
-                    <tr class="transition hover:bg-slate-50">
+                        @php
+                            $waktuPelaksanaan = $item->waktu_kegiatan ?? $item->tanggal_mulai;
+                            $peserta = $item->realisasi_peserta ?? $item->peserta ?? 0;
+                            $jabatanKerja = $item->standar_kompetensi ?? $item->jabatan_kerja ?? '-';
+                            $tempat = $item->tempat_kegiatan ?? $item->tempat ?? '-';
+                            $lokasi = $item->kabupaten_kota ?? $item->lokasi ?? $item->provinsi ?? '-';
+                        @endphp
 
-                        <td class="px-6 py-5 text-sm text-slate-500">
-                            {{ $loop->iteration }}
-                        </td>
+                        <tr class="transition hover:bg-slate-50">
 
-                        <td class="px-6 py-5">
-                            <div class="max-w-[350px]">
-                                <p class="font-semibold text-slate-800">
-                                    {{ $item->nama_kegiatan }}
-                                </p>
-                            </div>
-                        </td>
+                            <td class="px-6 py-5 text-sm text-slate-500">
+                                {{ $pelatihan->firstItem() + $loop->index }}
+                            </td>
 
-                        <td class="px-6 py-5 text-sm text-slate-600 whitespace-nowrap">
-                            {{ \Carbon\Carbon::parse($item->waktu_kegiatan)->translatedFormat('d M Y') }}
-                        </td>
+                            <td class="px-6 py-5">
+                                <div class="max-w-[350px]">
+                                    <p class="font-semibold text-slate-800">
+                                        {{ $item->nama_kegiatan }}
+                                    </p>
+                                </div>
+                            </td>
 
-                        <td class="px-6 py-5 text-sm font-semibold text-slate-700">
-                            {{ $item->realisasi_peserta }}
-                        </td>
+                            <td class="whitespace-nowrap px-6 py-5 text-sm text-slate-600">
+                                @if ($waktuPelaksanaan)
+                                    {{ \Carbon\Carbon::parse($waktuPelaksanaan)->translatedFormat('d M Y') }}
+                                @else
+                                    -
+                                @endif
+                            </td>
 
-                        <td class="px-6 py-5 text-sm text-slate-600">
-                            {{ $item->standar_kompetensi }}
-                        </td>
+                            <td class="px-6 py-5 text-sm font-semibold text-slate-700">
+                                {{ $peserta }}
+                            </td>
 
-                        <td class="px-6 py-5 text-sm text-slate-600">
-                            {{ $item->tempat_kegiatan }}
-                        </td>
+                            <td class="px-6 py-5 text-sm text-slate-600">
+                                {{ $jabatanKerja }}
+                            </td>
 
-                        <td class="px-6 py-5 text-sm text-slate-600">
-                            {{ $item->kabupaten_kota }}
-                        </td>
+                            <td class="px-6 py-5 text-sm text-slate-600">
+                                {{ $tempat }}
+                            </td>
 
-                        <td class="px-6 py-5">
+                            <td class="px-6 py-5 text-sm text-slate-600">
+                                {{ $lokasi }}
+                            </td>
 
-                            <div class="flex items-center justify-center gap-2">
+                            <td class="px-6 py-5">
+                                <div class="flex items-center justify-center">
+                                    <button
+                                        type="button"
+                                        class="action-dropdown-trigger inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-400 bg-blue-50 px-3 text-sm font-semibold text-blue-600 transition hover:bg-blue-100 hover:text-blue-700"
+                                        data-update-url="{{ route('admin.pelatihan-sertifikasi.update', $item) }}"
+                                        data-detail-url="{{ route('admin.pelatihan-sertifikasi.show', $item) }}"
+                                        data-delete-url="{{ route('admin.pelatihan-sertifikasi.destroy', $item) }}"
+                                        data-tahun="{{ $item->tahun }}"
+                                        data-status="{{ $item->status }}"
+                                        data-jenis-peserta="{{ $item->jenis_peserta }}"
+                                        data-metode-kegiatan="{{ $item->metode_kegiatan }}"
+                                        data-nama-kegiatan="{{ $item->nama_kegiatan }}"
+                                        data-waktu-kegiatan="{{ $item->waktu_kegiatan }}"
+                                        data-realisasi-peserta="{{ $item->realisasi_peserta ?? $item->peserta }}"
+                                        data-sumber-dana="{{ $item->sumber_dana }}"
+                                        data-standar-kompetensi="{{ $item->standar_kompetensi ?? $item->jabatan_kerja }}"
+                                        data-tuk="{{ $item->tuk }}"
+                                        data-lsp="{{ $item->lsp }}"
+                                        data-tempat-kegiatan="{{ $item->tempat_kegiatan ?? $item->tempat }}"
+                                        data-provinsi="{{ $item->provinsi }}"
+                                        data-kabupaten-kota="{{ $item->kabupaten_kota ?? $item->lokasi }}"
+                                        data-syarat-tambahan="{{ $item->syarat_tambahan }}"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-4 w-4"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            stroke-width="2">
+                                            <path stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                                            <path stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M19.5 7.125L16.875 4.5" />
+                                        </svg>
 
-                                {{-- EDIT --}}
-                                <button
-                                    class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-amber-200 bg-amber-50 text-amber-600 transition hover:bg-amber-100">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-4 w-4"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            stroke-width="2">
+                                            <path stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
 
-                                    ✏️
-
-                                </button>
-
-                                {{-- DELETE --}}
-                                <button
-                                    class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-600 transition hover:bg-rose-100">
-
-                                    🗑️
-
-                                </button>
-
-                            </div>
-
-                        </td>
-
-                    </tr>
+                        </tr>
 
                     @empty
 
-                    <tr>
+                        <tr>
+                            <td colspan="8" class="px-6 py-16 text-center">
 
-                        <td colspan="9"
-                            class="px-6 py-16 text-center">
+                                <div class="flex flex-col items-center">
 
-                            <div class="flex flex-col items-center">
+                                    <div class="mb-4 text-5xl">
+                                        📁
+                                    </div>
 
-                                <div class="mb-4 text-5xl">
-                                    📁
+                                    <h3 class="text-lg font-bold text-slate-700">
+                                        Belum Ada Data
+                                    </h3>
+
+                                    <p class="mt-1 text-sm text-slate-500">
+                                        Data pelatihan dan sertifikasi belum tersedia.
+                                    </p>
+
                                 </div>
 
-                                <h3 class="text-lg font-bold text-slate-700">
-                                    Belum Ada Data
-                                </h3>
-
-                                <p class="mt-1 text-sm text-slate-500">
-                                    Data pelatihan dan sertifikasi belum tersedia.
-                                </p>
-
-                            </div>
-
-                        </td>
-
-                    </tr>
+                            </td>
+                        </tr>
 
                     @endforelse
 
@@ -228,6 +281,44 @@
 
 </div>
 
+{{-- GLOBAL ACTION DROPDOWN --}}
+<div
+    id="actionDropdownMenu"
+    class="fixed z-[9999] hidden w-56 overflow-hidden rounded-xl border border-slate-200 bg-white text-left shadow-xl">
+
+    <button
+        type="button"
+        id="actionEditButton"
+        class="block w-full px-5 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+        Edit Kegiatan
+    </button>
+
+    <button
+        type="button"
+        id="actionDetailButton"
+        class="block w-full px-5 py-3 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+        Detail Kegiatan
+    </button>
+
+    <div class="border-t border-slate-200"></div>
+
+    <button
+        type="button"
+        id="actionDeleteButton"
+        class="block w-full px-5 py-3 text-left text-sm font-medium text-rose-600 transition hover:bg-rose-50">
+        Hapus Kegiatan
+    </button>
+</div>
+
+<form
+    id="deletePelatihanForm"
+    action="#"
+    method="POST"
+    class="hidden">
+    @csrf
+    @method('DELETE')
+</form>
+
 {{-- MODAL TAMBAH DATA --}}
 <div
     id="modalPelatihan"
@@ -235,9 +326,7 @@
 
     <div class="max-h-[95vh] w-full max-w-5xl overflow-y-auto rounded-3xl bg-white shadow-2xl">
 
-        {{-- HEADER --}}
         <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-
             <div>
                 <h2 class="text-xl font-bold text-slate-800">
                     Form Pelatihan
@@ -250,10 +339,8 @@
                 class="rounded-xl p-2 text-slate-500 hover:bg-slate-100">
                 ✕
             </button>
-
         </div>
 
-        {{-- FORM --}}
         <form
             action="{{ route('admin.pelatihan-sertifikasi.store') }}"
             method="POST"
@@ -261,306 +348,12 @@
 
             @csrf
 
-            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            @include('admin.pelatihan-sertifikasi.partials.form-fields', [
+                'mode' => 'create',
+                'prefix' => 'create',
+                'pelatihanItem' => null,
+            ])
 
-                {{-- TAHUN --}}
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
-                        Tahun
-                    </label>
-
-                    <select
-                        name="tahun"
-                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-
-                        <option value="">Pilih...</option>
-
-                        @for($i = date('Y') + 1; $i >= 2020; $i--)
-                            <option value="{{ $i }}">{{ $i }}</option>
-                        @endfor
-
-                    </select>
-                </div>
-
-                {{-- STATUS --}}
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
-                        Status Kegiatan
-                    </label>
-
-                    <select
-                        name="status_kegiatan"
-                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-
-                        <option value="">Pilih...</option>
-                        <option value="Terbuka">Terbuka</option>
-                        <option value="Tertutup">Tertutup</option>
-
-                    </select>
-                </div>
-
-                {{-- JENIS PESERTA --}}
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
-                        Jenis Peserta
-                    </label>
-
-                    <select
-                        name="jenis_peserta"
-                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-
-                        <option value="Umum">Umum</option>
-                        <option value="Fresh Graduate">Fresh Graduate</option>
-                        <option value="TKK">TKK</option>
-                        <option value="ASN">ASN</option>
-
-                    </select>
-                </div>
-
-                {{-- METODE --}}
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
-                        Metode Kegiatan
-                    </label>
-
-                    <select
-                        name="metode_kegiatan"
-                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-
-                        <option value="Luring">Luring</option>
-                        <option value="Daring">Daring</option>
-                        <option value="Luring dan Daring">Luring dan Daring</option>
-
-                    </select>
-                </div>
-
-            </div>
-
-            {{-- NAMA KEGIATAN --}}
-            <div>
-                <label class="mb-2 block text-sm font-medium text-slate-700">
-                    Nama Kegiatan
-                </label>
-
-                <input
-                    type="text"
-                    name="nama_kegiatan"
-                    class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm"
-                    placeholder="Masukkan nama kegiatan">
-            </div>
-
-            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-
-                {{-- WAKTU --}}
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
-                        Waktu Kegiatan
-                    </label>
-
-                    <input
-                        type="date"
-                        name="waktu_kegiatan"
-                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-                </div>
-
-                {{-- PESERTA --}}
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
-                        Realisasi Jumlah Peserta
-                    </label>
-
-                    <input
-                        type="number"
-                        name="jumlah_peserta"
-                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm"
-                        placeholder="0">
-                </div>
-
-            </div>
-
-            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-
-                {{-- SUMBER DANA --}}
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
-                        Sumber Dana
-                    </label>
-
-                    <select
-                        name="sumber_dana"
-                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-
-                        <option value="">Pilih...</option>
-                        <option value="APBD">APBD</option>
-                        <option value="APBDP">APBDP</option>
-                        <option value="APBN">APBN</option>
-
-                    </select>
-                </div>
-
-                {{-- STANDAR --}}
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
-                        Standar Kompetensi
-                    </label>
-
-                    <select
-                        name="standar_kompetensi"
-                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-
-                        <option value="">Pilih...</option>
-
-                        <option>Pengelola Teknis Pembangunan Bangunan Gedung Negara</option>
-                        <option>Ahli Madya Rekayasa Konstruksi Bangunan Gedung</option>
-                        <option>Ahli Muda Teknik Jalan</option>
-                        <option>Ahli Muda Bidang Keahlian Teknik Sumber Daya Air</option>
-                        <option>Ahli Muda K3 Konstruksi</option>
-                        <option>Ahli Muda Teknik Jembatan</option>
-                        <option>Ahli Muda Bidang Keahlian Manajemen Konstruksi</option>
-
-                    </select>
-                </div>
-
-            </div>
-
-            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-
-                {{-- TUK --}}
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
-                        Tempat Uji Kompetensi (TUK)
-                    </label>
-
-                    <input
-                        type="text"
-                        name="tuk"
-                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-                </div>
-
-                {{-- LSP --}}
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
-                        Lembaga Sertifikasi Profesi (LSP)
-                    </label>
-
-                    <select
-                        name="lsp"
-                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-
-                        <option value="">Pilih...</option>
-
-                        <option>ATAKI Konstruksi Indonesia</option>
-                        <option>HATSINDO Indonesia Teknik</option>
-                        <option>KATIGA Konstruksi Indonesia</option>
-                        <option>GATAKI Konstruksi Mandiri</option>
-                        <option>PERTAHKINDO Kaltim</option>
-                        <option>Infrastruktur Jalan dan Jembatan Indonesia</option>
-                        <option>ASTEKINDO Kaltim</option>
-
-                    </select>
-                </div>
-
-            </div>
-
-            {{-- TEMPAT --}}
-            <div>
-                <label class="mb-2 block text-sm font-medium text-slate-700">
-                    Tempat Kegiatan
-                </label>
-
-                <input
-                    type="text"
-                    name="tempat_kegiatan"
-                    class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-            </div>
-
-            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-
-                {{-- PROVINSI --}}
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
-                        Provinsi
-                    </label>
-
-                    <select
-                        id="provinsi"
-                        name="provinsi"
-                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-
-                        <option value="">Pilih...</option>
-
-                        <option>Aceh</option>
-                        <option>Sumatera Utara</option>
-                        <option>Sumatera Barat</option>
-                        <option>Riau</option>
-                        <option>Jambi</option>
-                        <option>Sumatera Selatan</option>
-                        <option>Bengkulu</option>
-                        <option>Lampung</option>
-                        <option>Kepulauan Bangka Belitung</option>
-                        <option>Kepulauan Riau</option>
-                        <option>DKI Jakarta</option>
-                        <option>Jawa Barat</option>
-                        <option>Jawa Tengah</option>
-                        <option>DI Yogyakarta</option>
-                        <option>Jawa Timur</option>
-                        <option>Banten</option>
-                        <option>Bali</option>
-                        <option>Nusa Tenggara Barat</option>
-                        <option>Nusa Tenggara Timur</option>
-                        <option>Kalimantan Barat</option>
-                        <option>Kalimantan Tengah</option>
-                        <option>Kalimantan Selatan</option>
-                        <option>Kalimantan Timur</option>
-                        <option>Kalimantan Utara</option>
-                        <option>Sulawesi Utara</option>
-                        <option>Sulawesi Tengah</option>
-                        <option>Sulawesi Selatan</option>
-                        <option>Sulawesi Tenggara</option>
-                        <option>Gorontalo</option>
-                        <option>Sulawesi Barat</option>
-                        <option>Maluku</option>
-                        <option>Maluku Utara</option>
-                        <option>Papua</option>
-                        <option>Papua Barat</option>
-
-                    </select>
-                </div>
-
-                {{-- KABUPATEN --}}
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">
-                        Kabupaten/Kota
-                    </label>
-
-                    <select
-                        id="kabupaten"
-                        name="kabupaten"
-                        class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-
-                        <option value="">
-                            Pilih provinsi dulu...
-                        </option>
-
-                    </select>
-                </div>
-
-            </div>
-
-            {{-- SYARAT --}}
-            <div>
-                <label class="mb-2 block text-sm font-medium text-slate-700">
-                    Syarat Tambahan
-                </label>
-
-                <textarea
-                    name="syarat_tambahan"
-                    rows="3"
-                    class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm"
-                    placeholder="Gunakan tanda semicolon (;) sebagai pemisah"></textarea>
-            </div>
-
-            {{-- BUTTON --}}
             <div class="flex items-center justify-end gap-3 border-t border-slate-200 pt-4">
 
                 <button
@@ -584,114 +377,311 @@
 
 </div>
 
-{{-- SCRIPT MODAL --}}
+{{-- MODAL EDIT DATA --}}
+<div
+    id="modalEditPelatihan"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
+
+    <div class="max-h-[95vh] w-full max-w-5xl overflow-y-auto rounded-3xl bg-white shadow-2xl">
+
+        <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+            <div>
+                <h2 class="text-xl font-bold text-slate-800">
+                    Edit Kegiatan
+                </h2>
+                <p class="mt-1 text-sm text-slate-500">
+                    Ubah data kegiatan pelatihan dan sertifikasi.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                data-edit-modal-close
+                class="rounded-xl p-2 text-slate-500 hover:bg-slate-100">
+                ✕
+            </button>
+        </div>
+
+        <form
+            id="editPelatihanForm"
+            action="#"
+            method="POST"
+            class="space-y-5 p-6">
+
+            @csrf
+            @method('PUT')
+
+            @include('admin.pelatihan-sertifikasi.partials.form-fields', [
+                'mode' => 'edit',
+                'prefix' => 'edit',
+                'pelatihanItem' => null,
+            ])
+
+            <div class="flex items-center justify-end gap-3 border-t border-slate-200 pt-4">
+
+                <button
+                    type="button"
+                    data-edit-modal-close
+                    class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                    Batal
+                </button>
+
+                <button
+                    type="submit"
+                    class="rounded-xl bg-[#28428B] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1d3270]">
+                    Update Data
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{{-- SCRIPT MODAL + GLOBAL DROPDOWN --}}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    const modal = document.getElementById('modalPelatihan');
+    const modalCreate = document.getElementById('modalPelatihan');
+    const modalEdit = document.getElementById('modalEditPelatihan');
+    const editForm = document.getElementById('editPelatihanForm');
+
+    const actionDropdownMenu = document.getElementById('actionDropdownMenu');
+    const actionEditButton = document.getElementById('actionEditButton');
+    const actionDetailButton = document.getElementById('actionDetailButton');
+    const actionDeleteButton = document.getElementById('actionDeleteButton');
+    const deletePelatihanForm = document.getElementById('deletePelatihanForm');
+
+    let activeActionButton = null;
+
+    const kabupatenData = {
+        "Kalimantan Timur": [
+            "Samarinda",
+            "Balikpapan",
+            "Bontang",
+            "Kutai Kartanegara",
+            "Kutai Timur",
+            "Kutai Barat",
+            "Berau",
+            "Paser",
+            "Penajam Paser Utara",
+            "Mahakam Ulu"
+        ],
+        "DKI Jakarta": [
+            "Jakarta Pusat",
+            "Jakarta Barat",
+            "Jakarta Timur",
+            "Jakarta Selatan",
+            "Jakarta Utara",
+            "Kepulauan Seribu"
+        ],
+        "Jawa Barat": [
+            "Bandung",
+            "Bekasi",
+            "Bogor",
+            "Depok",
+            "Cimahi",
+            "Tasikmalaya"
+        ],
+        "Jawa Timur": [
+            "Surabaya",
+            "Malang",
+            "Kediri",
+            "Madiun",
+            "Blitar"
+        ],
+        "Sulawesi Selatan": [
+            "Makassar",
+            "Parepare",
+            "Palopo"
+        ]
+    };
+
+    function renderKabupatenOptions(prefix, selectedProvinsi, selectedKabupaten = null) {
+        const kabupatenSelect = document.getElementById(prefix + '_kabupaten');
+
+        if (!kabupatenSelect) {
+            return;
+        }
+
+        kabupatenSelect.innerHTML = '';
+
+        if (!selectedProvinsi || !kabupatenData[selectedProvinsi]) {
+            kabupatenSelect.innerHTML = '<option value="">Pilih provinsi dulu...</option>';
+            return;
+        }
+
+        kabupatenSelect.innerHTML = '<option value="">Pilih Kabupaten/Kota</option>';
+
+        kabupatenData[selectedProvinsi].forEach(function (kabupaten) {
+            const option = document.createElement('option');
+
+            option.value = kabupaten;
+            option.textContent = kabupaten;
+
+            if (selectedKabupaten && selectedKabupaten === kabupaten) {
+                option.selected = true;
+            }
+
+            kabupatenSelect.appendChild(option);
+        });
+    }
+
+    function setField(name, value) {
+        const field = editForm.querySelector('[name="' + name + '"]');
+
+        if (field) {
+            field.value = value || '';
+        }
+    }
+
+    function hideActionDropdown() {
+        if (!actionDropdownMenu) {
+            return;
+        }
+
+        actionDropdownMenu.classList.add('hidden');
+        activeActionButton = null;
+    }
+
+    function showActionDropdown(button) {
+        const rect = button.getBoundingClientRect();
+        const menuWidth = 224;
+        const menuHeight = 150;
+
+        let top = rect.bottom + 8;
+        let left = rect.right - menuWidth;
+
+        if (left < 12) {
+            left = rect.left;
+        }
+
+        if (top + menuHeight > window.innerHeight - 12) {
+            top = rect.top - menuHeight - 8;
+        }
+
+        actionDropdownMenu.style.top = `${top}px`;
+        actionDropdownMenu.style.left = `${left}px`;
+
+        actionDropdownMenu.classList.remove('hidden');
+        activeActionButton = button;
+    }
 
     document.querySelectorAll('[data-modal-target]').forEach(button => {
-
-        button.addEventListener('click', () => {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+        button.addEventListener('click', function () {
+            modalCreate.classList.remove('hidden');
+            modalCreate.classList.add('flex');
         });
-
     });
 
     document.querySelectorAll('[data-modal-close]').forEach(button => {
-
-        button.addEventListener('click', () => {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+        button.addEventListener('click', function () {
+            modalCreate.classList.add('hidden');
+            modalCreate.classList.remove('flex');
         });
-
     });
 
-});
+    document.querySelectorAll('[data-edit-modal-close]').forEach(button => {
+        button.addEventListener('click', function () {
+            modalEdit.classList.add('hidden');
+            modalEdit.classList.remove('flex');
+        });
+    });
 
-const kabupatenData = {
+    document.querySelectorAll('.action-dropdown-trigger').forEach(button => {
+        button.addEventListener('click', function (event) {
+            event.stopPropagation();
 
-    "Kalimantan Timur": [
-        "Samarinda",
-        "Balikpapan",
-        "Bontang",
-        "Kutai Kartanegara",
-        "Kutai Timur",
-        "Kutai Barat",
-        "Berau",
-        "Paser",
-        "Penajam Paser Utara",
-        "Mahakam Ulu"
-    ],
+            if (activeActionButton === button && !actionDropdownMenu.classList.contains('hidden')) {
+                hideActionDropdown();
+                return;
+            }
 
-    "DKI Jakarta": [
-        "Jakarta Pusat",
-        "Jakarta Barat",
-        "Jakarta Timur",
-        "Jakarta Selatan",
-        "Jakarta Utara",
-        "Kepulauan Seribu"
-    ],
+            showActionDropdown(button);
+        });
+    });
 
-    "Jawa Barat": [
-        "Bandung",
-        "Bekasi",
-        "Bogor",
-        "Depok",
-        "Cimahi",
-        "Tasikmalaya"
-    ],
+    actionDropdownMenu.addEventListener('click', function (event) {
+        event.stopPropagation();
+    });
 
-    "Jawa Timur": [
-        "Surabaya",
-        "Malang",
-        "Kediri",
-        "Madiun",
-        "Blitar"
-    ],
+    document.addEventListener('click', function () {
+        hideActionDropdown();
+    });
 
-    "Sulawesi Selatan": [
-        "Makassar",
-        "Parepare",
-        "Palopo"
-    ]
+    window.addEventListener('scroll', hideActionDropdown, true);
+    window.addEventListener('resize', hideActionDropdown);
 
-};
+    actionEditButton.addEventListener('click', function () {
+        if (!activeActionButton) {
+            return;
+        }
 
-const provinsiSelect = document.getElementById('provinsi');
-const kabupatenSelect = document.getElementById('kabupaten');
+        editForm.action = activeActionButton.dataset.updateUrl;
 
-provinsiSelect.addEventListener('change', function () {
+        setField('tahun', activeActionButton.dataset.tahun);
+        setField('status', ['dibuka', 'selesai'].includes(activeActionButton.dataset.status) ? activeActionButton.dataset.status : '');
+        setField('jenis_peserta', activeActionButton.dataset.jenisPeserta);
+        setField('metode_kegiatan', activeActionButton.dataset.metodeKegiatan);
+        setField('nama_kegiatan', activeActionButton.dataset.namaKegiatan);
+        setField('waktu_kegiatan', activeActionButton.dataset.waktuKegiatan);
+        setField('realisasi_peserta', activeActionButton.dataset.realisasiPeserta);
+        setField('sumber_dana', activeActionButton.dataset.sumberDana);
+        setField('standar_kompetensi', activeActionButton.dataset.standarKompetensi);
+        setField('tuk', activeActionButton.dataset.tuk);
+        setField('lsp', activeActionButton.dataset.lsp);
+        setField('tempat_kegiatan', activeActionButton.dataset.tempatKegiatan);
+        setField('provinsi', activeActionButton.dataset.provinsi);
+        setField('syarat_tambahan', activeActionButton.dataset.syaratTambahan);
 
-    const selectedProvinsi = this.value;
+        renderKabupatenOptions('edit', activeActionButton.dataset.provinsi, activeActionButton.dataset.kabupatenKota);
 
-    kabupatenSelect.innerHTML = '';
+        hideActionDropdown();
 
-    if (!selectedProvinsi || !kabupatenData[selectedProvinsi]) {
+        modalEdit.classList.remove('hidden');
+        modalEdit.classList.add('flex');
+    });
 
-        kabupatenSelect.innerHTML =
-            '<option value="">Pilih provinsi dulu...</option>';
+    actionDetailButton.addEventListener('click', function () {
+        if (!activeActionButton) {
+            return;
+        }
 
-        return;
+        window.location.href = activeActionButton.dataset.detailUrl;
+    });
+
+    actionDeleteButton.addEventListener('click', function () {
+        if (!activeActionButton) {
+            return;
+        }
+
+        if (!confirm('Yakin ingin menghapus kegiatan ini?')) {
+            return;
+        }
+
+        deletePelatihanForm.action = activeActionButton.dataset.deleteUrl;
+        deletePelatihanForm.submit();
+    });
+
+    const createProvinsiSelect = document.getElementById('create_provinsi');
+
+    if (createProvinsiSelect) {
+        createProvinsiSelect.addEventListener('change', function () {
+            renderKabupatenOptions('create', this.value);
+        });
     }
 
-    kabupatenSelect.innerHTML =
-        '<option value="">Pilih Kabupaten/Kota</option>';
+    const editProvinsiSelect = document.getElementById('edit_provinsi');
 
-    kabupatenData[selectedProvinsi].forEach(function (kabupaten) {
-
-        const option = document.createElement('option');
-
-        option.value = kabupaten;
-        option.textContent = kabupaten;
-
-        kabupatenSelect.appendChild(option);
-
-    });
+    if (editProvinsiSelect) {
+        editProvinsiSelect.addEventListener('change', function () {
+            renderKabupatenOptions('edit', this.value);
+        });
+    }
 
 });
-
 </script>
 
 @endsection
