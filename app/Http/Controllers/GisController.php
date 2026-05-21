@@ -40,30 +40,149 @@ class GisController extends Controller
 
     private function bujkData(): array
     {
-        if (!Schema::hasTable('bujk')) {
+        $table = 'bujk';
+
+        if (!Schema::hasTable($table)) {
             return $this->emptyPayload();
         }
 
-        $items = DB::table('bujk')
-        
-            ->where('is_deleted', 0)
-            ->whereIn('kab_kota_bujk', array_keys($this->kodeKabupaten))
-            ->get()
+        $query = DB::table($table);
+
+        if ($this->hasColumn($table, 'is_deleted')) {
+            $query->where(function ($query) {
+                $query->whereNull('is_deleted')
+                    ->orWhere('is_deleted', 0);
+            });
+        }
+
+        /*
+         * Support dua versi struktur tabel:
+         * 1. Struktur lama:
+         *    nama_bujk, kab_kota_bujk, jenis_bujk, alamat_bujk, telp_bujk, email_bujk, website_bujk
+         *
+         * 2. Struktur baru:
+         *    nama_bu, kabupaten, jenis_usaha, dan kolom lain sesuai hasil import BUJK.
+         */
+        if ($this->hasColumn($table, 'kab_kota_bujk')) {
+            $query->whereIn('kab_kota_bujk', array_keys($this->kodeKabupaten));
+        } elseif ($this->hasColumn($table, 'kabupaten')) {
+            $query->whereNotNull('kabupaten')
+                ->where('kabupaten', '!=', '');
+        }
+
+        $rows = $query->get();
+
+        $items = $rows
             ->map(function ($row) {
+                $namaBu = $this->value($row, [
+                    'nama_bu',
+                    'nama_bujk',
+                    'nama',
+                    'Nama_BU',
+                    'Nama_BUJK',
+                ]);
+
+                $nib = $this->value($row, [
+                    'nib',
+                    'NIB',
+                ]);
+
+                $jenisUsaha = $this->value($row, [
+                    'jenis_usaha',
+                    'jenis_bujk',
+                    'Jenis_Usaha',
+                    'Jenis_BUJK',
+                ]);
+
+                $alamat = $this->value($row, [
+                    'alamat',
+                    'alamat_bujk',
+                    'alamat_bu',
+                    'Alamat',
+                    'Alamat_BUJK',
+                ]);
+
+                $kabupatenRaw = $this->value($row, [
+                    'kabupaten',
+                    'kab_kota_bujk',
+                    'kab_kota',
+                    'Kabupaten',
+                    'Kab_Kota_BUJK',
+                ]);
+
+                $kabupaten = $this->normalizeKabupaten($kabupatenRaw);
+
+                $telepon = $this->value($row, [
+                    'telepon',
+                    'telp',
+                    'telp_bujk',
+                    'no_telp',
+                    'no_telepon',
+                    'nomor_telepon',
+                    'kontak',
+                    'Telepon',
+                ]);
+
+                $email = $this->value($row, [
+                    'email',
+                    'email_bujk',
+                    'Email',
+                ]);
+
+                $website = $this->value($row, [
+                    'website',
+                    'website_bujk',
+                    'Website',
+                ]);
+
+                $asosiasi = $this->value($row, [
+                    'asosiasi',
+                    'Asosiasi',
+                ]);
+
+                $status = $this->value($row, [
+                    'status',
+                    'Status',
+                ]);
+
                 return [
-                    'id' => $row->id,
+                    'id' => $this->value($row, ['id', 'ID']),
                     'category' => 'bujk',
-                    'name' => $row->nama_bujk,
-                    'nib' => $row->nib,
-                    'jenis_usaha' => $row->jenis_bujk,
-                    'alamat' => $row->alamat_bujk,
-                    'kabupaten' => $this->kodeKabupaten[$row->kab_kota_bujk] ?? $row->kab_kota_bujk,
-                    'kode_kabupaten' => $row->kab_kota_bujk,
-                    'provinsi' => 'Kalimantan Timur',
-                    'telepon' => $row->telp_bujk,
-                    'email' => $row->email_bujk,
-                    'website' => $row->website_bujk,
+                    'name' => $namaBu,
+                    'nama_bu' => $namaBu,
+                    'nib' => $nib,
+                    'jenis_usaha' => $jenisUsaha,
+                    'alamat' => $alamat,
+                    'kabupaten' => $kabupaten,
+                    'kode_kabupaten' => $this->kodeKabupatenByName($kabupaten),
+                    'provinsi' => $this->value($row, ['propinsi', 'provinsi', 'Provinsi']) ?: 'Kalimantan Timur',
+                    'telepon' => $telepon,
+                    'email' => $email,
+                    'website' => $website,
+                    'asosiasi' => $asosiasi,
+                    'status' => $status,
                 ];
+            })
+            ->filter(function ($item) {
+                return filled($item['name'])
+                    && filled($item['kabupaten']);
+            })
+            ->values();
+
+        /*
+         * Deduplicate berdasarkan NIB.
+         * Kalau NIB kosong, fallback berdasarkan nama BU + kabupaten.
+         */
+        $items = $items
+            ->groupBy(function ($item) {
+                if (filled($item['nib'])) {
+                    return 'nib:' . trim((string) $item['nib']);
+                }
+
+                return 'nama:' . strtolower((string) $item['name']) . '|kab:' . strtolower((string) $item['kabupaten']);
+            })
+            ->map(function ($group) {
+                return $group->first();
             })
             ->values();
 
@@ -165,6 +284,7 @@ class GisController extends Controller
                     'total' => $group->count(),
                 ];
             })
+            ->sortByDesc('total')
             ->values();
 
         return array_merge([
@@ -203,7 +323,38 @@ class GisController extends Controller
             return $this->kodeKabupaten[$value];
         }
 
-        return $value;
+        $normalized = preg_replace('/\s+/', ' ', $value);
+        $normalized = trim($normalized);
+
+        $withoutPrefix = preg_replace('/^(kab\.?|kabupaten)\s+/i', '', $normalized);
+        $withoutPrefix = trim($withoutPrefix);
+
+        foreach ($this->kodeKabupaten as $kode => $kabupaten) {
+            if (strtolower($normalized) === strtolower($kabupaten)) {
+                return $kabupaten;
+            }
+
+            if (strtolower($withoutPrefix) === strtolower($kabupaten)) {
+                return $kabupaten;
+            }
+        }
+
+        return $normalized;
+    }
+
+    private function kodeKabupatenByName(?string $name): ?string
+    {
+        if (blank($name)) {
+            return null;
+        }
+
+        foreach ($this->kodeKabupaten as $kode => $kabupaten) {
+            if (strtolower($kabupaten) === strtolower((string) $name)) {
+                return $kode;
+            }
+        }
+
+        return null;
     }
 
     private function value(object $row, array $columns): mixed
@@ -215,6 +366,11 @@ class GisController extends Controller
         }
 
         return null;
+    }
+
+    private function hasColumn(string $table, string $column): bool
+    {
+        return Schema::hasColumn($table, $column);
     }
 
     private function isExpired($date): bool
