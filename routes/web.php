@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\BujkController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PelatihanTkkController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Layanan\AsosiasiPerusahaanController;
 use App\Http\Controllers\Layanan\AsosiasiProfesiController;
@@ -95,7 +96,9 @@ Route::get('/profil/sop-renja', function () {
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
 
 Route::get('/registrasi', function () {
     return view('welcome', [
@@ -218,67 +221,74 @@ Route::prefix('admin')
     ->name('admin.')
     ->middleware('auth')
     ->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        Route::get('/dashboard', [DashboardController::class, 'index'])
+            ->name('dashboard');
 
         Route::view('/pengaturan', 'admin.placeholder', [
-            'title' => 'Pengaturan Akun',
+            'title' => 'Pengaturan Akun'
         ])->name('pengaturan');
 
         Route::view('/pengguna', 'admin.placeholder', [
-            'title' => 'Pengguna',
+            'title' => 'Pengguna'
         ])->name('pengguna');
 
         Route::view('/jabatan-kerja', 'admin.placeholder', [
-            'title' => 'Jabatan Kerja',
+            'title' => 'Jabatan Kerja'
         ])->name('jabatan-kerja');
 
         Route::view('/prodi-pendidikan', 'admin.placeholder', [
-            'title' => 'Prodi Pendidikan',
+            'title' => 'Prodi Pendidikan'
         ])->name('prodi-pendidikan');
 
         Route::view('/pegawai', 'admin.placeholder', [
-            'title' => 'Pegawai',
+            'title' => 'Pegawai'
         ])->name('pegawai');
 
         Route::view('/pengguna-jasa', 'admin.placeholder', [
-            'title' => 'Pengguna Jasa',
+            'title' => 'Pengguna Jasa'
         ])->name('pengguna-jasa');
 
         Route::view('/asosiasi-perusahaan', 'admin.placeholder', [
-            'title' => 'Asosiasi Perusahaan',
+            'title' => 'Asosiasi Perusahaan'
         ])->name('asosiasi-perusahaan');
 
         Route::view('/asosiasi-profesi', 'admin.placeholder', [
-            'title' => 'Asosiasi Profesi',
+            'title' => 'Asosiasi Profesi'
         ])->name('asosiasi-profesi');
 
         Route::view('/lsp', 'admin.placeholder', [
-            'title' => 'LSP',
+            'title' => 'LSP'
         ])->name('lsp');
 
         Route::view('/perguruan-tinggi', 'admin.placeholder', [
-            'title' => 'Perguruan Tinggi / Pakar',
+            'title' => 'Perguruan Tinggi / Pakar'
         ])->name('perguruan-tinggi');
 
         Route::view('/lppkk', 'admin.placeholder', [
-            'title' => 'LPPKK',
+            'title' => 'LPPKK'
         ])->name('lppkk');
 
         Route::view('/pemerhati-konstruksi', 'admin.placeholder', [
-            'title' => 'Pemerhati Konstruksi',
+            'title' => 'Pemerhati Konstruksi'
         ])->name('pemerhati-konstruksi');
 
         Route::view('/pemanfaat-produk', 'admin.placeholder', [
-            'title' => 'Pemanfaat Produk',
+            'title' => 'Pemanfaat Produk'
         ])->name('pemanfaat-produk');
 
         Route::view('/rantai-pasok', 'admin.placeholder', [
-            'title' => 'Rantai Pasok',
+            'title' => 'Rantai Pasok'
         ])->name('rantai-pasok');
 
-        Route::get('/bujk', [BujkController::class, 'index'])->name('bujk');
-        Route::post('/bujk', [BujkController::class, 'store'])->name('bujk.store');
-        Route::post('/bujk/import', [BujkController::class, 'import'])->name('bujk.import');
+        Route::get('/bujk', [BujkController::class, 'index'])
+            ->name('bujk');
+
+        Route::post('/bujk', [BujkController::class, 'store'])
+            ->name('bujk.store');
+
+        Route::post('/bujk/import', [BujkController::class, 'import'])
+            ->name('bujk.import');
 
         Route::delete('/bujk/bulk-destroy', [BujkController::class, 'bulkDestroy'])
             ->name('bujk.bulk-destroy');
@@ -301,73 +311,87 @@ Route::prefix('admin')
             ->name('bujk.destroy');
 
         Route::view('/paket-konstruksi', 'admin.placeholder', [
-            'title' => 'Paket Konstruksi',
+            'title' => 'Paket Konstruksi'
         ])->name('paket-konstruksi');
 
         Route::view('/kotak-saran', 'admin.placeholder', [
-            'title' => 'Kotak Saran',
+            'title' => 'Kotak Saran'
         ])->name('kotak-saran');
 
         Route::view('/file-upload', 'admin.placeholder', [
-            'title' => 'File Upload',
+            'title' => 'File Upload'
         ])->name('file-upload');
 
         Route::view('/buku-tamu', 'admin.placeholder', [
-            'title' => 'Buku Tamu',
+            'title' => 'Buku Tamu'
         ])->name('buku-tamu');
 
         Route::view('/kategori', 'admin.placeholder', [
-            'title' => 'Kategori',
+            'title' => 'Kategori'
         ])->name('kategori');
 
         Route::view('/berita', 'admin.placeholder', [
-            'title' => 'Berita',
+            'title' => 'Berita'
         ])->name('berita');
 
         Route::view('/acara-kegiatan', 'admin.placeholder', [
-            'title' => 'Acara / Kegiatan',
+            'title' => 'Acara / Kegiatan'
         ])->name('acara-kegiatan');
 
         Route::view('/peraturan', 'admin.placeholder', [
-            'title' => 'Peraturan',
+            'title' => 'Peraturan'
         ])->name('peraturan');
 
         Route::get('/tenaga-kerja-konstruksi', [DashboardController::class, 'tkk'])
             ->name('tenaga-kerja-konstruksi');
 
-        Route::view('/pelatihan-sertifikasi', 'admin.placeholder', [
-            'title' => 'Pelatihan / Sertifikasi',
-        ])->name('pelatihan-sertifikasi');
+        Route::get('/tenaga-kerja-konstruksi/search', [DashboardController::class, 'searchTkk'])
+            ->name('tenaga-kerja-konstruksi.search');
+        
+        Route::get('/pelatihan-sertifikasi', [PelatihanTkkController::class, 'index'])
+            ->name('pelatihan-sertifikasi.index');
+
+        Route::get('/pelatihan-sertifikasi/create', [PelatihanTkkController::class, 'create'])
+            ->name('pelatihan-sertifikasi.create');
+
+        Route::post('/pelatihan-sertifikasi', [PelatihanTkkController::class, 'store'])
+            ->name('pelatihan-sertifikasi.store');
+
+        Route::put('/pelatihan-sertifikasi/{pelatihan}', [PelatihanTkkController::class, 'update'])
+            ->name('pelatihan-sertifikasi.update');
+
+        Route::delete('/pelatihan-sertifikasi/{pelatihan}', [PelatihanTkkController::class, 'destroy'])
+            ->name('pelatihan-sertifikasi.destroy');
 
         Route::view('/tertib-usaha', 'admin.placeholder', [
-            'title' => 'Tertib Usaha',
+            'title' => 'Tertib Usaha'
         ])->name('tertib-usaha');
 
         Route::view('/tertib-penyelenggaraan', 'admin.placeholder', [
-            'title' => 'Tertib Penyelenggaraan',
+            'title' => 'Tertib Penyelenggaraan'
         ])->name('tertib-penyelenggaraan');
 
         Route::view('/tertib-pemanfaatan', 'admin.placeholder', [
-            'title' => 'Tertib Pemanfaatan',
+            'title' => 'Tertib Pemanfaatan'
         ])->name('tertib-pemanfaatan');
 
         Route::view('/surat-menyurat', 'admin.placeholder', [
-            'title' => 'Surat Menyurat',
+            'title' => 'Surat Menyurat'
         ])->name('surat-menyurat');
 
         Route::view('/arsip', 'admin.placeholder', [
-            'title' => 'Arsip',
+            'title' => 'Arsip'
         ])->name('arsip');
 
         Route::view('/penandatangan-dokumen', 'admin.placeholder', [
-            'title' => 'Penandatangan Dokumen',
+            'title' => 'Penandatangan Dokumen'
         ])->name('penandatangan-dokumen');
 
         Route::view('/anggaran-perjadin', 'admin.placeholder', [
-            'title' => 'Anggaran Perjadin',
+            'title' => 'Anggaran Perjadin'
         ])->name('anggaran-perjadin');
 
         Route::view('/perjadin', 'admin.placeholder', [
-            'title' => 'Perjadin',
+            'title' => 'Perjadin'
         ])->name('perjadin');
     });
