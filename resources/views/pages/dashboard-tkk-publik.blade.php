@@ -1,0 +1,405 @@
+@extends('layouts.app')
+
+@section('page-title', 'Dashboard')
+@section('page-subtitle', 'Dashboard Tenaga Kerja Konstruksi')
+
+@section('content')
+<div class="mx-auto max-w-6xl space-y-4">
+
+    {{-- Header --}}
+    <div class="mt-10 rounded-[22px] bg-gradient-to-r from-[#142B67] via-[#1E3A7A] to-[#2F49A8] px-6 py-5 text-white shadow-lg">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-blue-100/70">
+                    Sistem Informasi Bina Konstruksi
+                </p>
+
+                <h1 class="mt-2 text-2xl font-black">
+                    Dashboard Tenaga Kerja Konstruksi
+                </h1>
+
+                <p class="mt-2 max-w-2xl text-sm text-blue-100/80">
+                    Visualisasi data tenaga kerja konstruksi di Kalimantan Timur.
+                </p>
+            </div>
+
+            <div class="flex gap-3">
+                <div class="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur">
+                    <p class="text-[11px] uppercase tracking-[0.15em] text-blue-100/70">
+                        Total TKK
+                    </p>
+
+                    <h3 class="mt-1 text-2xl font-black text-[#FACC15]">
+                        {{ $totalTkk ?? 0 }}
+                    </h3>
+                </div>
+
+                <div class="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur">
+                    <p class="text-[11px] uppercase tracking-[0.15em] text-blue-100/70">
+                        Wilayah
+                    </p>
+
+                    <h3 class="mt-1 text-2xl font-black text-[#FACC15]">
+                        10
+                    </h3>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    {{-- Charts --}}
+    <div class="grid grid-cols-1 gap-9 xl:grid-cols-2">
+
+        <x-dashboard-chart-card
+            title="Status Sertifikasi"
+            canvas="statusSertifikasiChart"
+            height="h-[220px]"
+        />
+
+        <x-dashboard-chart-card
+            title="Distribusi Jenjang"
+            canvas="distribusiJenjangChart"
+            height="h-[220px]"
+        />
+
+        <x-dashboard-chart-card
+            title="Top 5 Asosiasi"
+            canvas="topAsosiasiChart"
+            height="h-[240px]"
+        />
+
+        <x-dashboard-chart-card
+            title="Top 5 Klasifikasi"
+            canvas="topKlasifikasiChart"
+            height="h-[240px]"
+        />
+
+        <x-dashboard-chart-card
+            title="Perbandingan TKK Kab/Kota"
+            canvas="perbandinganKabupatenChart"
+            height="h-[260px]"
+        />
+
+        <div class="mb-9 sibikon-card overflow-hidden rounded-[20px] border border-slate-200 bg-white">
+            <div class="border-b border-slate-100 px-4 py-3">
+                <h3 class="text-sm font-extrabold text-slate-900">
+                    Proyeksi Kadaluarsa
+                </h3>
+            </div>
+
+            <div class="relative overflow-hidden p-4">
+
+                <img
+                    src="{{ asset('images/logo-sibikon.png') }}"
+                    alt="Logo Sibikon"
+                    class="pointer-events-none absolute left-1/2 top-1/2 w-36 -translate-x-1/2 -translate-y-1/2 opacity-[0.05]"
+                >
+
+                <div class="relative z-10 h-[260px]">
+                    <canvas id="proyeksiKadaluarsaChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+@endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const gridColor = 'rgba(148, 163, 184, 0.16)';
+    const textColor = '#475569';
+
+    const sibikonAccent = [
+        '#142B67',
+        '#FACC15',
+        '#F97316',
+        '#C0267B',
+        '#22C55E',
+        '#06B6D4'
+    ];
+
+    const bluePalette = [
+        '#173A73',
+        '#2F67A0',
+        '#5B9BC8',
+        '#90C4DF',
+        '#B8DDED'
+    ];
+
+    const statusPalette = [
+        '#142B67',
+        '#FACC15'
+    ];
+
+    function formatNumber(value) {
+        return new Intl.NumberFormat('id-ID').format(value);
+    }
+
+    function truncateLabel(label, max = 18) {
+        if (!label) return '';
+        return label.length > max ? label.substring(0, max) + '…' : label;
+    }
+
+    function tooltipLabel() {
+        return {
+            callbacks: {
+                label: function(context) {
+                    return formatNumber(context.raw);
+                }
+            }
+        };
+    }
+
+    function resolveColors(labels, colors) {
+        if (Array.isArray(colors) && colors.length === labels.length) {
+            return colors;
+        }
+
+        return labels.map((_, i) => colors[i % colors.length]);
+    }
+
+    function barChart(id, labels, values, horizontal = false, colors = bluePalette) {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        new Chart(el, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: resolveColors(labels, colors),
+                    borderRadius: 8,
+                    maxBarThickness: 36
+                }]
+            },
+            options: {
+                indexAxis: horizontal ? 'y' : 'x',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: tooltipLabel()
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: textColor,
+                            font: { size: 11 },
+                            maxRotation: 0,
+                            minRotation: 0,
+                            callback: function(value) {
+                                if (horizontal) return formatNumber(value);
+
+                                const label = this.getLabelForValue(value);
+                                return truncateLabel(label, 11);
+                            }
+                        },
+                        grid: { color: gridColor }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: textColor,
+                            font: { size: 11 },
+                            callback: function(value) {
+                                if (horizontal) {
+                                    const label = this.getLabelForValue(value);
+                                    return truncateLabel(label, 24);
+                                }
+
+                                return formatNumber(value);
+                            }
+                        },
+                        grid: { color: gridColor }
+                    }
+                }
+            }
+        });
+    }
+
+    function pieChart(id, labels, values) {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        new Chart(el, {
+            type: 'pie',
+            data: {
+                labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: sibikonAccent,
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: textColor,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 14,
+                            font: { size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percent = total ? ((context.raw / total) * 100).toFixed(1) : 0;
+                                return `${context.label}: ${formatNumber(context.raw)} (${percent}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function lineChart(id, labels, values) {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        new Chart(el, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    data: values,
+                    borderColor: '#2F67A0',
+                    backgroundColor: 'rgba(47, 103, 160, 0.10)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#142B67',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: tooltipLabel()
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: textColor,
+                            font: { size: 11 }
+                        },
+                        grid: { color: gridColor }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: textColor,
+                            font: { size: 11 },
+                            callback: value => formatNumber(value)
+                        },
+                        grid: { color: gridColor }
+                    }
+                }
+            }
+        });
+    }
+
+    function hexToRgb(hex) {
+        const cleanHex = hex.replace('#', '');
+        const bigint = parseInt(cleanHex, 16);
+
+        return {
+            r: (bigint >> 16) & 255,
+            g: (bigint >> 8) & 255,
+            b: bigint & 255
+        };
+    }
+
+    function interpolateColor(color1, color2, factor) {
+        const c1 = hexToRgb(color1);
+        const c2 = hexToRgb(color2);
+
+        const r = Math.round(c1.r + (c2.r - c1.r) * factor);
+        const g = Math.round(c1.g + (c2.g - c1.g) * factor);
+        const b = Math.round(c1.b + (c2.b - c1.b) * factor);
+
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function buildKabupatenColors(values) {
+        const maxValue = Math.max(...values);
+        const minValue = Math.min(...values);
+
+        const darkest = '#173A73';
+        const lightest = '#D9E8F4';
+
+        return values.map((value) => {
+            if (maxValue === minValue) return darkest;
+
+            const normalized = (maxValue - value) / (maxValue - minValue);
+            return interpolateColor(darkest, lightest, normalized);
+        });
+    }
+
+    pieChart(
+        'statusSertifikasiChart',
+        @json(collect($statusSertifikasi)->pluck('label')),
+        @json(collect($statusSertifikasi)->pluck('value'))
+    );
+
+    barChart(
+        'distribusiJenjangChart',
+        @json(collect($distribusiJenjang)->pluck('label')),
+        @json(collect($distribusiJenjang)->pluck('value')),
+        false,
+        bluePalette
+    );
+
+    barChart(
+        'topAsosiasiChart',
+        @json(collect($topAsosiasi)->pluck('label')),
+        @json(collect($topAsosiasi)->pluck('value')),
+        true,
+        bluePalette
+    );
+
+    barChart(
+        'topKlasifikasiChart',
+        @json(collect($topKlasifikasi)->pluck('label')),
+        @json(collect($topKlasifikasi)->pluck('value')),
+        true,
+        bluePalette
+    );
+
+    const perbandinganKabupatenLabels = @json(collect($perbandinganKabupaten)->pluck('label'));
+    const perbandinganKabupatenValues = @json(collect($perbandinganKabupaten)->pluck('value'));
+    const perbandinganKabupatenColors = bluePalette;
+    
+    barChart(
+        'perbandinganKabupatenChart',
+        perbandinganKabupatenLabels,
+        perbandinganKabupatenValues,
+        true,
+        perbandinganKabupatenColors
+    );
+
+    lineChart(
+        'proyeksiKadaluarsaChart',
+        @json(collect($proyeksiKadaluarsa)->pluck('label')),
+        @json(collect($proyeksiKadaluarsa)->pluck('value'))
+    );
+</script>
+@endpush

@@ -178,47 +178,49 @@
         'angka' => '890',
         'label' => 'Tenaga Ahli',
         'icon' => 'tenaga-ahli',
-        'target' => 'chart-tkk',
+        'url' => route('dashboard.tenaga-kerja')
         ],
         [
         'angka' => '1751',
         'label' => 'Tenaga Terampil',
         'icon' => 'tenaga-terampil',
-        'target' => 'chart-tkk',
+        'url' => route('dashboard.tenaga-kerja')
         ],
         [
         'angka' => '747',
-        'label' => 'Badan Usaha (NIB)',
+        'label' => 'BUJK',
         'icon' => 'nib',
-        'target' => 'null',
+        'url' => route('dashboard.bujk.publik')
         ],
         [
         'angka' => '172',
-        'label' => 'Badan Usaha (SBU)',
+        'label' => 'SBU',
         'icon' => 'sbu',
-        'target' => 'null'
+        'url' => route('dashboard.sbu.publik')
         ],
         ];
         @endphp
 
-        <div class="mx-auto grid max-w-7xl grid-cols-1 items-center justify-items-center gap-y-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-x-8">
+        <div class="mx-auto grid max-w-7xl grid-cols-1 items-center gap-y-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-x-10">
 
             {{-- KIRI: STATISTIC CARDS --}}
-            <div class="grid w-full max-w-[760px] grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2">
-                @foreach ($statistik as $item)
-                <div class="group relative min-h-[165px] overflow-hidden rounded-[24px] border border-[#c5cae9]/60 bg-white px-8 py-8 shadow-[0_14px_35px_rgba(33,50,94,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(33,50,94,0.14)]">
+            <div class="grid w-full grid-cols-1 gap-8 sm:grid-cols-2">
 
-                    {{-- Garis Atas --}}
+                @foreach ($statistik as $item)
+                <div class="group relative overflow-hidden rounded-[24px] border border-[#c5cae9]/60 bg-white px-7 py-7 shadow-[0_14px_35px_rgba(33,50,94,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(33,50,94,0.14)]">
+
+                    {{-- Top Accent --}}
                     <span class="absolute left-0 top-0 h-1.5 w-full bg-[#21325e]"></span>
 
                     <div class="flex items-center gap-5">
 
-                        {{-- Icon Box --}}
-                        <div class="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-[#c5cae9]/30 text-[#3a4fac] transition group-hover:bg-[#f7e578]/70">
+                        {{-- Icon --}}
+                        <a href="{{ $item['url'] }}"
+                            class="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-[#eef2ff] text-[#21325e] transition duration-300 hover:scale-105 hover:bg-[#f7e578] hover:text-black hover:shadow-lg">
 
                             {{-- Tenaga Ahli --}}
                             @if ($item['icon'] === 'tenaga-ahli')
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none"
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M6 10a6 6 0 0112 0" />
@@ -233,7 +235,7 @@
 
                             {{-- Tenaga Terampil --}}
                             @elseif ($item['icon'] === 'tenaga-terampil')
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none"
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M14 5l5 5" />
@@ -247,9 +249,9 @@
                                     d="M4 7l3-3" />
                             </svg>
 
-                            {{-- Badan Usaha NIB --}}
+                            {{-- NIB --}}
                             @elseif ($item['icon'] === 'nib')
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none"
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M7 3h7l5 5v13H7V3z" />
@@ -261,9 +263,9 @@
                                     d="M4 7v14h12" />
                             </svg>
 
-                            {{-- Badan Usaha SBU --}}
+                            {{-- SBU --}}
                             @else
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none"
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M7 4h10a2 2 0 012 2v9a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z" />
@@ -274,16 +276,15 @@
                                     d="M10.5 17l-1 3 2.5-1.3L14.5 20l-1-3" />
                             </svg>
                             @endif
-
-                        </div>
+                        </a>
 
                         {{-- Text --}}
                         <div>
-                            <h3 class="text-5xl font-extrabold leading-none text-[#21325e]">
+                            <h3 class="text-4xl font-extrabold leading-none text-[#21325e]">
                                 {{ $item['angka'] }}
                             </h3>
 
-                            <p class="mt-3 text-base font-semibold leading-snug text-[#21325e]/70">
+                            <p class="mt-2 text-sm font-semibold leading-snug text-[#21325e]/70">
                                 {{ $item['label'] }}
                             </p>
                         </div>
@@ -291,10 +292,11 @@
                     </div>
                 </div>
                 @endforeach
+
             </div>
 
             {{-- KANAN: TITLE --}}
-            <div class="w-full max-w-[560px] text-center">
+            <div class="w-full max-w-[560px] text-center lg:text-center">
                 <p class="mb-5 text-xs font-bold uppercase tracking-[0.45em] text-[#7282cc]">
                     Statistik
                 </p>
@@ -307,7 +309,6 @@
             </div>
 
         </div>
-
     </div>
 </section>
 

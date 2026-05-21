@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Layanan\AsosiasiPerusahaanController;
 use App\Http\Controllers\Layanan\AsosiasiProfesiController;
 use App\Http\Controllers\Layanan\PenyediaJasaController;
+use App\Http\Controllers\PublicDashboardController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
@@ -197,6 +198,21 @@ Route::get('/layanan/penyedia-jasa/data', [PenyediaJasaController::class, 'data'
 
 Route::get('/layanan/penyedia-jasa', [PenyediaJasaController::class, 'index'])
     ->name('penyedia-jasa');
+
+/*
+|--------------------------------------------------------------------------
+| Dashboard Publik
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/dashboard/tenaga-kerja-konstruksi', [PublicDashboardController::class, 'tenagaKerja'])
+    ->name('dashboard.tenaga-kerja');
+
+Route::get('/dashboard/bujk', [PublicDashboardController::class, 'bujk'])
+    ->name('dashboard.bujk.publik');
+
+Route::get('/dashboard/sbu', [PublicDashboardController::class, 'sbu'])
+    ->name('dashboard.sbu.publik');
 
 Route::prefix('admin')
     ->name('admin.')
