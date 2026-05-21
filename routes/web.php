@@ -4,77 +4,22 @@ use App\Http\Controllers\Admin\BujkController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PelatihanTkkController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\GisController;
 use App\Http\Controllers\Layanan\AsosiasiPerusahaanController;
 use App\Http\Controllers\Layanan\AsosiasiProfesiController;
 use App\Http\Controllers\Layanan\PenyediaJasaController;
 use App\Http\Controllers\PublicDashboardController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
-    $kodeKabupaten = [
-        '64.01' => 'Paser',
-        '64.02' => 'Kutai Kartanegara',
-        '64.03' => 'Berau',
-        '64.07' => 'Kutai Barat',
-        '64.08' => 'Kutai Timur',
-        '64.09' => 'Penajam Paser Utara',
-        '64.11' => 'Mahakam Ulu',
-        '64.71' => 'Kota Balikpapan',
-        '64.72' => 'Kota Samarinda',
-        '64.74' => 'Kota Bontang',
-    ];
-
-    $bujkRows = DB::table('bujk')
-        ->select([
-            'id',
-            'nib',
-            'nama_bu',
-            'jenis_usaha',
-            'alamat',
-            'kabupaten',
-            // 'provinsi',
-            'telepon',
-            'email',
-            'website',
-            'is_deleted',
-        ])
-        ->where('is_deleted', 0)
-        ->whereIn('kabupaten', array_keys($kodeKabupaten))
-        ->get()
-        ->map(function ($row) use ($kodeKabupaten) {
-            return [
-                'id' => $row->id,
-                'nib' => $row->nib,
-                'nama_bu' => $row->nama_bu,
-                'jenis_usaha' => $row->jenis_usaha,
-                'alamat' => $row->alamat,
-                'kabupaten' => $row->kabupaten,
-                'kode_kabupaten' => $row->kabupaten,
-                // 'provinsi' => $row->provinsi,
-                'telepon' => $row->telepon,
-                'email' => $row->email,
-                'website' => $row->website,
-            ];
-        })
-        ->values();
-
-    $gisSummary = $bujkRows
-        ->groupBy('kabupaten')
-        ->map(function ($items, $kabupaten) {
-            return [
-                'kabupaten' => $kabupaten,
-                'total' => $items->count(),
-            ];
-        })
-        ->values();
-
-    $kabupatenOptions = collect($kodeKabupaten)->values()->sort()->values();
 
     return view('welcome', [
         'page' => 'beranda',
     ]);
 })->name('beranda');
+
+Route::get('/gis-data/{category}', [GisController::class, 'data'])
+    ->name('gis.data');
 
 Route::get('/profil/tentang-kami', function () {
     return view('welcome', [
