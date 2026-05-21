@@ -21,6 +21,9 @@ Route::get('/', function () {
 Route::get('/gis-data/{category}', [GisController::class, 'data'])
     ->name('gis.data');
 
+Route::get('/gis-data/{category}', [GisController::class, 'data'])
+    ->name('gis.data');
+
 Route::get('/profil/tentang-kami', function () {
     return view('welcome', [
         'page' => 'tentang-kami',

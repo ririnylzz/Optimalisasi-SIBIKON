@@ -4,342 +4,329 @@
 @section('page-subtitle', 'Kelola identitas, klasifikasi, wilayah, dan kontak usaha jasa konstruksi di Kalimantan Timur.')
 
 @section('content')
-    @php
-        $isEditing = $editingBujk !== null;
-        $selectedJenis = old('jenis_bujk');
+@php
+$isEditing = $editingBujk !== null;
+$selectedJenis = old('jenis_bujk');
 
-        if (is_string($selectedJenis)) {
-            $selectedJenis = collect(explode(',', $selectedJenis))
-                ->map(fn ($item) => trim($item))
-                ->filter()
-                ->values()
-                ->all();
-        }
+if (is_string($selectedJenis)) {
+$selectedJenis = collect(explode(',', $selectedJenis))
+->map(fn ($item) => trim($item))
+->filter()
+->values()
+->all();
+}
 
-        $selectedJenis = $selectedJenis ?? ($editingBujk?->jenis_bujk_list ?? []);
+$selectedJenis = $selectedJenis ?? ($editingBujk?->jenis_bujk_list ?? []);
 
-        $selectedProvince = old('provinsi_bujk', $editingBujk?->provinsi_bujk);
-        $selectedKabupaten = old('kab_kota_bujk', $editingBujk?->kab_kota_bujk);
-        $selectedFilterKabupaten = $regencyFilter ?? request('kabupaten');
-        $regencyFilterOptions = collect($regencyFilterOptions ?? []);
-        $availableKabupaten = collect();
+$selectedProvince = old('provinsi_bujk', $editingBujk?->provinsi_bujk);
+$selectedKabupaten = old('kab_kota_bujk', $editingBujk?->kab_kota_bujk);
+$selectedFilterKabupaten = $regencyFilter ?? request('kabupaten');
+$regencyFilterOptions = collect($regencyFilterOptions ?? []);
+$availableKabupaten = collect();
 
-        if ($selectedFilterKabupaten && !$regencyFilterOptions->contains($selectedFilterKabupaten)) {
-            $regencyFilterOptions->push($selectedFilterKabupaten);
-        }
+if ($selectedFilterKabupaten && !$regencyFilterOptions->contains($selectedFilterKabupaten)) {
+$regencyFilterOptions->push($selectedFilterKabupaten);
+}
 
-        if ($selectedKabupaten) {
-            $availableKabupaten->push($selectedKabupaten);
-        }
+if ($selectedKabupaten) {
+$availableKabupaten->push($selectedKabupaten);
+}
 
-        $latestDataDate = $latestDataDate ?? null;
-        $latestDataDateLabel = null;
+$latestDataDate = $latestDataDate ?? null;
+$latestDataDateLabel = null;
 
-        if (!blank($latestDataDate)) {
-            try {
-                $latestDataDateLabel = \Illuminate\Support\Carbon::parse($latestDataDate)
-                    ->locale('id')
-                    ->translatedFormat('d F Y');
-            } catch (\Throwable $exception) {
-                $latestDataDateLabel = $latestDataDate;
-            }
-        }
+if (!blank($latestDataDate)) {
+try {
+$latestDataDateLabel = \Illuminate\Support\Carbon::parse($latestDataDate)
+->locale('id')
+->translatedFormat('d F Y');
+} catch (\Throwable $exception) {
+$latestDataDateLabel = $latestDataDate;
+}
+}
 
-        $requestedPanel = request('panel');
-        $initialPanel = 'closed';
-        $hasUploadError = $errors->has('file_import') || $errors->has('tanggal_data_terbaru');
+$requestedPanel = request('panel');
+$initialPanel = 'closed';
+$hasUploadError = $errors->has('file_import') || $errors->has('tanggal_data_terbaru');
 
-        if (in_array($requestedPanel, ['upload', 'manual'], true)) {
-            $initialPanel = $requestedPanel;
-        } elseif ($hasUploadError) {
-            $initialPanel = 'upload';
-        } elseif ($isEditing || ($errors->any() && !$hasUploadError)) {
-            $initialPanel = 'manual';
-        }
+if (in_array($requestedPanel, ['upload', 'manual'], true)) {
+$initialPanel = $requestedPanel;
+} elseif ($hasUploadError) {
+$initialPanel = 'upload';
+} elseif ($isEditing || ($errors->any() && !$hasUploadError)) {
+$initialPanel = 'manual';
+}
 
-        $toastMessages = [];
+$toastMessages = [];
 
-        if (session('success')) {
-            $toastMessages[] = [
-                'type' => 'success',
-                'message' => session('success'),
-            ];
-        }
+if (session('success')) {
+$toastMessages[] = [
+'type' => 'success',
+'message' => session('success'),
+];
+}
 
-        if (session('error')) {
-            $toastMessages[] = [
-                'type' => 'error',
-                'message' => session('error'),
-            ];
-        }
+if (session('error')) {
+$toastMessages[] = [
+'type' => 'error',
+'message' => session('error'),
+];
+}
 
-        if ($errors->has('file_import')) {
-            $toastMessages[] = [
-                'type' => 'error',
-                'message' => $errors->first('file_import'),
-            ];
-        } elseif ($errors->has('tanggal_data_terbaru')) {
-            $toastMessages[] = [
-                'type' => 'error',
-                'message' => $errors->first('tanggal_data_terbaru'),
-            ];
-        } elseif ($errors->any()) {
-            $toastMessages[] = [
-                'type' => 'error',
-                'message' => $errors->first(),
-            ];
-        }
-    @endphp
+if ($errors->has('file_import')) {
+$toastMessages[] = [
+'type' => 'error',
+'message' => $errors->first('file_import'),
+];
+} elseif ($errors->has('tanggal_data_terbaru')) {
+$toastMessages[] = [
+'type' => 'error',
+'message' => $errors->first('tanggal_data_terbaru'),
+];
+} elseif ($errors->any()) {
+$toastMessages[] = [
+'type' => 'error',
+'message' => $errors->first(),
+];
+}
+@endphp
 
-    <div class="pointer-events-none fixed right-4 top-4 z-[100] flex w-full max-w-sm flex-col gap-3">
-        @foreach($toastMessages as $toast)
-            <div
-                data-toast
-                class="pointer-events-auto rounded-2xl border px-4 py-3 shadow-2xl transition duration-300
+<div class="pointer-events-none fixed right-4 top-4 z-[100] flex w-full max-w-sm flex-col gap-3">
+    @foreach($toastMessages as $toast)
+    <div
+        data-toast
+        class="pointer-events-auto rounded-2xl border px-4 py-3 shadow-2xl transition duration-300
                     {{ $toast['type'] === 'success'
                         ? 'border-emerald-500/30 bg-emerald-500 text-white'
-                        : 'border-rose-500/30 bg-rose-500 text-white' }}"
-            >
-                <div class="flex items-start gap-3">
-                    <div class="mt-0.5 shrink-0">
-                        @if($toast['type'] === 'success')
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                        @else
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86l-7.13 12.5A1 1 0 004.03 18h15.94a1 1 0 00.87-1.64l-7.13-12.5a1 1 0 00-1.74 0z" />
-                            </svg>
-                        @endif
-                    </div>
-
-                    <div class="min-w-0 flex-1">
-                        <p class="text-sm font-semibold">
-                            {{ $toast['type'] === 'success' ? 'Berhasil' : 'Gagal' }}
-                        </p>
-                        <p class="mt-1 text-sm leading-5 text-white/95">
-                            {{ $toast['message'] }}
-                        </p>
-                    </div>
-
-                    <button
-                        type="button"
-                        data-toast-close
-                        class="shrink-0 rounded-lg p-1 text-white/80 transition hover:bg-white/10 hover:text-white"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
+                        : 'border-rose-500/30 bg-rose-500 text-white' }}">
+        <div class="flex items-start gap-3">
+            <div class="mt-0.5 shrink-0">
+                @if($toast['type'] === 'success')
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                @else
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86l-7.13 12.5A1 1 0 004.03 18h15.94a1 1 0 00.87-1.64l-7.13-12.5a1 1 0 00-1.74 0z" />
+                </svg>
+                @endif
             </div>
-        @endforeach
-    </div>
 
-    <div class="space-y-4">
-        <div>
-            <div class="flex items-center gap-2 text-xs text-slate-500">
-                <a href="{{ route('admin.dashboard') }}" class="hover:text-indigo-600">Home</a>
-                <span>/</span>
-                <span class="font-medium text-slate-500">Masyarakat Jasa Konstruksi</span>
-                <span>/</span>
-                <span class="font-medium text-slate-700">BUJK</span>
+            <div class="min-w-0 flex-1">
+                <p class="text-sm font-semibold">
+                    {{ $toast['type'] === 'success' ? 'Berhasil' : 'Gagal' }}
+                </p>
+                <p class="mt-1 text-sm leading-5 text-white/95">
+                    {{ $toast['message'] }}
+                </p>
             </div>
+
+            <button
+                type="button"
+                data-toast-close
+                class="shrink-0 rounded-lg p-1 text-white/80 transition hover:bg-white/10 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
+    </div>
+    @endforeach
+</div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                <div>
-                    <h3 class="text-base font-bold text-slate-900">Tabel Data BUJK</h3>
-
-                    @if($latestDataDateLabel)
-                        <div class="mt-3 flex flex-wrap items-center gap-2">
-                            <span class="inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700">
-                                Data terbaru per {{ $latestDataDateLabel }}
-                            </span>
-                        </div>
-                    @endif
-                </div>
-
-                <div class="flex flex-wrap items-center gap-2">
-                    <button
-                        type="button"
-                        data-modal-open="manual"
-                        class="rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500"
-                    >
-                        Tambah Data
-                    </button>
-
-                    <button
-                        type="button"
-                        data-modal-open="upload"
-                        class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700"
-                    >
-                        Upload File
-                    </button>
-                </div>
-            </div>
-
-            <form id="bujk-filter-form" method="GET" action="{{ route('admin.bujk') }}" class="mt-8 grid grid-cols-1 gap-3 text-xs md:grid-cols-2 xl:grid-cols-5">
-                <div class="xl:col-span-2">
-                    <label for="search" class="mb-2 block text-xs font-semibold text-slate-600">Filter / keyword</label>
-                    <input
-                        id="search"
-                        type="text"
-                        name="search"
-                        value="{{ $search }}"
-                        placeholder="Cari NIB atau nama BUJK"
-                        autocomplete="off"
-                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
-                    />
-                </div>
-
-                <div>
-                    <label for="jenis" class="mb-2 block text-xs font-semibold text-slate-600">Jenis usaha</label>
-                    <select
-                        id="jenis"
-                        name="jenis"
-                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
-                    >
-                        <option value="">Semua jenis</option>
-                        @foreach($jenisOptions as $jenis)
-                            <option value="{{ $jenis }}" @selected($jenisFilter === $jenis)>{{ $jenis }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label for="filter_kabupaten" class="mb-2 block text-xs font-semibold text-slate-600">Kabupaten / Kota</label>
-                    <select
-                        id="filter_kabupaten"
-                        name="kabupaten"
-                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
-                    >
-                        <option value="">Semua kabupaten/kota</option>
-                        @foreach($regencyFilterOptions as $kabupatenOption)
-                            <option value="{{ $kabupatenOption }}" @selected($selectedFilterKabupaten === $kabupatenOption)>{{ $kabupatenOption }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label for="per_page" class="mb-2 block text-xs font-semibold text-slate-600">Show</label>
-                    <select
-                        id="per_page"
-                        name="per_page"
-                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
-                    >
-                        @foreach([10, 25, 50, 100] as $size)
-                            <option value="{{ $size }}" @selected($perPage === $size)>{{ $size }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </form>
-
-            <div id="bujk-table-container">
-                @include('admin.bujk.partials.table', [
-                    'bujks' => $bujks,
-                    'search' => $search,
-                    'jenisFilter' => $jenisFilter,
-                    'regencyFilter' => $regencyFilter,
-                    'perPage' => $perPage,
-                ])
-            </div>
+<div class="space-y-4">
+    <div>
+        <div class="flex items-center gap-2 text-xs text-slate-500">
+            <a href="{{ route('admin.dashboard') }}" class="hover:text-indigo-600">Home</a>
+            <span>/</span>
+            <span class="font-medium text-slate-500">Masyarakat Jasa Konstruksi</span>
+            <span>/</span>
+            <span class="font-medium text-slate-700">BUJK</span>
         </div>
     </div>
 
-    <div class="absolute left-[-9999px] top-auto h-0 w-0 overflow-hidden opacity-0" aria-hidden="true">
-        <form id="bulk-delete-form" action="{{ route('admin.bujk.bulk-destroy') }}" method="POST">
-            @csrf
-            @method('DELETE')
-            <div id="bulk-delete-inputs"></div>
-            <button type="submit" data-hidden-submit>submit</button>
+    <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+                <h3 class="text-base font-bold text-slate-900">Tabel Data BUJK</h3>
+
+                @if($latestDataDateLabel)
+                <div class="mt-3 flex flex-wrap items-center gap-2">
+                    <span class="inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700">
+                        Data terbaru per {{ $latestDataDateLabel }}
+                    </span>
+                </div>
+                @endif
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+                <button
+                    type="button"
+                    data-modal-open="manual"
+                    class="rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500">
+                    Tambah Data
+                </button>
+
+                <button
+                    type="button"
+                    data-modal-open="upload"
+                    class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700">
+                    Upload File
+                </button>
+            </div>
+        </div>
+
+        <form id="bujk-filter-form" method="GET" action="{{ route('admin.bujk') }}" class="mt-8 grid grid-cols-1 gap-3 text-xs md:grid-cols-2 xl:grid-cols-5">
+            <div class="xl:col-span-2">
+                <label for="search" class="mb-2 block text-xs font-semibold text-slate-600">Filter / keyword</label>
+                <input
+                    id="search"
+                    type="text"
+                    name="search"
+                    value="{{ $search }}"
+                    placeholder="Cari NIB atau nama BUJK"
+                    autocomplete="off"
+                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+            </div>
+
+            <div>
+                <label for="jenis" class="mb-2 block text-xs font-semibold text-slate-600">Jenis usaha</label>
+                <select
+                    id="jenis"
+                    name="jenis"
+                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+                    <option value="">Semua jenis</option>
+                    @foreach($jenisOptions as $jenis)
+                    <option value="{{ $jenis }}" @selected($jenisFilter===$jenis)>{{ $jenis }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label for="filter_kabupaten" class="mb-2 block text-xs font-semibold text-slate-600">Kabupaten / Kota</label>
+                <select
+                    id="filter_kabupaten"
+                    name="kabupaten"
+                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+                    <option value="">Semua kabupaten/kota</option>
+                    @foreach($regencyFilterOptions as $kabupatenOption)
+                    <option value="{{ $kabupatenOption }}" @selected($selectedFilterKabupaten===$kabupatenOption)>{{ $kabupatenOption }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label for="per_page" class="mb-2 block text-xs font-semibold text-slate-600">Show</label>
+                <select
+                    id="per_page"
+                    name="per_page"
+                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+                    @foreach([10, 25, 50, 100] as $size)
+                    <option value="{{ $size }}" @selected($perPage===$size)>{{ $size }}</option>
+                    @endforeach
+                </select>
+            </div>
         </form>
 
-        <form id="delete-all-form" action="{{ route('admin.bujk.destroy-all') }}" method="POST">
-            @csrf
-            @method('DELETE')
-            <button type="submit" data-hidden-submit>submit</button>
-        </form>
+        <div id="bujk-table-container">
+            @include('admin.bujk.partials.table', [
+            'bujks' => $bujks,
+            'search' => $search,
+            'jenisFilter' => $jenisFilter,
+            'regencyFilter' => $regencyFilter,
+            'perPage' => $perPage,
+            ])
+        </div>
     </div>
+</div>
 
-    <div
-        id="upload-modal"
-        data-modal-wrapper="upload"
-        class="pointer-events-none fixed inset-0 z-[70] hidden p-4 opacity-0 transition duration-200"
-    >
-        <div data-modal-backdrop class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition duration-200"></div>
+<div class="absolute left-[-9999px] top-auto h-0 w-0 overflow-hidden opacity-0" aria-hidden="true">
+    <form id="bulk-delete-form" action="{{ route('admin.bujk.bulk-destroy') }}" method="POST">
+        @csrf
+        @method('DELETE')
+        <div id="bulk-delete-inputs"></div>
+        <button type="submit" data-hidden-submit>submit</button>
+    </form>
 
-        <div class="relative z-10 flex min-h-full items-center justify-center">
-            <div
-                data-modal-panel
-                class="w-full max-w-3xl translate-y-4 scale-[0.98] rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out"
-            >
-                <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
+    <form id="delete-all-form" action="{{ route('admin.bujk.destroy-all') }}" method="POST">
+        @csrf
+        @method('DELETE')
+        <button type="submit" data-hidden-submit>submit</button>
+    </form>
+</div>
+
+<div
+    id="upload-modal"
+    data-modal-wrapper="upload"
+    class="pointer-events-none fixed inset-0 z-[70] hidden p-4 opacity-0 transition duration-200">
+    <div data-modal-backdrop class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition duration-200"></div>
+
+    <div class="relative z-10 flex min-h-full items-center justify-center">
+        <div
+            data-modal-panel
+            class="w-full max-w-3xl translate-y-4 scale-[0.98] rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out">
+            <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">Import CSV / XLSX</h3>
+                    <p class="mt-1 text-sm text-slate-500">
+                        Upload file BUJK melalui template CSV atau XLSX.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    data-modal-close
+                    class="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="px-5 py-4">
+                <form id="bujk-import-form" action="{{ route('admin.bujk.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    @csrf
+
                     <div>
-                        <h3 class="text-xl font-bold text-slate-900">Import CSV / XLSX</h3>
-                        <p class="mt-1 text-sm text-slate-500">
-                            Upload file BUJK melalui template CSV atau XLSX.
-                        </p>
+                        <label for="file_import" class="mb-2 block text-sm font-medium text-slate-700">
+                            File upload <span class="text-rose-500">*</span>
+                        </label>
+                        <input
+                            id="file_import"
+                            type="file"
+                            name="file_import"
+                            accept=".csv,.txt,.xlsx"
+                            required
+                            oninvalid="this.setCustomValidity('File import wajib dipilih.')"
+                            oninput="this.setCustomValidity('')"
+                            onchange="this.setCustomValidity('')"
+                            class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm text-slate-700 file:mr-3 file:rounded-md file:border-0 file:bg-indigo-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-indigo-500" />
+                        @error('file_import')
+                        <p class="mt-2 text-xs text-rose-500">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    <button
-                        type="button"
-                        data-modal-close
-                        class="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-
-                <div class="px-5 py-4">
-                    <form id="bujk-import-form" action="{{ route('admin.bujk.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-                        @csrf
-
-                        <div>
-                            <label for="file_import" class="mb-2 block text-sm font-medium text-slate-700">
-                                File upload <span class="text-rose-500">*</span>
-                            </label>
-                            <input
-                                id="file_import"
-                                type="file"
-                                name="file_import"
-                                accept=".csv,.txt,.xlsx"
-                                required
-                                oninvalid="this.setCustomValidity('File import wajib dipilih.')"
-                                oninput="this.setCustomValidity('')"
-                                onchange="this.setCustomValidity('')"
-                                class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm text-slate-700 file:mr-3 file:rounded-md file:border-0 file:bg-indigo-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-indigo-500"
-                            />
-                            @error('file_import')
-                                <p class="mt-2 text-xs text-rose-500">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label for="tanggal_data_terbaru" class="mb-2 block text-sm font-medium text-slate-700">
-                                Tanggal data terbaru <span class="text-rose-500">*</span>
-                            </label>
-                            <input
-                                id="tanggal_data_terbaru"
-                                type="date"
-                                name="tanggal_data_terbaru"
-                                value="{{ old('tanggal_data_terbaru', $latestDataDate) }}"
-                                required
-                                oninvalid="this.setCustomValidity('Tanggal data wajib diisi.')"
-                                oninput="this.setCustomValidity('')"
-                                onchange="this.setCustomValidity('')"
-                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
-                            />
-                            <p class="mt-2 text-xs leading-5 text-slate-500">
-                                Tanggal ini akan dicatat sebagai tanggal data terbaru dan ditampilkan di bawah judul Tabel Data BUJK.
-                            </p>
-                            @error('tanggal_data_terbaru')
-                                <p class="mt-2 text-xs text-rose-500">{{ $message }}</p>
-                            @enderror
-                        </div>
+                    <div>
+                        <label for="tanggal_data_terbaru" class="mb-2 block text-sm font-medium text-slate-700">
+                            Tanggal data terbaru <span class="text-rose-500">*</span>
+                        </label>
+                        <input
+                            id="tanggal_data_terbaru"
+                            type="date"
+                            name="tanggal_data_terbaru"
+                            value="{{ old('tanggal_data_terbaru', $latestDataDate) }}"
+                            required
+                            oninvalid="this.setCustomValidity('Tanggal data wajib diisi.')"
+                            oninput="this.setCustomValidity('')"
+                            onchange="this.setCustomValidity('')"
+                            class="w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+                        <p class="mt-2 text-xs leading-5 text-slate-500">
+                            Tanggal ini akan dicatat sebagai tanggal data terbaru dan ditampilkan di bawah judul Tabel Data BUJK.
+                        </p>
+                        @error('tanggal_data_terbaru')
+                        <p class="mt-2 text-xs text-rose-500">{{ $message }}</p>
+                        @enderror
+                    </div>
 
                         <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-600">
                             <p class="font-semibold text-slate-800">Aturan import:</p>
@@ -349,1040 +336,1477 @@
                             <p>4. Data dengan NIB sama akan digabung dan di-update, bukan ditambahkan duplikat baru.</p>
                         </div>
 
-                            <div class="flex items-center gap-2">
-                                <button
-                                    type="button"
-                                    data-modal-close
-                                    class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-                                >
-                                    Batal
-                                </button>
-
-                                <button
-                                    type="submit"
-                                    class="rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500"
-                                >
-                                    Proses Import
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div
-        id="manual-modal"
-        data-modal-wrapper="manual"
-        class="pointer-events-none fixed inset-0 z-[70] hidden p-4 opacity-0 transition duration-200"
-    >
-        <div data-modal-backdrop class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition duration-200"></div>
-
-        <div class="relative z-10 flex min-h-full items-center justify-center">
-            <div
-                data-modal-panel
-                class="w-full max-w-5xl translate-y-4 scale-[0.98] rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out"
-            >
-                <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
-                    <div>
-                        <h3 class="text-xl font-bold text-slate-900">{{ $isEditing ? 'Ubah Data BUJK' : 'Form BUJK' }}</h3>
-                        <p class="mt-1 text-sm text-slate-500">
-                            Isi data BUJK secara manual melalui form berikut.
-                        </p>
-                    </div>
-
-                    <div class="flex items-center gap-2">
-                        @if($isEditing)
-                            <a
-                                href="{{ route('admin.bujk') }}"
-                                class="rounded-xl border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-                            >
-                                Reset
-                            </a>
-                        @endif
-
-                        <button
-                            type="button"
-                            data-modal-close
-                            class="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="px-5 py-4">
-                    @if($errors->any() && !$hasUploadError)
-                        <div class="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                            <p class="font-semibold">Masih ada input yang perlu diperbaiki:</p>
-                            <ul class="mt-2 space-y-1 text-xs">
-                                @foreach($errors->all() as $error)
-                                    <li>• {{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    <form
-                        action="{{ $isEditing ? route('admin.bujk.update', $editingBujk) : route('admin.bujk.store') }}"
-                        method="POST"
-                        class="space-y-3"
-                    >
-                        @csrf
-                        @if($isEditing)
-                            @method('PUT')
-                        @endif
-
-                        <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
-                            <div>
-                                <label for="nib" class="mb-2 block text-sm font-medium text-slate-700">NIB</label>
-                                <input
-                                    id="nib"
-                                    type="text"
-                                    name="nib"
-                                    value="{{ old('nib', $editingBujk?->nib) }}"
-                                    placeholder="NIB Perusahaan"
-                                    class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
-                                />
-                                @error('nib')
-                                    <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label for="nama_bujk" class="mb-2 block text-sm font-medium text-slate-700">Nama BUJK</label>
-                                <input
-                                    id="nama_bujk"
-                                    type="text"
-                                    name="nama_bujk"
-                                    value="{{ old('nama_bujk', $editingBujk?->nama_bujk) }}"
-                                    placeholder="Nama BUJK"
-                                    class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
-                                />
-                                @error('nama_bu')
-                                    <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="mb-2 block text-sm font-medium text-slate-700">Jenis Usaha</label>
-                            <div class="grid gap-3 lg:grid-cols-2">
-                                @foreach($jenisOptions as $jenis)
-                                    <label class="flex items-center gap-3 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700">
-                                        <input
-                                            type="checkbox"
-                                            name="jenis_bujk[]"
-                                            value="{{ $jenis }}"
-                                            {{ in_array($jenis, $selectedJenis, true) ? 'checked' : '' }}
-                                            class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                                        />
-                                        <span>{{ $jenis }}</span>
-                                    </label>
-                                @endforeach
-                            </div>
-                            @error('jenis_usaha')
-                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label for="alamat_bujk" class="mb-2 block text-sm font-medium text-slate-700">Alamat</label>
-                            <textarea
-                                id="alamat_bujk"
-                                name="alamat_bujk"
-                                rows="2"
-                                placeholder="Alamat BUJK"
-                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
-                            >{{ old('alamat_bujk', $editingBujk?->alamat_bujk) }}</textarea>
-                            @error('alamat')
-                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
-                            <div>
-                                <label for="provinsi_bujk" class="mb-2 block text-sm font-medium text-slate-700">Provinsi</label>
-                                <select
-                                    id="provinsi_bujk"
-                                    name="provinsi_bujk"
-                                    class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
-                                >
-                                    <option value="">Pilih...</option>
-                                    @if($selectedProvince)
-                                        <option value="{{ $selectedProvince }}" selected>{{ $selectedProvince }}</option>
-                                    @endif
-                                </select>
-                                @error('propinsi')
-                                    <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label for="kab_kota_bujk" class="mb-2 block text-sm font-medium text-slate-700">Kabupaten / Kota</label>
-                                <select
-                                    id="kab_kota_bujk"
-                                    name="kab_kota_bujk"
-                                    class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
-                                >
-                                    <option value="">{{ $selectedProvince ? 'Pilih...' : 'Pilih provinsi dulu...' }}</option>
-                                    @foreach($availableKabupaten as $kabupaten)
-                                        <option value="{{ $kabupaten }}" selected>{{ $kabupaten }}</option>
-                                    @endforeach
-                                </select>
-                                @error('kabupaten')
-                                    <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label for="npwp_bujk" class="mb-2 block text-sm font-medium text-slate-700">NPWP</label>
-                                <input
-                                    id="npwp_bujk"
-                                    type="text"
-                                    name="npwp_bujk"
-                                    value="{{ old('npwp_bujk', $editingBujk?->npwp_bujk) }}"
-                                    placeholder="NPWP BUJK"
-                                    class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
-                                />
-                                @error('npwp')
-                                    <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
-                            <div>
-                                <label for="email_bujk" class="mb-2 block text-sm font-medium text-slate-700">Email</label>
-                                <input
-                                    id="email_bujk"
-                                    type="email"
-                                    name="email_bujk"
-                                    value="{{ old('email_bujk', $editingBujk?->email_bujk) }}"
-                                    placeholder="Email BUJK"
-                                    class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
-                                />
-                                @error('email')
-                                    <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label for="telp_bujk" class="mb-2 block text-sm font-medium text-slate-700">No. Telp</label>
-                                <input
-                                    id="telp_bujk"
-                                    type="text"
-                                    name="telp_bujk"
-                                    value="{{ old('telp_bujk', $editingBujk?->telp_bujk) }}"
-                                    placeholder="Nomor Telepon"
-                                    class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
-                                />
-                                @error('telepon')
-                                    <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label for="website_bujk" class="mb-2 block text-sm font-medium text-slate-700">Website</label>
-                                <input
-                                    id="website_bujk"
-                                    type="text"
-                                    name="website_bujk"
-                                    value="{{ old('website_bujk', $editingBujk?->website_bujk) }}"
-                                    placeholder="Website"
-                                    class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
-                                />
-                                @error('website')
-                                    <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4">
+                        <div class="flex items-center gap-2">
                             <button
                                 type="button"
                                 data-modal-close
-                                class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-                            >
+                                class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
                                 Batal
                             </button>
 
-                            <div class="flex items-center gap-2">
-                                @if($isEditing)
-                                    <span class="hidden text-xs text-slate-500 sm:inline">
-                                        Sedang mengubah: {{ $editingBujk->nama_bujk }}
-                                    </span>
-                                @endif
-
-                                <button
-                                    type="submit"
-                                    class="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500"
-                                >
-                                    {{ $isEditing ? 'Update Data' : 'Simpan Data' }}
-                                </button>
-                            </div>
+                            <button
+                                type="submit"
+                                class="rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500">
+                                Proses Import
+                            </button>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
-    <div
-        id="delete-confirm-modal"
-        data-modal-wrapper="delete"
-        class="pointer-events-none fixed inset-0 z-[80] hidden p-4 opacity-0 transition duration-200"
-    >
-        <div data-modal-backdrop class="absolute inset-0 bg-slate-950/75 backdrop-blur-sm opacity-0 transition duration-200"></div>
+<div
+    id="manual-modal"
+    data-modal-wrapper="manual"
+    class="pointer-events-none fixed inset-0 z-[70] hidden p-4 opacity-0 transition duration-200">
+    <div data-modal-backdrop class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition duration-200"></div>
 
-        <div class="relative z-10 flex min-h-full items-center justify-center">
-            <div
-                data-modal-panel
-                class="w-full max-w-md translate-y-4 scale-[0.98] rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out"
-            >
-                <div class="px-5 py-5">
-                    <div class="flex items-start gap-4">
-                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 text-rose-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16" />
-                            </svg>
+    <div class="relative z-10 flex min-h-full items-center justify-center">
+        <div
+            data-modal-panel
+            class="w-full max-w-5xl translate-y-4 scale-[0.98] rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out">
+            <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">{{ $isEditing ? 'Ubah Data BUJK' : 'Form BUJK' }}</h3>
+                    <p class="mt-1 text-sm text-slate-500">
+                        Isi data BUJK secara manual melalui form berikut.
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    @if($isEditing)
+                    <a
+                        href="{{ route('admin.bujk') }}"
+                        class="rounded-xl border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+                        Reset
+                    </a>
+                    @endif
+
+                    <button
+                        type="button"
+                        data-modal-close
+                        class="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="px-5 py-4">
+                @if($errors->any() && !$hasUploadError)
+                <div class="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                    <p class="font-semibold">Masih ada input yang perlu diperbaiki:</p>
+                    <ul class="mt-2 space-y-1 text-xs">
+                        @foreach($errors->all() as $error)
+                        <li>• {{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+
+                <form
+                    id="bujk-manual-form"
+                    action="{{ $isEditing ? route('admin.bujk.update', $editingBujk) : route('admin.bujk.store') }}"
+                    method="POST"
+                    class="space-y-3">
+                    @csrf
+                    @if($isEditing)
+                    @method('PUT')
+                    @endif
+
+                    <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
+                        <div>
+                            <label for="nib" class="mb-2 block text-sm font-medium text-slate-700">NIB</label>
+                            <input
+                                id="nib"
+                                type="text"
+                                name="nib"
+                                value="{{ old('nib', $editingBujk?->nib) }}"
+                                placeholder="NIB Perusahaan"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500" />
+                            @error('nib')
+                            <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
                         </div>
 
-                        <div class="min-w-0 flex-1">
-                            <h3 id="delete-modal-title" class="text-lg font-bold text-slate-900">Hapus data BUJK?</h3>
-                            <p id="delete-modal-text" class="mt-1 text-sm leading-6 text-slate-500">
-                                Data ini akan dihapus.
-                            </p>
+                        <div>
+                            <label for="nama_bujk" class="mb-2 block text-sm font-medium text-slate-700">Nama BUJK</label>
+                            <input
+                                id="nama_bujk"
+                                type="text"
+                                name="nama_bujk"
+                                value="{{ old('nama_bujk', $editingBujk?->nama_bujk) }}"
+                                placeholder="Nama BUJK"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500" />
+                            @error('nama_bu')
+                            <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
-                    <div class="mt-6 flex items-center justify-end gap-2">
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700">Jenis Usaha</label>
+                        <div class="grid gap-3 lg:grid-cols-2">
+                            @foreach($jenisOptions as $jenis)
+                            <label class="flex items-center gap-3 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700">
+                                <input
+                                    type="checkbox"
+                                    name="jenis_bujk[]"
+                                    value="{{ $jenis }}"
+                                    {{ in_array($jenis, $selectedJenis, true) ? 'checked' : '' }}
+                                    class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                                <span>{{ $jenis }}</span>
+                            </label>
+                            @endforeach
+                        </div>
+                        @error('jenis_usaha')
+                        <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="alamat_bujk" class="mb-2 block text-sm font-medium text-slate-700">Alamat</label>
+                        <textarea
+                            id="alamat_bujk"
+                            name="alamat_bujk"
+                            rows="2"
+                            placeholder="Alamat BUJK"
+                            class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500">{{ old('alamat_bujk', $editingBujk?->alamat_bujk) }}</textarea>
+                        @error('alamat')
+                        <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
+                        <div>
+                            <label for="provinsi_bujk" class="mb-2 block text-sm font-medium text-slate-700">Provinsi</label>
+                            <select
+                                id="provinsi_bujk"
+                                name="provinsi_bujk"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500">
+                                <option value="">Pilih...</option>
+                                @if($selectedProvince)
+                                <option value="{{ $selectedProvince }}" selected>{{ $selectedProvince }}</option>
+                                @endif
+                            </select>
+                            @error('propinsi')
+                            <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="kab_kota_bujk" class="mb-2 block text-sm font-medium text-slate-700">Kabupaten / Kota</label>
+                            <select
+                                id="kab_kota_bujk"
+                                name="kab_kota_bujk"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500">
+                                <option value="">{{ $selectedProvince ? 'Pilih...' : 'Pilih provinsi dulu...' }}</option>
+                                @foreach($availableKabupaten as $kabupaten)
+                                <option value="{{ $kabupaten }}" selected>{{ $kabupaten }}</option>
+                                @endforeach
+                            </select>
+                            @error('kabupaten')
+                            <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="npwp_bujk" class="mb-2 block text-sm font-medium text-slate-700">NPWP</label>
+                            <input
+                                id="npwp_bujk"
+                                type="text"
+                                name="npwp_bujk"
+                                value="{{ old('npwp_bujk', $editingBujk?->npwp_bujk) }}"
+                                placeholder="NPWP BUJK"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500" />
+                            @error('npwp')
+                            <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
+                        <div>
+                            <label for="email_bujk" class="mb-2 block text-sm font-medium text-slate-700">Email</label>
+                            <input
+                                id="email_bujk"
+                                type="email"
+                                name="email_bujk"
+                                value="{{ old('email_bujk', $editingBujk?->email_bujk) }}"
+                                placeholder="Email BUJK"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500" />
+                            @error('email')
+                            <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="telp_bujk" class="mb-2 block text-sm font-medium text-slate-700">No. Telp</label>
+                            <input
+                                id="telp_bujk"
+                                type="text"
+                                name="telp_bujk"
+                                value="{{ old('telp_bujk', $editingBujk?->telp_bujk) }}"
+                                placeholder="Nomor Telepon"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500" />
+                            @error('telepon')
+                            <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="website_bujk" class="mb-2 block text-sm font-medium text-slate-700">Website</label>
+                            <input
+                                id="website_bujk"
+                                type="text"
+                                name="website_bujk"
+                                value="{{ old('website_bujk', $editingBujk?->website_bujk) }}"
+                                placeholder="Website"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500" />
+                            @error('website')
+                            <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-4">
                         <button
                             type="button"
                             data-modal-close
-                            class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-                        >
+                            class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
                             Batal
                         </button>
 
-                        <button
-                            type="button"
-                            id="confirm-delete-button"
-                            class="rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-500"
-                        >
-                            Ya, Hapus
-                        </button>
+                        <div class="flex items-center gap-2">
+                            @if($isEditing)
+                            <span class="hidden text-xs text-slate-500 sm:inline">
+                                Sedang mengubah: {{ $editingBujk->nama_bujk }}
+                            </span>
+                            @endif
+
+                            <button
+                                type="submit"
+                                class="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500">
+                                {{ $isEditing ? 'Update Data' : 'Simpan Data' }}
+                            </button>
+                        </div>
                     </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div
+    id="delete-confirm-modal"
+    data-modal-wrapper="delete"
+    class="pointer-events-none fixed inset-0 z-[80] hidden p-4 opacity-0 transition duration-200">
+    <div data-modal-backdrop class="absolute inset-0 bg-slate-950/75 backdrop-blur-sm opacity-0 transition duration-200"></div>
+
+    <div class="relative z-10 flex min-h-full items-center justify-center">
+        <div
+            data-modal-panel
+            class="w-full max-w-md translate-y-4 scale-[0.98] rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out">
+            <div class="px-5 py-5">
+                <div class="flex items-start gap-4">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 text-rose-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16" />
+                        </svg>
+                    </div>
+
+                    <div class="min-w-0 flex-1">
+                        <h3 id="delete-modal-title" class="text-lg font-bold text-slate-900">Hapus data BUJK?</h3>
+                        <p id="delete-modal-text" class="mt-1 text-sm leading-6 text-slate-500">
+                            Data ini akan dihapus.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex items-center justify-end gap-2">
+                    <button
+                        type="button"
+                        data-modal-close
+                        class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+                        Batal
+                    </button>
+
+                    <button
+                        type="button"
+                        id="confirm-delete-button"
+                        class="rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-500">
+                        Ya, Hapus
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div
-        id="bujk-script-data"
-        class="hidden"
-        data-selected-province="{{ e((string) $selectedProvince) }}"
-        data-selected-kabupaten="{{ e((string) $selectedKabupaten) }}"
-        data-selected-filter-kabupaten="{{ e((string) $selectedFilterKabupaten) }}"
-        data-provinces-endpoint="{{ route('admin.bujk.regions.provinces') }}"
-        data-regencies-endpoint="{{ route('admin.bujk.regions.regencies') }}"
-        data-initial-panel="{{ $initialPanel }}"
-    ></div>
+<div
+    id="bujk-script-data"
+    class="hidden"
+    data-selected-province="{{ e((string) $selectedProvince) }}"
+    data-selected-kabupaten="{{ e((string) $selectedKabupaten) }}"
+    data-selected-filter-kabupaten="{{ e((string) $selectedFilterKabupaten) }}"
+    data-provinces-endpoint="{{ route('admin.bujk.regions.provinces') }}"
+    data-regencies-endpoint="{{ route('admin.bujk.regions.regencies') }}"
+    data-initial-panel="{{ $initialPanel }}"></div>
 @endsection
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const body = document.body;
-    const scriptData = document.getElementById('bujk-script-data');
-    if (!scriptData) return;
+    document.addEventListener('DOMContentLoaded', function() {
+        const body = document.body;
+        const scriptData = document.getElementById('bujk-script-data');
+        if (!scriptData) return;
 
-    const modalElements = {
-        upload: document.getElementById('upload-modal'),
-        manual: document.getElementById('manual-modal'),
-        delete: document.getElementById('delete-confirm-modal'),
-    };
+        const modalElements = {
+            upload: document.getElementById('upload-modal'),
+            manual: document.getElementById('manual-modal'),
+            delete: document.getElementById('delete-confirm-modal'),
+        };
 
-    const tableContainer = document.getElementById('bujk-table-container');
-    const openButtons = document.querySelectorAll('[data-modal-open]');
-    const toastCloseButtons = document.querySelectorAll('[data-toast-close]');
-    const bujkImportForm = document.getElementById('bujk-import-form');
-    const provinceSelect = document.getElementById('provinsi_bujk');
-    const kabupatenSelect = document.getElementById('kab_kota_bujk');
-    const filterKabupatenSelect = document.getElementById('filter_kabupaten');
+        const tableContainer = document.getElementById('bujk-table-container');
+        const openButtons = document.querySelectorAll('[data-modal-open]');
+        const toastCloseButtons = document.querySelectorAll('[data-toast-close]');
+        const bujkImportForm = document.getElementById('bujk-import-form');
+        const bujkManualForm = document.getElementById('bujk-manual-form');
+        const provinceSelect = document.getElementById('provinsi_bujk');
+        const kabupatenSelect = document.getElementById('kab_kota_bujk');
+        const filterKabupatenSelect = document.getElementById('filter_kabupaten');
 
-    const filterForm = document.getElementById('bujk-filter-form');
-    const searchInput = document.getElementById('search');
-    const jenisSelect = document.getElementById('jenis');
-    const perPageSelect = document.getElementById('per_page');
+        const filterForm = document.getElementById('bujk-filter-form');
+        const searchInput = document.getElementById('search');
+        const jenisSelect = document.getElementById('jenis');
+        const perPageSelect = document.getElementById('per_page');
 
-    const confirmDeleteButton = document.getElementById('confirm-delete-button');
-    const deleteModalTitle = document.getElementById('delete-modal-title');
-    const deleteModalText = document.getElementById('delete-modal-text');
-    const bulkDeleteForm = document.getElementById('bulk-delete-form');
-    const bulkDeleteInputs = document.getElementById('bulk-delete-inputs');
-    const deleteAllForm = document.getElementById('delete-all-form');
+        const confirmDeleteButton = document.getElementById('confirm-delete-button');
+        const deleteModalTitle = document.getElementById('delete-modal-title');
+        const deleteModalText = document.getElementById('delete-modal-text');
+        const bulkDeleteForm = document.getElementById('bulk-delete-form');
+        const bulkDeleteInputs = document.getElementById('bulk-delete-inputs');
+        const deleteAllForm = document.getElementById('delete-all-form');
 
-    const selectedProvince = String(scriptData.dataset.selectedProvince || '').trim();
-    const selectedKabupaten = String(scriptData.dataset.selectedKabupaten || '').trim();
-    const provincesEndpoint = scriptData.dataset.provincesEndpoint || '';
-    const regenciesEndpoint = scriptData.dataset.regenciesEndpoint || '';
-    const initialPanel = scriptData.dataset.initialPanel || 'closed';
+        const selectedProvince = String(scriptData.dataset.selectedProvince || '').trim();
+        const selectedKabupaten = String(scriptData.dataset.selectedKabupaten || '').trim();
+        const provincesEndpoint = scriptData.dataset.provincesEndpoint || '';
+        const regenciesEndpoint = scriptData.dataset.regenciesEndpoint || '';
+        const initialPanel = scriptData.dataset.initialPanel || 'closed';
 
-    let deleteState = {
-        mode: null,
-        form: null,
-        name: null,
-        ids: [],
-    };
+        let deleteState = {
+            mode: null,
+            form: null,
+            name: null,
+            ids: [],
+        };
 
-    let filterDebounce = null;
-    let activeFilterController = null;
+        let filterDebounce = null;
+        let activeFilterController = null;
 
-    const resetImportForm = () => {
-        if (!bujkImportForm) return;
+        const resetImportForm = () => {
+            if (!bujkImportForm) return;
 
-        bujkImportForm.reset();
+            bujkImportForm.reset();
 
-        const fileInput = bujkImportForm.querySelector('#file_import');
-        const dateInput = bujkImportForm.querySelector('#tanggal_data_terbaru');
+            const fileInput = bujkImportForm.querySelector('#file_import');
+            const dateInput = bujkImportForm.querySelector('#tanggal_data_terbaru');
 
-        if (fileInput) {
-            fileInput.value = '';
-            fileInput.setCustomValidity('');
-        }
+            if (fileInput) {
+                fileInput.value = '';
+                fileInput.setCustomValidity('');
+            }
 
-        if (dateInput) {
-            dateInput.value = '';
-            dateInput.setCustomValidity('');
-        }
-    };
+            if (dateInput) {
+                dateInput.value = '';
+                dateInput.setCustomValidity('');
+            }
+        };
 
-    const hasOpenModal = () => {
-        return Object.values(modalElements).some((modal) => modal && modal.dataset.state === 'open');
-    };
+        const hasOpenModal = () => {
+            return Object.values(modalElements).some((modal) => modal && modal.dataset.state === 'open');
+        };
 
-    const lockBody = () => {
-        body.classList.toggle('overflow-hidden', hasOpenModal());
-    };
+        const lockBody = () => {
+            body.classList.toggle('overflow-hidden', hasOpenModal());
+        };
 
-    const updateQuery = (panelName = null) => {
-        const url = new URL(window.location.href);
+        const updateQuery = (panelName = null) => {
+            const url = new URL(window.location.href);
 
-        if (panelName === 'upload' || panelName === 'manual') {
-            url.searchParams.set('panel', panelName);
-        } else {
-            url.searchParams.delete('panel');
-            url.searchParams.delete('edit');
-        }
+            if (panelName === 'upload' || panelName === 'manual') {
+                url.searchParams.set('panel', panelName);
+            } else {
+                url.searchParams.delete('panel');
+                url.searchParams.delete('edit');
+            }
 
-        window.history.replaceState({}, '', url.toString());
-    };
+            window.history.replaceState({}, '', url.toString());
+        };
 
-    const showModal = (modal, panelName = null, writeQuery = true) => {
-        if (!modal) return;
+        const showModal = (modal, panelName = null, writeQuery = true) => {
+            if (!modal) return;
 
-        modal.classList.remove('hidden');
-        modal.dataset.state = 'open';
+            modal.classList.remove('hidden');
+            modal.dataset.state = 'open';
 
-        requestAnimationFrame(() => {
-            modal.classList.remove('pointer-events-none', 'opacity-0');
-            modal.classList.add('pointer-events-auto', 'opacity-100');
+            requestAnimationFrame(() => {
+                modal.classList.remove('pointer-events-none', 'opacity-0');
+                modal.classList.add('pointer-events-auto', 'opacity-100');
+
+                const backdrop = modal.querySelector('[data-modal-backdrop]');
+                const panel = modal.querySelector('[data-modal-panel]');
+
+                if (backdrop) {
+                    backdrop.classList.remove('opacity-0');
+                    backdrop.classList.add('opacity-100');
+                }
+
+                if (panel) {
+                    panel.classList.remove('translate-y-4', 'scale-[0.98]', 'opacity-0');
+                    panel.classList.add('translate-y-0', 'scale-100', 'opacity-100');
+                }
+            });
+
+            lockBody();
+
+            if (writeQuery && (panelName === 'upload' || panelName === 'manual')) {
+                updateQuery(panelName);
+            }
+        };
+
+        const hideModal = (modal, writeQuery = true) => {
+            if (!modal) return;
+
+            modal.dataset.state = 'closed';
+            modal.classList.remove('pointer-events-auto', 'opacity-100');
+            modal.classList.add('pointer-events-none', 'opacity-0');
 
             const backdrop = modal.querySelector('[data-modal-backdrop]');
             const panel = modal.querySelector('[data-modal-panel]');
 
             if (backdrop) {
-                backdrop.classList.remove('opacity-0');
-                backdrop.classList.add('opacity-100');
+                backdrop.classList.remove('opacity-100');
+                backdrop.classList.add('opacity-0');
             }
 
             if (panel) {
-                panel.classList.remove('translate-y-4', 'scale-[0.98]', 'opacity-0');
-                panel.classList.add('translate-y-0', 'scale-100', 'opacity-100');
+                panel.classList.remove('translate-y-0', 'scale-100', 'opacity-100');
+                panel.classList.add('translate-y-4', 'scale-[0.98]', 'opacity-0');
+            }
+
+            setTimeout(() => {
+                if (modal.dataset.state !== 'open') {
+                    modal.classList.add('hidden');
+                }
+                lockBody();
+            }, 210);
+
+            if (modal === modalElements.upload) {
+                resetImportForm();
+            }
+
+            if (writeQuery && (modal === modalElements.upload || modal === modalElements.manual)) {
+                updateQuery(null);
+            }
+        };
+
+        const closeAllPrimaryModals = (writeQuery = true) => {
+            hideModal(modalElements.upload, writeQuery);
+            hideModal(modalElements.manual, writeQuery);
+        };
+
+        const submitHiddenForm = (form) => {
+            if (!form) return;
+
+            const hiddenSubmit = form.querySelector('[data-hidden-submit]');
+            if (hiddenSubmit) {
+                hiddenSubmit.click();
+                return;
+            }
+
+            HTMLFormElement.prototype.submit.call(form);
+        };
+
+        const getRowCheckboxes = () => Array.from(tableContainer.querySelectorAll('[data-row-checkbox]'));
+        const getSelectAllRows = () => tableContainer.querySelector('#select-all-rows');
+        const getBulkDeleteTrigger = () => tableContainer.querySelector('#bulk-delete-trigger');
+
+        const getSelectedIds = () => {
+            return getRowCheckboxes()
+                .filter((checkbox) => checkbox.checked)
+                .map((checkbox) => checkbox.value);
+        };
+
+        const updateBulkDeleteButton = (count) => {
+            const bulkDeleteTrigger = getBulkDeleteTrigger();
+            if (!bulkDeleteTrigger) return;
+
+            if (count > 0) {
+                bulkDeleteTrigger.disabled = false;
+                bulkDeleteTrigger.classList.remove('cursor-not-allowed', 'text-rose-300');
+                bulkDeleteTrigger.classList.add('border-rose-200', 'text-rose-600', 'hover:border-rose-300', 'hover:bg-rose-50');
+                bulkDeleteTrigger.textContent = `Hapus Terpilih (${count})`;
+            } else {
+                bulkDeleteTrigger.disabled = true;
+                bulkDeleteTrigger.classList.add('cursor-not-allowed', 'text-rose-300');
+                bulkDeleteTrigger.classList.remove('text-rose-600', 'hover:border-rose-300', 'hover:bg-rose-50');
+                bulkDeleteTrigger.textContent = 'Hapus Terpilih';
+            }
+        };
+
+        const refreshSelectionState = () => {
+            const rowCheckboxes = getRowCheckboxes();
+            const selectAllRows = getSelectAllRows();
+            const count = getSelectedIds().length;
+
+            if (selectAllRows) {
+                selectAllRows.checked = count > 0 && count === rowCheckboxes.length && rowCheckboxes.length > 0;
+                selectAllRows.indeterminate = count > 0 && count < rowCheckboxes.length;
+            }
+
+            updateBulkDeleteButton(count);
+        };
+
+        const buildFilterUrl = (pageUrl = null) => {
+            const url = pageUrl ?
+                new URL(pageUrl, window.location.origin) :
+                new URL(filterForm.action, window.location.origin);
+
+            if (!pageUrl) {
+                url.searchParams.delete('page');
+            }
+
+            const keyword = searchInput ? searchInput.value.trim() : '';
+            const jenis = jenisSelect ? jenisSelect.value : '';
+            const kabupaten = filterKabupatenSelect ? filterKabupatenSelect.value : '';
+            const perPage = perPageSelect ? perPageSelect.value : '';
+
+            if (keyword !== '') {
+                url.searchParams.set('search', keyword);
+            } else {
+                url.searchParams.delete('search');
+            }
+
+            if (jenis !== '') {
+                url.searchParams.set('jenis', jenis);
+            } else {
+                url.searchParams.delete('jenis');
+            }
+
+            if (kabupaten !== '') {
+                url.searchParams.set('kabupaten', kabupaten);
+            } else {
+                url.searchParams.delete('kabupaten');
+            }
+
+            if (perPage !== '') {
+                url.searchParams.set('per_page', perPage);
+            } else {
+                url.searchParams.delete('per_page');
+            }
+
+            return url;
+        };
+
+        const fetchFilteredTable = async (pageUrl = null) => {
+            if (!filterForm || !tableContainer) return;
+
+            const url = buildFilterUrl(pageUrl);
+
+            if (activeFilterController) {
+                activeFilterController.abort();
+            }
+
+            activeFilterController = new AbortController();
+
+            try {
+                const response = await fetch(url.toString(), {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    signal: activeFilterController.signal,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Gagal memuat data BUJK.');
+                }
+
+                const payload = await response.json();
+                tableContainer.innerHTML = payload.html;
+                refreshSelectionState();
+                window.history.replaceState({}, '', url.toString());
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    return;
+                }
+
+                console.error(error);
+                window.location.href = url.toString();
+            }
+        };
+
+        const triggerRealtimeFilter = () => {
+            clearTimeout(filterDebounce);
+            filterDebounce = setTimeout(() => {
+                fetchFilteredTable();
+            }, 120);
+        };
+
+        if (searchInput) {
+            searchInput.addEventListener('input', triggerRealtimeFilter);
+
+            searchInput.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    clearTimeout(filterDebounce);
+                    fetchFilteredTable();
+                }
+            });
+        }
+
+        if (jenisSelect) {
+            jenisSelect.addEventListener('change', function() {
+                clearTimeout(filterDebounce);
+                fetchFilteredTable();
+            });
+        }
+
+        if (filterKabupatenSelect) {
+            filterKabupatenSelect.addEventListener('change', function() {
+                clearTimeout(filterDebounce);
+                fetchFilteredTable();
+            });
+        }
+
+        if (perPageSelect) {
+            perPageSelect.addEventListener('change', function() {
+                clearTimeout(filterDebounce);
+                fetchFilteredTable();
+            });
+        }
+
+        if (filterForm) {
+            filterForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                clearTimeout(filterDebounce);
+                fetchFilteredTable();
+            });
+        }
+
+        openButtons.forEach((button) => {
+            button.addEventListener('click', function() {
+                const target = this.dataset.modalOpen;
+
+                if (target === 'upload') {
+                    closeAllPrimaryModals(false);
+                    resetImportForm();
+                    showModal(modalElements.upload, 'upload', true);
+                }
+
+                if (target === 'manual') {
+                    closeAllPrimaryModals(false);
+                    showModal(modalElements.manual, 'manual', true);
+                }
+            });
+        });
+
+        Object.values(modalElements).forEach((modal) => {
+            if (!modal) return;
+
+            modal.dataset.state = 'closed';
+
+            const backdrop = modal.querySelector('[data-modal-backdrop]');
+            if (backdrop) {
+                backdrop.addEventListener('click', function() {
+                    hideModal(modal, true);
+                });
+            }
+
+            modal.querySelectorAll('[data-modal-close]').forEach((button) => {
+                button.addEventListener('click', function() {
+                    hideModal(modal, true);
+                });
+            });
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                Object.values(modalElements).forEach((modal) => hideModal(modal, true));
             }
         });
 
-        lockBody();
+        if (bujkManualForm) {
+            const manualFields = {
+                nib: bujkManualForm.querySelector('#nib'),
+                nama: bujkManualForm.querySelector('#nama_bujk'),
+                jenis: bujkManualForm.querySelectorAll('input[name="jenis_bujk[]"]'),
+                alamat: bujkManualForm.querySelector('#alamat_bujk'),
+                provinsi: bujkManualForm.querySelector('#provinsi_bujk'),
+                kabupaten: bujkManualForm.querySelector('#kab_kota_bujk'),
+                npwp: bujkManualForm.querySelector('#npwp_bujk'),
+                email: bujkManualForm.querySelector('#email_bujk'),
+                telp: bujkManualForm.querySelector('#telp_bujk'),
+                website: bujkManualForm.querySelector('#website_bujk'),
+            };
 
-        if (writeQuery && (panelName === 'upload' || panelName === 'manual')) {
-            updateQuery(panelName);
-        }
-    };
+            const onlyNumbers = (value) => {
+                return String(value || '').replace(/\D/g, '');
+            };
 
-    const hideModal = (modal, writeQuery = true) => {
-        if (!modal) return;
+            const formatNpwp = (value) => {
+                const digits = onlyNumbers(value).slice(0, 16);
 
-        modal.dataset.state = 'closed';
-        modal.classList.remove('pointer-events-auto', 'opacity-100');
-        modal.classList.add('pointer-events-none', 'opacity-0');
+                let result = '';
 
-        const backdrop = modal.querySelector('[data-modal-backdrop]');
-        const panel = modal.querySelector('[data-modal-panel]');
+                if (digits.length > 0) result += digits.slice(0, 2);
+                if (digits.length > 2) result += '.' + digits.slice(2, 5);
+                if (digits.length > 5) result += '.' + digits.slice(5, 8);
+                if (digits.length > 8) result += '.' + digits.slice(8, 9);
+                if (digits.length > 9) result += '-' + digits.slice(9, 12);
+                if (digits.length > 12) result += '.' + digits.slice(12, 16);
 
-        if (backdrop) {
-            backdrop.classList.remove('opacity-100');
-            backdrop.classList.add('opacity-0');
-        }
+                return result;
+            };
 
-        if (panel) {
-            panel.classList.remove('translate-y-0', 'scale-100', 'opacity-100');
-            panel.classList.add('translate-y-4', 'scale-[0.98]', 'opacity-0');
-        }
+            const getErrorWrapper = (field) => {
+                if (!field) return null;
 
-        setTimeout(() => {
-            if (modal.dataset.state !== 'open') {
-                modal.classList.add('hidden');
+                if (field.type === 'checkbox') {
+                    return field.closest('.grid')?.parentElement || field.parentElement;
+                }
+
+                return field.parentElement;
+            };
+
+            const getOrCreateErrorText = (field) => {
+                const wrapper = getErrorWrapper(field);
+                if (!wrapper) return null;
+
+                let errorText = wrapper.querySelector('[data-bujk-error]');
+
+                if (!errorText) {
+                    errorText = document.createElement('p');
+                    errorText.setAttribute('data-bujk-error', 'true');
+                    errorText.className = 'mt-1 text-xs text-rose-500';
+                    wrapper.appendChild(errorText);
+                }
+
+                return errorText;
+            };
+
+            const showTrigger = (field, message, showPopup = false) => {
+                if (!field) return false;
+
+                field.setCustomValidity(message || '');
+
+                const errorText = getOrCreateErrorText(field);
+
+                if (errorText) {
+                    errorText.textContent = message || '';
+                    errorText.classList.toggle('hidden', !message);
+                }
+
+                if (message) {
+                    field.classList.add('border-rose-500', 'focus:border-rose-500');
+
+                    if (field.type === 'checkbox') {
+                        field.classList.add('text-rose-600', 'focus:ring-rose-500');
+                    }
+                } else {
+                    field.classList.remove('border-rose-500', 'focus:border-rose-500');
+
+                    if (field.type === 'checkbox') {
+                        field.classList.remove('text-rose-600', 'focus:ring-rose-500');
+                    }
+                }
+
+                if (message && showPopup) {
+                    field.reportValidity();
+                }
+
+                return !message;
+            };
+
+            const clearTrigger = (field) => {
+                if (!field) return;
+
+                field.setCustomValidity('');
+
+                const errorText = getOrCreateErrorText(field);
+
+                if (errorText) {
+                    errorText.textContent = '';
+                    errorText.classList.add('hidden');
+                }
+
+                field.classList.remove('border-rose-500', 'focus:border-rose-500');
+
+                if (field.type === 'checkbox') {
+                    field.classList.remove('text-rose-600', 'focus:ring-rose-500');
+                }
+            };
+
+            const isAnyJenisChecked = () => {
+                return Array.from(manualFields.jenis || []).some((checkbox) => checkbox.checked);
+            };
+
+            const getFirstJenis = () => {
+                return manualFields.jenis && manualFields.jenis.length ?
+                    manualFields.jenis[0] :
+                    null;
+            };
+
+            const validateNib = (showMessage = true, showPopup = false) => {
+                const field = manualFields.nib;
+                if (!field) return true;
+
+                const before = field.value;
+                const cleaned = onlyNumbers(before).slice(0, 13);
+
+                if (before !== cleaned) {
+                    field.value = cleaned;
+
+                    if (showMessage) {
+                        return showTrigger(field, 'NIB hanya boleh diisi angka.', showPopup);
+                    }
+                }
+
+                if (cleaned === '') {
+                    return showMessage ?
+                        showTrigger(field, 'NIB wajib diisi.', showPopup) :
+                        false;
+                }
+
+                if (cleaned.length !== 13) {
+                    return showMessage ?
+                        showTrigger(field, 'NIB harus terdiri dari 13 digit angka.', showPopup) :
+                        false;
+                }
+
+                clearTrigger(field);
+                return true;
+            };
+
+            const validateNama = (showMessage = true, showPopup = false) => {
+                const field = manualFields.nama;
+                if (!field) return true;
+
+                if (field.value.trim() === '') {
+                    return showMessage ?
+                        showTrigger(field, 'Nama BUJK wajib diisi.', showPopup) :
+                        false;
+                }
+
+                clearTrigger(field);
+                return true;
+            };
+
+            const validateJenis = (showMessage = true, showPopup = false) => {
+                const firstJenis = getFirstJenis();
+                if (!firstJenis) return true;
+
+                if (!isAnyJenisChecked()) {
+                    return showMessage ?
+                        showTrigger(firstJenis, 'Pilih minimal satu jenis usaha.', showPopup) :
+                        false;
+                }
+
+                clearTrigger(firstJenis);
+                return true;
+            };
+
+            const validateAlamat = (showMessage = true, showPopup = false) => {
+                const field = manualFields.alamat;
+                if (!field) return true;
+
+                if (field.value.trim() === '') {
+                    return showMessage ?
+                        showTrigger(field, 'Alamat wajib diisi.', showPopup) :
+                        false;
+                }
+
+                clearTrigger(field);
+                return true;
+            };
+
+            const validateProvinsi = (showMessage = true, showPopup = false) => {
+                const field = manualFields.provinsi;
+                if (!field) return true;
+
+                if (field.value.trim() === '') {
+                    return showMessage ?
+                        showTrigger(field, 'Provinsi wajib dipilih.', showPopup) :
+                        false;
+                }
+
+                clearTrigger(field);
+                return true;
+            };
+
+            const validateKabupaten = (showMessage = true, showPopup = false) => {
+                const field = manualFields.kabupaten;
+                if (!field) return true;
+
+                if (field.value.trim() === '') {
+                    return showMessage ?
+                        showTrigger(field, 'Kabupaten / Kota wajib dipilih.', showPopup) :
+                        false;
+                }
+
+                clearTrigger(field);
+                return true;
+            };
+
+            const validateNpwp = (showMessage = true, showPopup = false) => {
+                const field = manualFields.npwp;
+                if (!field) return true;
+
+                const before = field.value;
+                const digits = onlyNumbers(before).slice(0, 16);
+                const formatted = formatNpwp(digits);
+
+                if (before !== formatted) {
+                    field.value = formatted;
+                }
+
+                if (digits === '') {
+                    return showMessage ?
+                        showTrigger(field, 'NPWP wajib diisi.', showPopup) :
+                        false;
+                }
+
+                clearTrigger(field);
+                return true;
+            };
+
+            const validateEmail = (showMessage = true, showPopup = false) => {
+                const field = manualFields.email;
+                if (!field) return true;
+
+                field.setCustomValidity('');
+
+                if (field.value.trim() === '') {
+                    return showMessage ?
+                        showTrigger(field, 'Email wajib diisi.', showPopup) :
+                        false;
+                }
+
+                if (!field.checkValidity()) {
+                    return showMessage ?
+                        showTrigger(field, 'Format email tidak valid. Contoh: nama@email.com', showPopup) :
+                        false;
+                }
+
+                clearTrigger(field);
+                return true;
+            };
+
+            const validateTelp = (showMessage = true, showPopup = false) => {
+                const field = manualFields.telp;
+                if (!field) return true;
+
+                const before = field.value;
+                const cleaned = onlyNumbers(before);
+
+                if (before !== cleaned) {
+                    field.value = cleaned;
+
+                    if (showMessage) {
+                        return showTrigger(field, 'No. Telp hanya boleh diisi angka.', showPopup);
+                    }
+                }
+
+                if (cleaned === '') {
+                    return showMessage ?
+                        showTrigger(field, 'No. Telp wajib diisi.', showPopup) :
+                        false;
+                }
+
+                clearTrigger(field);
+                return true;
+            };
+
+            const validateWebsite = () => {
+                clearTrigger(manualFields.website);
+                return true;
+            };
+
+            const validateAllManualFields = () => {
+                const validators = [
+                    validateNib,
+                    validateNama,
+                    validateJenis,
+                    validateAlamat,
+                    validateProvinsi,
+                    validateKabupaten,
+                    validateNpwp,
+                    validateEmail,
+                    validateTelp,
+                    validateWebsite,
+                ];
+
+                let firstInvalid = null;
+
+                for (const validator of validators) {
+                    const isValid = validator(true, false);
+
+                    if (!isValid && !firstInvalid) {
+                        if (validator === validateJenis) {
+                            firstInvalid = getFirstJenis();
+                        } else if (validator === validateNib) {
+                            firstInvalid = manualFields.nib;
+                        } else if (validator === validateNama) {
+                            firstInvalid = manualFields.nama;
+                        } else if (validator === validateAlamat) {
+                            firstInvalid = manualFields.alamat;
+                        } else if (validator === validateProvinsi) {
+                            firstInvalid = manualFields.provinsi;
+                        } else if (validator === validateKabupaten) {
+                            firstInvalid = manualFields.kabupaten;
+                        } else if (validator === validateNpwp) {
+                            firstInvalid = manualFields.npwp;
+                        } else if (validator === validateEmail) {
+                            firstInvalid = manualFields.email;
+                        } else if (validator === validateTelp) {
+                            firstInvalid = manualFields.telp;
+                        }
+                    }
+                }
+
+                if (firstInvalid) {
+                    firstInvalid.focus();
+                    firstInvalid.reportValidity();
+                    return false;
+                }
+
+                return true;
+            };
+
+            if (manualFields.nib) {
+                manualFields.nib.setAttribute('inputmode', 'numeric');
+                manualFields.nib.setAttribute('maxlength', '13');
+
+                manualFields.nib.addEventListener('input', function() {
+                    validateNib(true, false);
+                });
+
+                manualFields.nib.addEventListener('blur', function() {
+                    validateNib(true, false);
+                });
             }
-            lockBody();
-        }, 210);
 
-        if (modal === modalElements.upload) {
-            resetImportForm();
+            if (manualFields.nama) {
+                manualFields.nama.addEventListener('input', function() {
+                    validateNama(true, false);
+                });
+
+                manualFields.nama.addEventListener('blur', function() {
+                    validateNama(true, false);
+                });
+            }
+
+            if (manualFields.jenis) {
+                manualFields.jenis.forEach((checkbox) => {
+                    checkbox.addEventListener('change', function() {
+                        validateJenis(true, false);
+                    });
+                });
+            }
+
+            if (manualFields.alamat) {
+                manualFields.alamat.addEventListener('input', function() {
+                    validateAlamat(true, false);
+                });
+
+                manualFields.alamat.addEventListener('blur', function() {
+                    validateAlamat(true, false);
+                });
+            }
+
+            if (manualFields.provinsi) {
+                manualFields.provinsi.addEventListener('change', function() {
+                    validateProvinsi(true, false);
+                    validateKabupaten(true, false);
+                });
+
+                manualFields.provinsi.addEventListener('blur', function() {
+                    validateProvinsi(true, false);
+                });
+            }
+
+            if (manualFields.kabupaten) {
+                manualFields.kabupaten.addEventListener('change', function() {
+                    validateKabupaten(true, false);
+                });
+
+                manualFields.kabupaten.addEventListener('blur', function() {
+                    validateKabupaten(true, false);
+                });
+            }
+
+            if (manualFields.npwp) {
+                manualFields.npwp.setAttribute('inputmode', 'numeric');
+                manualFields.npwp.setAttribute('maxlength', '20');
+                manualFields.npwp.setAttribute('placeholder', '__.___.___.__-___.___');
+
+                manualFields.npwp.addEventListener('input', function() {
+                    this.value = formatNpwp(this.value);
+                    validateNpwp(true, false);
+                });
+
+                manualFields.npwp.addEventListener('blur', function() {
+                    this.value = formatNpwp(this.value);
+                    validateNpwp(true, false);
+                });
+            }
+
+            if (manualFields.email) {
+                manualFields.email.addEventListener('input', function() {
+                    validateEmail(true, false);
+                });
+
+                manualFields.email.addEventListener('blur', function() {
+                    validateEmail(true, false);
+                });
+            }
+
+            if (manualFields.telp) {
+                manualFields.telp.setAttribute('inputmode', 'numeric');
+
+                manualFields.telp.addEventListener('input', function() {
+                    validateTelp(true, false);
+                });
+
+                manualFields.telp.addEventListener('blur', function() {
+                    validateTelp(true, false);
+                });
+            }
+
+            if (manualFields.website) {
+                manualFields.website.addEventListener('input', function() {
+                    validateWebsite();
+                });
+            }
+
+            bujkManualForm.addEventListener('submit', function(event) {
+                if (!validateAllManualFields()) {
+                    event.preventDefault();
+                }
+            });
+        }
+        if (initialPanel === 'upload') {
+            showModal(modalElements.upload, 'upload', false);
+        } else if (initialPanel === 'manual') {
+            showModal(modalElements.manual, 'manual', false);
         }
 
-        if (writeQuery && (modal === modalElements.upload || modal === modalElements.manual)) {
-            updateQuery(null);
-        }
-    };
+        const dismissToast = (toast) => {
+            if (!toast) return;
+            toast.classList.add('translate-y-2', 'opacity-0');
+            setTimeout(() => toast.remove(), 300);
+        };
 
-    const closeAllPrimaryModals = (writeQuery = true) => {
-        hideModal(modalElements.upload, writeQuery);
-        hideModal(modalElements.manual, writeQuery);
-    };
+        document.querySelectorAll('[data-toast]').forEach((toast, index) => {
+            setTimeout(() => dismissToast(toast), 3200 + (index * 300));
+        });
 
-    const submitHiddenForm = (form) => {
-        if (!form) return;
+        toastCloseButtons.forEach((button) => {
+            button.addEventListener('click', function() {
+                dismissToast(this.closest('[data-toast]'));
+            });
+        });
 
-        const hiddenSubmit = form.querySelector('[data-hidden-submit]');
-        if (hiddenSubmit) {
-            hiddenSubmit.click();
-            return;
-        }
+        if (tableContainer) {
+            tableContainer.addEventListener('change', function(event) {
+                if (event.target.matches('#select-all-rows')) {
+                    const checked = event.target.checked;
+                    getRowCheckboxes().forEach((checkbox) => {
+                        checkbox.checked = checked;
+                    });
+                    refreshSelectionState();
+                }
 
-        HTMLFormElement.prototype.submit.call(form);
-    };
+                if (event.target.matches('[data-row-checkbox]')) {
+                    refreshSelectionState();
+                }
+            });
 
-    const getRowCheckboxes = () => Array.from(tableContainer.querySelectorAll('[data-row-checkbox]'));
-    const getSelectAllRows = () => tableContainer.querySelector('#select-all-rows');
-    const getBulkDeleteTrigger = () => tableContainer.querySelector('#bulk-delete-trigger');
+            tableContainer.addEventListener('click', function(event) {
+                const paginationLink = event.target.closest('.bujk-pagination a');
+                if (paginationLink) {
+                    event.preventDefault();
+                    clearTimeout(filterDebounce);
+                    fetchFilteredTable(paginationLink.href);
+                    return;
+                }
 
-    const getSelectedIds = () => {
-        return getRowCheckboxes()
-            .filter((checkbox) => checkbox.checked)
-            .map((checkbox) => checkbox.value);
-    };
+                const singleDeleteButton = event.target.closest('[data-delete-single]');
+                if (singleDeleteButton) {
+                    deleteState = {
+                        mode: 'single',
+                        form: singleDeleteButton.closest('form'),
+                        name: singleDeleteButton.dataset.deleteName || 'data ini',
+                        ids: [],
+                    };
 
-    const updateBulkDeleteButton = (count) => {
-        const bulkDeleteTrigger = getBulkDeleteTrigger();
-        if (!bulkDeleteTrigger) return;
+                    deleteModalTitle.textContent = 'Hapus data BUJK?';
+                    deleteModalText.innerHTML = `Data <span class="font-semibold text-slate-700">${deleteState.name}</span> akan dihapus dari daftar aktif. Tindakan ini tidak bisa dibatalkan.`;
+                    confirmDeleteButton.disabled = false;
+                    confirmDeleteButton.textContent = 'Ya, Hapus';
 
-        if (count > 0) {
-            bulkDeleteTrigger.disabled = false;
-            bulkDeleteTrigger.classList.remove('cursor-not-allowed', 'text-rose-300');
-            bulkDeleteTrigger.classList.add('border-rose-200', 'text-rose-600', 'hover:border-rose-300', 'hover:bg-rose-50');
-            bulkDeleteTrigger.textContent = `Hapus Terpilih (${count})`;
-        } else {
-            bulkDeleteTrigger.disabled = true;
-            bulkDeleteTrigger.classList.add('cursor-not-allowed', 'text-rose-300');
-            bulkDeleteTrigger.classList.remove('text-rose-600', 'hover:border-rose-300', 'hover:bg-rose-50');
-            bulkDeleteTrigger.textContent = 'Hapus Terpilih';
-        }
-    };
+                    showModal(modalElements.delete, null, false);
+                    return;
+                }
 
-    const refreshSelectionState = () => {
-        const rowCheckboxes = getRowCheckboxes();
-        const selectAllRows = getSelectAllRows();
-        const count = getSelectedIds().length;
+                const bulkDeleteTrigger = event.target.closest('#bulk-delete-trigger');
+                if (bulkDeleteTrigger) {
+                    const ids = getSelectedIds();
+                    if (!ids.length) return;
 
-        if (selectAllRows) {
-            selectAllRows.checked = count > 0 && count === rowCheckboxes.length && rowCheckboxes.length > 0;
-            selectAllRows.indeterminate = count > 0 && count < rowCheckboxes.length;
-        }
+                    deleteState = {
+                        mode: 'bulk',
+                        form: null,
+                        name: null,
+                        ids,
+                    };
 
-        updateBulkDeleteButton(count);
-    };
+                    deleteModalTitle.textContent = 'Hapus beberapa data BUJK?';
+                    deleteModalText.innerHTML = `Sebanyak <span class="font-semibold text-slate-700">${ids.length} data</span> terpilih akan dihapus dari daftar aktif. Tindakan ini tidak bisa dibatalkan.`;
+                    confirmDeleteButton.disabled = false;
+                    confirmDeleteButton.textContent = 'Ya, Hapus';
 
-    const buildFilterUrl = (pageUrl = null) => {
-        const url = pageUrl
-            ? new URL(pageUrl, window.location.origin)
-            : new URL(filterForm.action, window.location.origin);
+                    showModal(modalElements.delete, null, false);
+                    return;
+                }
 
-        if (!pageUrl) {
-            url.searchParams.delete('page');
-        }
+                const deleteAllTrigger = event.target.closest('#delete-all-trigger');
+                if (deleteAllTrigger && !deleteAllTrigger.disabled) {
+                    deleteState = {
+                        mode: 'all',
+                        form: null,
+                        name: null,
+                        ids: [],
+                    };
 
-        const keyword = searchInput ? searchInput.value.trim() : '';
-        const jenis = jenisSelect ? jenisSelect.value : '';
-        const kabupaten = filterKabupatenSelect ? filterKabupatenSelect.value : '';
-        const perPage = perPageSelect ? perPageSelect.value : '';
+                    deleteModalTitle.textContent = 'Hapus semua data BUJK?';
+                    deleteModalText.innerHTML = 'Semua <span class="font-semibold text-slate-700">data BUJK aktif</span> akan dihapus. Pastikan kamu benar-benar yakin karena tindakan ini tidak bisa dibatalkan.';
+                    confirmDeleteButton.disabled = false;
+                    confirmDeleteButton.textContent = 'Ya, Hapus';
 
-        if (keyword !== '') {
-            url.searchParams.set('search', keyword);
-        } else {
-            url.searchParams.delete('search');
-        }
-
-        if (jenis !== '') {
-            url.searchParams.set('jenis', jenis);
-        } else {
-            url.searchParams.delete('jenis');
-        }
-
-        if (kabupaten !== '') {
-            url.searchParams.set('kabupaten', kabupaten);
-        } else {
-            url.searchParams.delete('kabupaten');
-        }
-
-        if (perPage !== '') {
-            url.searchParams.set('per_page', perPage);
-        } else {
-            url.searchParams.delete('per_page');
+                    showModal(modalElements.delete, null, false);
+                }
+            });
         }
 
-        return url;
-    };
+        if (confirmDeleteButton) {
+            confirmDeleteButton.addEventListener('click', function() {
+                this.disabled = true;
+                this.textContent = 'Memproses...';
 
-    const fetchFilteredTable = async (pageUrl = null) => {
-        if (!filterForm || !tableContainer) return;
+                if (deleteState.mode === 'single' && deleteState.form) {
+                    submitHiddenForm(deleteState.form);
+                    return;
+                }
 
-        const url = buildFilterUrl(pageUrl);
+                if (deleteState.mode === 'bulk') {
+                    bulkDeleteInputs.innerHTML = '';
 
-        if (activeFilterController) {
-            activeFilterController.abort();
+                    deleteState.ids.forEach((id) => {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'ids[]';
+                        input.value = id;
+                        bulkDeleteInputs.appendChild(input);
+                    });
+
+                    submitHiddenForm(bulkDeleteForm);
+                    return;
+                }
+
+                if (deleteState.mode === 'all') {
+                    submitHiddenForm(deleteAllForm);
+                }
+            });
         }
 
-        activeFilterController = new AbortController();
+        window.addEventListener('popstate', function() {
+            const url = new URL(window.location.href);
 
-        try {
-            const response = await fetch(url.toString(), {
-                method: 'GET',
+            if (searchInput) {
+                searchInput.value = url.searchParams.get('search') || '';
+            }
+
+            if (jenisSelect) {
+                jenisSelect.value = url.searchParams.get('jenis') || '';
+            }
+
+            if (filterKabupatenSelect) {
+                filterKabupatenSelect.value = url.searchParams.get('kabupaten') || '';
+            }
+
+            if (perPageSelect) {
+                perPageSelect.value = url.searchParams.get('per_page') || '{{ $perPage }}';
+            }
+
+            fetchFilteredTable(url.toString());
+        });
+
+        refreshSelectionState();
+
+        if (!provinceSelect || !kabupatenSelect) return;
+
+        const normalizeText = (value = '') => {
+            return String(value).trim().replace(/\s+/g, ' ').toUpperCase();
+        };
+
+        const createOption = (value, text, selected = false, dataCode = '') => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = text;
+            option.selected = selected;
+
+            if (dataCode) {
+                option.dataset.code = dataCode;
+            }
+
+            return option;
+        };
+
+        const resetKabupaten = (placeholder = 'Pilih provinsi dulu...') => {
+            kabupatenSelect.innerHTML = '';
+            kabupatenSelect.appendChild(createOption('', placeholder, true));
+            kabupatenSelect.disabled = true;
+        };
+
+        const renderProvinces = (items) => {
+            provinceSelect.innerHTML = '';
+            provinceSelect.appendChild(createOption('', 'Pilih...'));
+
+            let matched = false;
+
+            items.forEach((item) => {
+                const value = normalizeText(item.value || item.label || '');
+                const label = item.label || item.value || '';
+                const code = item.code || '';
+                const isSelected = selectedProvince !== '' && normalizeText(selectedProvince) === value;
+
+                if (isSelected) matched = true;
+
+                provinceSelect.appendChild(createOption(value, label, isSelected, code));
+            });
+
+            if (selectedProvince && !matched) {
+                provinceSelect.appendChild(createOption(selectedProvince, selectedProvince, true));
+            }
+        };
+
+        const renderRegencies = (items, selectedValue = '') => {
+            kabupatenSelect.innerHTML = '';
+            kabupatenSelect.appendChild(createOption('', 'Pilih...'));
+
+            let matched = false;
+
+            items.forEach((item) => {
+                const value = normalizeText(item.value || item.label || '');
+                const label = item.label || item.value || '';
+                const isSelected = selectedValue !== '' && normalizeText(selectedValue) === value;
+
+                if (isSelected) matched = true;
+
+                kabupatenSelect.appendChild(createOption(value, label, isSelected, item.code || ''));
+            });
+
+            if (selectedValue && !matched) {
+                kabupatenSelect.appendChild(createOption(selectedValue, selectedValue, true));
+            }
+
+            kabupatenSelect.disabled = false;
+        };
+
+        const fetchJson = async (url) => {
+            const response = await fetch(url, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'Accept': 'application/json',
                 },
-                signal: activeFilterController.signal,
             });
+
+            let payload = {};
+
+            try {
+                payload = await response.json();
+            } catch (error) {
+                payload = {};
+            }
 
             if (!response.ok) {
-                throw new Error('Gagal memuat data BUJK.');
+                throw new Error(payload.message || 'Gagal memuat data wilayah.');
             }
 
-            const payload = await response.json();
-            tableContainer.innerHTML = payload.html;
-            refreshSelectionState();
-            window.history.replaceState({}, '', url.toString());
-        } catch (error) {
-            if (error.name === 'AbortError') {
+            return payload;
+        };
+
+        const loadRegencies = async (provinceCode, selectedRegency = '') => {
+            if (!provinceCode) {
+                resetKabupaten('Pilih provinsi dulu...');
                 return;
             }
 
-            console.error(error);
-            window.location.href = url.toString();
-        }
-    };
+            kabupatenSelect.disabled = true;
+            kabupatenSelect.innerHTML = '';
+            kabupatenSelect.appendChild(createOption('', 'Memuat kabupaten/kota...', true));
 
-    const triggerRealtimeFilter = () => {
-        clearTimeout(filterDebounce);
-        filterDebounce = setTimeout(() => {
-            fetchFilteredTable();
-        }, 120);
-    };
+            try {
+                const url = `${regenciesEndpoint}?province_code=${encodeURIComponent(provinceCode)}`;
+                const payload = await fetchJson(url);
+                const items = Array.isArray(payload.data) ? payload.data : [];
 
-    if (searchInput) {
-        searchInput.addEventListener('input', triggerRealtimeFilter);
-
-        searchInput.addEventListener('keydown', function (event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                clearTimeout(filterDebounce);
-                fetchFilteredTable();
+                renderRegencies(items, selectedRegency);
+            } catch (error) {
+                console.error(error);
+                resetKabupaten('Gagal memuat kabupaten/kota');
             }
-        });
-    }
+        };
 
-    if (jenisSelect) {
-        jenisSelect.addEventListener('change', function () {
-            clearTimeout(filterDebounce);
-            fetchFilteredTable();
-        });
-    }
-
-    if (filterKabupatenSelect) {
-        filterKabupatenSelect.addEventListener('change', function () {
-            clearTimeout(filterDebounce);
-            fetchFilteredTable();
-        });
-    }
-
-    if (perPageSelect) {
-        perPageSelect.addEventListener('change', function () {
-            clearTimeout(filterDebounce);
-            fetchFilteredTable();
-        });
-    }
-
-    if (filterForm) {
-        filterForm.addEventListener('submit', function (event) {
-            event.preventDefault();
-            clearTimeout(filterDebounce);
-            fetchFilteredTable();
-        });
-    }
-
-    openButtons.forEach((button) => {
-        button.addEventListener('click', function () {
-            const target = this.dataset.modalOpen;
-
-            if (target === 'upload') {
-                closeAllPrimaryModals(false);
-                resetImportForm();
-                showModal(modalElements.upload, 'upload', true);
-            }
-
-            if (target === 'manual') {
-                closeAllPrimaryModals(false);
-                showModal(modalElements.manual, 'manual', true);
-            }
-        });
-    });
-
-    Object.values(modalElements).forEach((modal) => {
-        if (!modal) return;
-
-        modal.dataset.state = 'closed';
-
-        const backdrop = modal.querySelector('[data-modal-backdrop]');
-        if (backdrop) {
-            backdrop.addEventListener('click', function () {
-                hideModal(modal, true);
-            });
-        }
-
-        modal.querySelectorAll('[data-modal-close]').forEach((button) => {
-            button.addEventListener('click', function () {
-                hideModal(modal, true);
-            });
-        });
-    });
-
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') {
-            Object.values(modalElements).forEach((modal) => hideModal(modal, true));
-        }
-    });
-
-    if (initialPanel === 'upload') {
-        showModal(modalElements.upload, 'upload', false);
-    } else if (initialPanel === 'manual') {
-        showModal(modalElements.manual, 'manual', false);
-    }
-
-    const dismissToast = (toast) => {
-        if (!toast) return;
-        toast.classList.add('translate-y-2', 'opacity-0');
-        setTimeout(() => toast.remove(), 300);
-    };
-
-    document.querySelectorAll('[data-toast]').forEach((toast, index) => {
-        setTimeout(() => dismissToast(toast), 3200 + (index * 300));
-    });
-
-    toastCloseButtons.forEach((button) => {
-        button.addEventListener('click', function () {
-            dismissToast(this.closest('[data-toast]'));
-        });
-    });
-
-    if (tableContainer) {
-        tableContainer.addEventListener('change', function (event) {
-            if (event.target.matches('#select-all-rows')) {
-                const checked = event.target.checked;
-                getRowCheckboxes().forEach((checkbox) => {
-                    checkbox.checked = checked;
-                });
-                refreshSelectionState();
-            }
-
-            if (event.target.matches('[data-row-checkbox]')) {
-                refreshSelectionState();
-            }
-        });
-
-        tableContainer.addEventListener('click', function (event) {
-            const paginationLink = event.target.closest('.bujk-pagination a');
-            if (paginationLink) {
-                event.preventDefault();
-                clearTimeout(filterDebounce);
-                fetchFilteredTable(paginationLink.href);
-                return;
-            }
-
-            const singleDeleteButton = event.target.closest('[data-delete-single]');
-            if (singleDeleteButton) {
-                deleteState = {
-                    mode: 'single',
-                    form: singleDeleteButton.closest('form'),
-                    name: singleDeleteButton.dataset.deleteName || 'data ini',
-                    ids: [],
-                };
-
-                deleteModalTitle.textContent = 'Hapus data BUJK?';
-                deleteModalText.innerHTML = `Data <span class="font-semibold text-slate-700">${deleteState.name}</span> akan dihapus dari daftar aktif. Tindakan ini tidak bisa dibatalkan.`;
-                confirmDeleteButton.disabled = false;
-                confirmDeleteButton.textContent = 'Ya, Hapus';
-
-                showModal(modalElements.delete, null, false);
-                return;
-            }
-
-            const bulkDeleteTrigger = event.target.closest('#bulk-delete-trigger');
-            if (bulkDeleteTrigger) {
-                const ids = getSelectedIds();
-                if (!ids.length) return;
-
-                deleteState = {
-                    mode: 'bulk',
-                    form: null,
-                    name: null,
-                    ids,
-                };
-
-                deleteModalTitle.textContent = 'Hapus beberapa data BUJK?';
-                deleteModalText.innerHTML = `Sebanyak <span class="font-semibold text-slate-700">${ids.length} data</span> terpilih akan dihapus dari daftar aktif. Tindakan ini tidak bisa dibatalkan.`;
-                confirmDeleteButton.disabled = false;
-                confirmDeleteButton.textContent = 'Ya, Hapus';
-
-                showModal(modalElements.delete, null, false);
-                return;
-            }
-
-            const deleteAllTrigger = event.target.closest('#delete-all-trigger');
-            if (deleteAllTrigger && !deleteAllTrigger.disabled) {
-                deleteState = {
-                    mode: 'all',
-                    form: null,
-                    name: null,
-                    ids: [],
-                };
-
-                deleteModalTitle.textContent = 'Hapus semua data BUJK?';
-                deleteModalText.innerHTML = 'Semua <span class="font-semibold text-slate-700">data BUJK aktif</span> akan dihapus. Pastikan kamu benar-benar yakin karena tindakan ini tidak bisa dibatalkan.';
-                confirmDeleteButton.disabled = false;
-                confirmDeleteButton.textContent = 'Ya, Hapus';
-
-                showModal(modalElements.delete, null, false);
-            }
-        });
-    }
-
-    if (confirmDeleteButton) {
-        confirmDeleteButton.addEventListener('click', function () {
-            this.disabled = true;
-            this.textContent = 'Memproses...';
-
-            if (deleteState.mode === 'single' && deleteState.form) {
-                submitHiddenForm(deleteState.form);
-                return;
-            }
-
-            if (deleteState.mode === 'bulk') {
-                bulkDeleteInputs.innerHTML = '';
-
-                deleteState.ids.forEach((id) => {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'ids[]';
-                    input.value = id;
-                    bulkDeleteInputs.appendChild(input);
-                });
-
-                submitHiddenForm(bulkDeleteForm);
-                return;
-            }
-
-            if (deleteState.mode === 'all') {
-                submitHiddenForm(deleteAllForm);
-            }
-        });
-    }
-
-    window.addEventListener('popstate', function () {
-        const url = new URL(window.location.href);
-
-        if (searchInput) {
-            searchInput.value = url.searchParams.get('search') || '';
-        }
-
-        if (jenisSelect) {
-            jenisSelect.value = url.searchParams.get('jenis') || '';
-        }
-
-        if (filterKabupatenSelect) {
-            filterKabupatenSelect.value = url.searchParams.get('kabupaten') || '';
-        }
-
-        if (perPageSelect) {
-            perPageSelect.value = url.searchParams.get('per_page') || '{{ $perPage }}';
-        }
-
-        fetchFilteredTable(url.toString());
-    });
-
-    refreshSelectionState();
-
-    if (!provinceSelect || !kabupatenSelect) return;
-
-    const normalizeText = (value = '') => {
-        return String(value).trim().replace(/\s+/g, ' ').toUpperCase();
-    };
-
-    const createOption = (value, text, selected = false, dataCode = '') => {
-        const option = document.createElement('option');
-        option.value = value;
-        option.textContent = text;
-        option.selected = selected;
-
-        if (dataCode) {
-            option.dataset.code = dataCode;
-        }
-
-        return option;
-    };
-
-    const resetKabupaten = (placeholder = 'Pilih provinsi dulu...') => {
-        kabupatenSelect.innerHTML = '';
-        kabupatenSelect.appendChild(createOption('', placeholder, true));
-        kabupatenSelect.disabled = true;
-    };
-
-    const renderProvinces = (items) => {
-        provinceSelect.innerHTML = '';
-        provinceSelect.appendChild(createOption('', 'Pilih...'));
-
-        let matched = false;
-
-        items.forEach((item) => {
-            const value = normalizeText(item.value || item.label || '');
-            const label = item.label || item.value || '';
-            const code = item.code || '';
-            const isSelected = selectedProvince !== '' && normalizeText(selectedProvince) === value;
-
-            if (isSelected) matched = true;
-
-            provinceSelect.appendChild(createOption(value, label, isSelected, code));
-        });
-
-        if (selectedProvince && !matched) {
-            provinceSelect.appendChild(createOption(selectedProvince, selectedProvince, true));
-        }
-    };
-
-    const renderRegencies = (items, selectedValue = '') => {
-        kabupatenSelect.innerHTML = '';
-        kabupatenSelect.appendChild(createOption('', 'Pilih...'));
-
-        let matched = false;
-
-        items.forEach((item) => {
-            const value = normalizeText(item.value || item.label || '');
-            const label = item.label || item.value || '';
-            const isSelected = selectedValue !== '' && normalizeText(selectedValue) === value;
-
-            if (isSelected) matched = true;
-
-            kabupatenSelect.appendChild(createOption(value, label, isSelected, item.code || ''));
-        });
-
-        if (selectedValue && !matched) {
-            kabupatenSelect.appendChild(createOption(selectedValue, selectedValue, true));
-        }
-
-        kabupatenSelect.disabled = false;
-    };
-
-    const fetchJson = async (url) => {
-        const response = await fetch(url, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json',
-            },
-        });
-
-        let payload = {};
-
-        try {
-            payload = await response.json();
-        } catch (error) {
-            payload = {};
-        }
-
-        if (!response.ok) {
-            throw new Error(payload.message || 'Gagal memuat data wilayah.');
-        }
-
-        return payload;
-    };
-
-    const loadRegencies = async (provinceCode, selectedRegency = '') => {
-        if (!provinceCode) {
-            resetKabupaten('Pilih provinsi dulu...');
-            return;
-        }
-
-        kabupatenSelect.disabled = true;
-        kabupatenSelect.innerHTML = '';
-        kabupatenSelect.appendChild(createOption('', 'Memuat kabupaten/kota...', true));
-
-        try {
-            const url = `${regenciesEndpoint}?province_code=${encodeURIComponent(provinceCode)}`;
-            const payload = await fetchJson(url);
-            const items = Array.isArray(payload.data) ? payload.data : [];
-
-            renderRegencies(items, selectedRegency);
-        } catch (error) {
-            console.error(error);
-            resetKabupaten('Gagal memuat kabupaten/kota');
-        }
-    };
-
-    const loadProvinces = async () => {
-        provinceSelect.disabled = true;
-        provinceSelect.innerHTML = '';
-        provinceSelect.appendChild(createOption('', 'Memuat provinsi...', true));
-        resetKabupaten('Pilih provinsi dulu...');
-
-        try {
-            const payload = await fetchJson(provincesEndpoint);
-            const items = Array.isArray(payload.data) ? payload.data : [];
-
-            renderProvinces(items);
-            provinceSelect.disabled = false;
-
-            const selectedOption = provinceSelect.selectedOptions[0];
-            const provinceCode = selectedOption ? (selectedOption.dataset.code || '') : '';
-
-            await loadRegencies(provinceCode, selectedKabupaten);
-        } catch (error) {
-            console.error(error);
-            provinceSelect.innerHTML = '';
-            provinceSelect.appendChild(createOption('', 'Gagal memuat provinsi', true));
+        const loadProvinces = async () => {
             provinceSelect.disabled = true;
+            provinceSelect.innerHTML = '';
+            provinceSelect.appendChild(createOption('', 'Memuat provinsi...', true));
             resetKabupaten('Pilih provinsi dulu...');
-        }
-    };
 
-    provinceSelect.addEventListener('change', function () {
-        const selectedOption = this.selectedOptions[0];
-        const provinceCode = selectedOption ? (selectedOption.dataset.code || '') : '';
-        loadRegencies(provinceCode, '');
+            try {
+                const payload = await fetchJson(provincesEndpoint);
+                const items = Array.isArray(payload.data) ? payload.data : [];
+
+                renderProvinces(items);
+                provinceSelect.disabled = false;
+
+                const selectedOption = provinceSelect.selectedOptions[0];
+                const provinceCode = selectedOption ? (selectedOption.dataset.code || '') : '';
+
+                await loadRegencies(provinceCode, selectedKabupaten);
+            } catch (error) {
+                console.error(error);
+                provinceSelect.innerHTML = '';
+                provinceSelect.appendChild(createOption('', 'Gagal memuat provinsi', true));
+                provinceSelect.disabled = true;
+                resetKabupaten('Pilih provinsi dulu...');
+            }
+        };
+
+        provinceSelect.addEventListener('change', function() {
+            const selectedOption = this.selectedOptions[0];
+            const provinceCode = selectedOption ? (selectedOption.dataset.code || '') : '';
+            loadRegencies(provinceCode, '');
+        });
+
+        loadProvinces();
     });
-
-    loadProvinces();
-});
 </script>
 @endpush
