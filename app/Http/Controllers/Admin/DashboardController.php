@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Response;
 
 class DashboardController extends Controller
 {
@@ -300,8 +299,8 @@ class DashboardController extends Controller
             ->values()
             ->all();
 
-            $search = $request->query('search');
-            $searchBy = $request->query('search_by', 'nama');
+        $search = $request->query('search');
+        $searchBy = $request->query('search_by', 'nama');
 
         if (empty($selectedJenjang)) {
             $selectedJenjang = ['7', '8', '9'];
@@ -344,7 +343,7 @@ class DashboardController extends Controller
             return $tanggalKadaluwarsa->betweenIncluded($today, $endOfYear);
         };
 
-       $filteredRows = $allRows->filter(function ($row) use (
+        $filteredRows = $allRows->filter(function ($row) use (
             $selectedKabupaten,
             $selectedJenjang,
             $search,
@@ -360,22 +359,19 @@ class DashboardController extends Controller
                         strtolower($row->nama ?? ''),
                         $keyword
                     );
-                }
-
-                elseif ($searchBy === 'kabupaten') {
+                } elseif ($searchBy === 'kabupaten') {
                     $matchSearch = str_contains(
                         strtolower($row->kabupaten ?? ''),
                         $keyword
                     );
-                }
-
-                elseif ($searchBy === 'jabatan') {
+                } elseif ($searchBy === 'jabatan') {
                     $matchSearch = str_contains(
                         strtolower($row->jabatan_kerja ?? ''),
                         $keyword
                     );
                 }
             }
+
             $matchKabupaten = $selectedKabupaten === 'semua'
                 || $selectedKabupaten === ''
                 || $row->kabupaten === $selectedKabupaten;
@@ -546,88 +542,89 @@ class DashboardController extends Controller
             'selectedJenjang'
         ));
     }
+
     public function searchTkk(Request $request)
-        {
-            $keyword = strtolower($request->query('keyword', ''));
-            $category = $request->query('category', 'nama');
-            $page = (int) $request->query('page', 1);
+    {
+        $keyword = strtolower($request->query('keyword', ''));
+        $category = $request->query('category', 'nama');
+        $page = (int) $request->query('page', 1);
 
-            $perPage = 10;
-            $offset = ($page - 1) * $perPage;
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
 
-            $allowedCategories = [
+        $allowedCategories = [
+            'nama',
+            'kabupaten',
+            'jabatan',
+        ];
+
+        if (!in_array($category, $allowedCategories, true)) {
+            $category = 'nama';
+        }
+
+        $columnMap = [
+            'nama' => 'nama',
+            'kabupaten' => 'kabupaten',
+            'jabatan' => 'jabatan_kerja',
+        ];
+
+        $column = $columnMap[$category];
+
+        $query = DB::table('tkk')
+            ->select(
                 'nama',
                 'kabupaten',
-                'jabatan',
-            ];
-
-            if (!in_array($category, $allowedCategories)) {
-                $category = 'nama';
-            }
-
-            $columnMap = [
-                'nama' => 'nama',
-                'kabupaten' => 'kabupaten',
-                'jabatan' => 'jabatan_kerja',
-            ];
-
-            $column = $columnMap[$category];
-
-            $query = DB::table('tkk')
-                ->select(
-                    'nama',
-                    'kabupaten',
-                    'jabatan_kerja',
-                    'jenjang',
-                    'tanggal_aktif',
-                    'tanggal_kadaluwarsa'
-                )
-                ->when($keyword, function ($query) use ($column, $keyword) {
-                    $query->whereRaw("LOWER($column) LIKE ?", ["%{$keyword}%"]);
-                });
-
-            $total = $query->count();
-
-            $rows = $query
-                ->offset($offset)
-                ->limit($perPage)
-                ->get();
-
-            $today = Carbon::now()->startOfDay();
-
-            $data = $rows->map(function ($row) use ($today) {
-
-                $status = 'Belum Aktif';
-
-                if ($row->tanggal_aktif && $row->tanggal_kadaluwarsa) {
-
-                    $aktif = Carbon::parse($row->tanggal_aktif)->startOfDay();
-                    $kadaluarsa = Carbon::parse($row->tanggal_kadaluwarsa)->startOfDay();
-
-                    if (
-                        $aktif->lessThanOrEqualTo($today) &&
-                        $kadaluarsa->greaterThanOrEqualTo($today)
-                    ) {
-                        $status = 'Aktif';
-                    } elseif ($kadaluarsa->lt($today)) {
-                        $status = 'Kadaluarsa';
-                    }
-                }
-
-                return [
-                    'nama' => $row->nama,
-                    'kabupaten' => $row->kabupaten,
-                    'jabatan' => $row->jabatan_kerja,
-                    'jenjang' => $row->jenjang,
-                    'status' => $status,
-                ];
+                'jabatan_kerja',
+                'jenjang',
+                'tanggal_aktif',
+                'tanggal_kadaluwarsa'
+            )
+            ->when($keyword, function ($query) use ($column, $keyword) {
+                $query->whereRaw("LOWER($column) LIKE ?", ["%{$keyword}%"]);
             });
 
-            return response()->json([
-                'data' => $data,
-                'total' => $total,
-                'current_page' => $page,
-                'last_page' => ceil($total / $perPage),
-            ]);
-        }
+        $total = $query->count();
+
+        $rows = $query
+            ->offset($offset)
+            ->limit($perPage)
+            ->get();
+
+        $today = Carbon::now()->startOfDay();
+
+        $data = $rows->map(function ($row) use ($today) {
+
+            $status = 'Belum Aktif';
+
+            if ($row->tanggal_aktif && $row->tanggal_kadaluwarsa) {
+
+                $aktif = Carbon::parse($row->tanggal_aktif)->startOfDay();
+                $kadaluarsa = Carbon::parse($row->tanggal_kadaluwarsa)->startOfDay();
+
+                if (
+                    $aktif->lessThanOrEqualTo($today) &&
+                    $kadaluarsa->greaterThanOrEqualTo($today)
+                ) {
+                    $status = 'Aktif';
+                } elseif ($kadaluarsa->lt($today)) {
+                    $status = 'Kadaluarsa';
+                }
+            }
+
+            return [
+                'nama' => $row->nama,
+                'kabupaten' => $row->kabupaten,
+                'jabatan' => $row->jabatan_kerja,
+                'jenjang' => $row->jenjang,
+                'status' => $status,
+            ];
+        });
+
+        return response()->json([
+            'data' => $data,
+            'total' => $total,
+            'current_page' => $page,
+            'last_page' => (int) ceil($total / $perPage),
+        ]);
+    }
 }
