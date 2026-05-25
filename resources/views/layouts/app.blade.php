@@ -16,23 +16,23 @@
 
         {{-- Top Bar Logo Instansi --}}
         <div class="hidden bg-white md:block">
-            <div class="mx-auto flex h-11 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+            <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center gap-4">
                     <img
                         src="{{ asset('images/logo-dinas.png') }}"
                         alt="Dinas PUPRPERA Provinsi Kalimantan Timur"
-                        class="h-8 w-auto object-contain">
+                        class="h-12 w-auto object-contain">
 
                     <img
                         src="{{ asset('images/logo-gubernur.png') }}"
                         alt="Logo Gubernur Kalimantan Timur"
-                        class="h-8 w-auto object-contain">
+                        class="h-12 w-auto object-contain">
                 </div>
 
                 <img
                     src="{{ asset('images/logo-berakhlak.png') }}"
                     alt="BerAKHLAK"
-                    class="h-7 w-auto object-contain">
+                    class="h-11 w-auto object-contain">
             </div>
         </div>
 
