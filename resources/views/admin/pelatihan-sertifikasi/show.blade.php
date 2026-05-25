@@ -6,45 +6,45 @@
 @section('content')
 
 @php
-    $statusLabel = match ($pelatihan->status) {
-        'dibuka' => 'Terbuka',
-        'selesai' => 'Tertutup',
-        'draft' => 'Draft',
-        default => '-',
-    };
+$statusLabel = match ($pelatihan->status) {
+'dibuka' => 'Terbuka',
+'selesai' => 'Tertutup',
+'draft' => 'Draft',
+default => '-',
+};
 
-    $statusColor = match ($pelatihan->status) {
-        'dibuka' => 'bg-emerald-100 text-emerald-700 border-emerald-200',
-        'selesai' => 'bg-rose-100 text-rose-700 border-rose-200',
-        'draft' => 'bg-slate-100 text-slate-600 border-slate-200',
-        default => 'bg-slate-100 text-slate-600 border-slate-200',
-    };
+$statusColor = match ($pelatihan->status) {
+'dibuka' => 'bg-emerald-100 text-emerald-700 border-emerald-200',
+'selesai' => 'bg-rose-100 text-rose-700 border-rose-200',
+'draft' => 'bg-slate-100 text-slate-600 border-slate-200',
+default => 'bg-slate-100 text-slate-600 border-slate-200',
+};
 
-    $waktuPelaksanaan = $pelatihan->waktu_kegiatan ?? $pelatihan->tanggal_mulai;
-    $waktuLabel = $waktuPelaksanaan
-        ? \Carbon\Carbon::parse($waktuPelaksanaan)->translatedFormat('d M Y')
-        : '-';
+$waktuPelaksanaan = $pelatihan->waktu_kegiatan ?? $pelatihan->tanggal_mulai;
+$waktuLabel = $waktuPelaksanaan
+? \Carbon\Carbon::parse($waktuPelaksanaan)->translatedFormat('d M Y')
+: '-';
 
-    $peserta = $pelatihan->realisasi_peserta ?? $pelatihan->peserta ?? 0;
-    $jabatanKerja = $pelatihan->standar_kompetensi ?? $pelatihan->jabatan_kerja ?? '-';
-    $tempat = $pelatihan->tempat_kegiatan ?? $pelatihan->tempat ?? '-';
-    $lokasi = $pelatihan->kabupaten_kota ?? $pelatihan->lokasi ?? $pelatihan->provinsi ?? '-';
+$peserta = $pelatihan->realisasi_peserta ?? $pelatihan->peserta ?? 0;
+$jabatanKerja = $pelatihan->standar_kompetensi ?? $pelatihan->jabatan_kerja ?? '-';
+$tempat = $pelatihan->tempat_kegiatan ?? $pelatihan->tempat ?? '-';
+$lokasi = $pelatihan->kabupaten_kota ?? $pelatihan->lokasi ?? $pelatihan->provinsi ?? '-';
 
-    $pendaftarByKabupaten = collect([
-        [
-            'kabupaten' => $lokasi,
-            'jumlah' => $peserta,
-        ],
-    ])->filter(fn ($item) => $item['kabupaten'] !== '-' && (int) $item['jumlah'] > 0);
+$pendaftarByKabupaten = collect([
+[
+'kabupaten' => $lokasi,
+'jumlah' => $peserta,
+],
+])->filter(fn ($item) => $item['kabupaten'] !== '-' && (int) $item['jumlah'] > 0);
 
-    $pendaftarByStatus = collect([
-        [
-            'status' => 'Peserta Terdata',
-            'jumlah' => $peserta,
-        ],
-    ])->filter(fn ($item) => (int) $item['jumlah'] > 0);
+$pendaftarByStatus = collect([
+[
+'status' => 'Peserta Terdata',
+'jumlah' => $peserta,
+],
+])->filter(fn ($item) => (int) $item['jumlah'] > 0);
 
-    $pesertaRows = collect();
+$pesertaRows = collect();
 @endphp
 
 <div class="w-full max-w-full space-y-6 overflow-hidden">
@@ -144,21 +144,21 @@
 
                     <tbody class="divide-y divide-slate-200 bg-white">
                         @forelse ($pendaftarByKabupaten as $row)
-                            <tr>
-                                <td class="px-5 py-4 text-sm font-semibold uppercase text-[#142B67]">
-                                    {{ $row['kabupaten'] }}
-                                </td>
+                        <tr>
+                            <td class="px-5 py-4 text-sm font-semibold uppercase text-[#142B67]">
+                                {{ $row['kabupaten'] }}
+                            </td>
 
-                                <td class="px-5 py-4 text-right text-sm font-semibold text-[#142B67]">
-                                    {{ $row['jumlah'] }}
-                                </td>
-                            </tr>
+                            <td class="px-5 py-4 text-right text-sm font-semibold text-[#142B67]">
+                                {{ $row['jumlah'] }}
+                            </td>
+                        </tr>
                         @empty
-                            <tr>
-                                <td colspan="2" class="px-5 py-8 text-center text-sm text-slate-500">
-                                    Data pendaftar berdasarkan kabupaten/kota belum tersedia.
-                                </td>
-                            </tr>
+                        <tr>
+                            <td colspan="2" class="px-5 py-8 text-center text-sm text-slate-500">
+                                Data pendaftar berdasarkan kabupaten/kota belum tersedia.
+                            </td>
+                        </tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -189,21 +189,21 @@
 
                     <tbody class="divide-y divide-slate-200 bg-white">
                         @forelse ($pendaftarByStatus as $row)
-                            <tr>
-                                <td class="px-5 py-4 text-sm font-semibold text-[#142B67]">
-                                    {{ $row['status'] }}
-                                </td>
+                        <tr>
+                            <td class="px-5 py-4 text-sm font-semibold text-[#142B67]">
+                                {{ $row['status'] }}
+                            </td>
 
-                                <td class="px-5 py-4 text-right text-sm font-semibold text-[#142B67]">
-                                    {{ $row['jumlah'] }}
-                                </td>
-                            </tr>
+                            <td class="px-5 py-4 text-right text-sm font-semibold text-[#142B67]">
+                                {{ $row['jumlah'] }}
+                            </td>
+                        </tr>
                         @empty
-                            <tr>
-                                <td colspan="2" class="px-5 py-8 text-center text-sm text-slate-500">
-                                    Data pendaftar berdasarkan status belum tersedia.
-                                </td>
-                            </tr>
+                        <tr>
+                            <td colspan="2" class="px-5 py-8 text-center text-sm text-slate-500">
+                                Data pendaftar berdasarkan status belum tersedia.
+                            </td>
+                        </tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -511,81 +511,81 @@
 
                 <tbody class="divide-y divide-slate-100 bg-white">
                     @forelse ($pesertaRows as $pesertaItem)
-                        <tr class="transition hover:bg-slate-50">
-                            <td class="px-4 py-4">
-                                <input
-                                    type="checkbox"
-                                    class="h-4 w-4 rounded border-slate-300 text-[#28428B] focus:ring-[#28428B]">
-                            </td>
+                    <tr class="transition hover:bg-slate-50">
+                        <td class="px-4 py-4">
+                            <input
+                                type="checkbox"
+                                class="h-4 w-4 rounded border-slate-300 text-[#28428B] focus:ring-[#28428B]">
+                        </td>
 
-                            <td class="px-4 py-4 text-center text-sm text-slate-500">
-                                {{ $loop->iteration }}
-                            </td>
+                        <td class="px-4 py-4 text-center text-sm text-slate-500">
+                            {{ $loop->iteration }}
+                        </td>
 
-                            <td class="px-4 py-4 text-sm font-semibold text-[#142B67]">
-                                {{ $pesertaItem['nama'] ?? '-' }}
-                            </td>
+                        <td class="px-4 py-4 text-sm font-semibold text-[#142B67]">
+                            {{ $pesertaItem['nama'] ?? '-' }}
+                        </td>
 
-                            <td class="px-4 py-4 text-sm text-blue-600">
-                                {{ $pesertaItem['email_telp'] ?? '-' }}
-                            </td>
+                        <td class="px-4 py-4 text-sm text-blue-600">
+                            {{ $pesertaItem['email_telp'] ?? '-' }}
+                        </td>
 
-                            <td class="px-4 py-4 text-sm text-slate-600">
-                                {{ $pesertaItem['pendidikan'] ?? '-' }}
-                            </td>
+                        <td class="px-4 py-4 text-sm text-slate-600">
+                            {{ $pesertaItem['pendidikan'] ?? '-' }}
+                        </td>
 
-                            <td class="px-4 py-4 text-center">
-                                <span class="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
-                                    {{ $pesertaItem['asn'] ?? '-' }}
-                                </span>
-                            </td>
+                        <td class="px-4 py-4 text-center">
+                            <span class="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
+                                {{ $pesertaItem['asn'] ?? '-' }}
+                            </span>
+                        </td>
 
-                            <td class="px-4 py-4 text-sm text-slate-600">
-                                {{ $pesertaItem['jabatan_instansi'] ?? '-' }}
-                            </td>
+                        <td class="px-4 py-4 text-sm text-slate-600">
+                            {{ $pesertaItem['jabatan_instansi'] ?? '-' }}
+                        </td>
 
-                            <td class="px-4 py-4 text-sm text-slate-600">
-                                {{ $pesertaItem['alamat'] ?? '-' }}
-                            </td>
+                        <td class="px-4 py-4 text-sm text-slate-600">
+                            {{ $pesertaItem['alamat'] ?? '-' }}
+                        </td>
 
-                            <td class="px-4 py-4 text-sm text-slate-600">
-                                {{ $pesertaItem['kab_kota'] ?? '-' }}
-                            </td>
+                        <td class="px-4 py-4 text-sm text-slate-600">
+                            {{ $pesertaItem['kab_kota'] ?? '-' }}
+                        </td>
 
-                            <td class="px-4 py-4 text-center">
-                                <div class="flex items-center justify-center gap-2">
-                                    <button
-                                        type="button"
-                                        class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-500 text-white transition hover:bg-cyan-600">
-                                        ✓
-                                    </button>
+                        <td class="px-4 py-4 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <button
+                                    type="button"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-500 text-white transition hover:bg-cyan-600">
+                                    ✓
+                                </button>
 
-                                    <button
-                                        type="button"
-                                        class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-red-500 text-white transition hover:bg-red-600">
-                                        ✕
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                                <button
+                                    type="button"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-red-500 text-white transition hover:bg-red-600">
+                                    ✕
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
                     @empty
-                        <tr>
-                            <td colspan="10" class="px-5 py-14 text-center">
-                                <div class="flex flex-col items-center justify-center">
-                                    <div class="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-2xl">
-                                        👥
-                                    </div>
-
-                                    <h3 class="text-base font-extrabold text-slate-700">
-                                        Belum Ada Data Peserta
-                                    </h3>
-
-                                    <p class="mt-1 max-w-md text-sm text-slate-500">
-                                        Data peserta belum tersedia. Jika nanti tabel peserta sudah dibuat, bagian ini bisa langsung dihubungkan ke database peserta kegiatan.
-                                    </p>
+                    <tr>
+                        <td colspan="10" class="px-5 py-14 text-center">
+                            <div class="flex flex-col items-center justify-center">
+                                <div class="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-2xl">
+                                    👥
                                 </div>
-                            </td>
-                        </tr>
+
+                                <h3 class="text-base font-extrabold text-slate-700">
+                                    Belum Ada Data Peserta
+                                </h3>
+
+                                <p class="mt-1 max-w-md text-sm text-slate-500">
+                                    Data peserta belum tersedia. Jika nanti tabel peserta sudah dibuat, bagian ini bisa langsung dihubungkan ke database peserta kegiatan.
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -661,43 +661,43 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const modalUploadFile = document.getElementById('modalUploadFile');
-    const uploadModalTitle = document.getElementById('uploadModalTitle');
-    const uploadModalLabel = document.getElementById('uploadModalLabel');
-    const uploadFileInput = document.getElementById('upload-file-input');
+    document.addEventListener('DOMContentLoaded', function() {
+        const modalUploadFile = document.getElementById('modalUploadFile');
+        const uploadModalTitle = document.getElementById('uploadModalTitle');
+        const uploadModalLabel = document.getElementById('uploadModalLabel');
+        const uploadFileInput = document.getElementById('upload-file-input');
 
-    document.querySelectorAll('[data-upload-modal-target]').forEach(function (button) {
-        button.addEventListener('click', function () {
-            const title = this.dataset.uploadTitle || 'Form Upload File';
-            const label = this.dataset.uploadLabel || 'Softcopy File';
+        document.querySelectorAll('[data-upload-modal-target]').forEach(function(button) {
+            button.addEventListener('click', function() {
+                const title = this.dataset.uploadTitle || 'Form Upload File';
+                const label = this.dataset.uploadLabel || 'Softcopy File';
 
-            uploadModalTitle.textContent = title;
-            uploadModalLabel.textContent = label;
+                uploadModalTitle.textContent = title;
+                uploadModalLabel.textContent = label;
 
-            if (uploadFileInput) {
-                uploadFileInput.value = '';
+                if (uploadFileInput) {
+                    uploadFileInput.value = '';
+                }
+
+                modalUploadFile.classList.remove('hidden');
+                modalUploadFile.classList.add('flex');
+            });
+        });
+
+        document.querySelectorAll('[data-upload-modal-close]').forEach(function(button) {
+            button.addEventListener('click', function() {
+                modalUploadFile.classList.add('hidden');
+                modalUploadFile.classList.remove('flex');
+            });
+        });
+
+        modalUploadFile.addEventListener('click', function(event) {
+            if (event.target === modalUploadFile) {
+                modalUploadFile.classList.add('hidden');
+                modalUploadFile.classList.remove('flex');
             }
-
-            modalUploadFile.classList.remove('hidden');
-            modalUploadFile.classList.add('flex');
         });
     });
-
-    document.querySelectorAll('[data-upload-modal-close]').forEach(function (button) {
-        button.addEventListener('click', function () {
-            modalUploadFile.classList.add('hidden');
-            modalUploadFile.classList.remove('flex');
-        });
-    });
-
-    modalUploadFile.addEventListener('click', function (event) {
-        if (event.target === modalUploadFile) {
-            modalUploadFile.classList.add('hidden');
-            modalUploadFile.classList.remove('flex');
-        }
-    });
-});
 </script>
 
 @endsection

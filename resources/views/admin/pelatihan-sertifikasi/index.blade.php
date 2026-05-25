@@ -5,6 +5,43 @@
 
 @section('content')
 
+@php
+    $openCreateModal = $errors->any() && old('_form_mode', 'create') === 'create';
+
+    $serverErrorMessage = $errors->any()
+        ? 'Periksa kembali field yang wajib diisi.'
+        : null;
+@endphp
+
+{{-- TOAST NOTIFICATION --}}
+<div
+    id="toastNotification"
+    class="fixed right-6 top-6 z-[99999] hidden w-full max-w-sm overflow-hidden rounded-2xl shadow-2xl">
+
+    <div id="toastBox" class="flex items-start gap-4 px-5 py-4 text-white">
+        <div id="toastIcon" class="mt-0.5 text-xl font-bold">
+            ✓
+        </div>
+
+        <div class="min-w-0 flex-1">
+            <p id="toastTitle" class="text-sm font-extrabold">
+                Berhasil
+            </p>
+
+            <p id="toastMessage" class="mt-1 text-sm leading-relaxed">
+                Data berhasil diproses.
+            </p>
+        </div>
+
+        <button
+            type="button"
+            id="toastClose"
+            class="text-2xl font-light leading-none text-white/80 transition hover:text-white">
+            &times;
+        </button>
+    </div>
+</div>
+
 <div class="space-y-6">
 
     {{-- HEADER --}}
@@ -35,25 +72,6 @@
             Tambah Data
         </button>
     </div>
-
-    {{-- ALERT --}}
-    @if (session('success'))
-        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-semibold text-emerald-700">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if ($errors->any())
-        <div class="rounded-2xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm text-rose-700">
-            <p class="mb-2 font-bold">Data gagal disimpan:</p>
-
-            <ul class="list-inside list-disc space-y-1">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
 
     {{-- CARD TABLE --}}
     <div class="rounded-3xl border border-slate-200 bg-white shadow-sm">
@@ -322,7 +340,7 @@
 {{-- MODAL TAMBAH DATA --}}
 <div
     id="modalPelatihan"
-    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
+    class="fixed inset-0 z-50 {{ $openCreateModal ? 'flex' : 'hidden' }} items-center justify-center bg-black/50 p-4">
 
     <div class="max-h-[95vh] w-full max-w-5xl overflow-y-auto rounded-3xl bg-white shadow-2xl">
 
@@ -344,9 +362,12 @@
         <form
             action="{{ route('admin.pelatihan-sertifikasi.store') }}"
             method="POST"
-            class="space-y-5 p-6">
+            novalidate
+            class="pelatihan-form space-y-5 p-6">
 
             @csrf
+
+            <input type="hidden" name="_form_mode" value="create">
 
             @include('admin.pelatihan-sertifikasi.partials.form-fields', [
                 'mode' => 'create',
@@ -406,10 +427,13 @@
             id="editPelatihanForm"
             action="#"
             method="POST"
-            class="space-y-5 p-6">
+            novalidate
+            class="pelatihan-form space-y-5 p-6">
 
             @csrf
             @method('PUT')
+
+            <input type="hidden" name="_form_mode" value="edit">
 
             @include('admin.pelatihan-sertifikasi.partials.form-fields', [
                 'mode' => 'edit',
@@ -440,9 +464,60 @@
 
 </div>
 
-{{-- SCRIPT MODAL + GLOBAL DROPDOWN --}}
+{{-- SCRIPT MODAL + VALIDASI FORM + GLOBAL DROPDOWN + TOAST --}}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
+    const toastNotification = document.getElementById('toastNotification');
+    const toastBox = document.getElementById('toastBox');
+    const toastIcon = document.getElementById('toastIcon');
+    const toastTitle = document.getElementById('toastTitle');
+    const toastMessage = document.getElementById('toastMessage');
+    const toastClose = document.getElementById('toastClose');
+
+    let toastTimer = null;
+
+    function showToast(type, title, message) {
+        if (!toastNotification || !toastBox) {
+            return;
+        }
+
+        clearTimeout(toastTimer);
+
+        toastBox.classList.remove('bg-emerald-500', 'bg-rose-500');
+
+        if (type === 'success') {
+            toastBox.classList.add('bg-emerald-500');
+            toastIcon.textContent = '✓';
+        } else {
+            toastBox.classList.add('bg-rose-500');
+            toastIcon.textContent = '!';
+        }
+
+        toastTitle.textContent = title;
+        toastMessage.textContent = message;
+
+        toastNotification.classList.remove('hidden');
+
+        toastTimer = setTimeout(function () {
+            toastNotification.classList.add('hidden');
+        }, 3500);
+    }
+
+    if (toastClose) {
+        toastClose.addEventListener('click', function () {
+            toastNotification.classList.add('hidden');
+            clearTimeout(toastTimer);
+        });
+    }
+
+    @if (session('success'))
+        showToast('success', 'Berhasil', @json(session('success')));
+    @endif
+
+    @if ($serverErrorMessage)
+        showToast('error', 'Gagal', @json($serverErrorMessage));
+    @endif
 
     const modalCreate = document.getElementById('modalPelatihan');
     const modalEdit = document.getElementById('modalEditPelatihan');
@@ -529,13 +604,110 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function clearSingleFieldError(field) {
+        const wrapper = field.closest('.field-group');
+        const errorText = wrapper ? wrapper.querySelector('.form-field-error') : null;
+
+        if (errorText) {
+            errorText.textContent = '';
+            errorText.classList.add('hidden');
+        }
+    }
+
+    function showSingleFieldError(field, message) {
+        const wrapper = field.closest('.field-group');
+        const errorText = wrapper ? wrapper.querySelector('.form-field-error') : null;
+
+        if (errorText) {
+            errorText.textContent = message;
+            errorText.classList.remove('hidden');
+        }
+    }
+
+    function validatePelatihanForm(form) {
+        let valid = true;
+        let firstInvalidField = null;
+
+        form.querySelectorAll('.form-control-field').forEach(function (field) {
+            clearSingleFieldError(field);
+
+            const value = String(field.value || '').trim();
+            const label = field.dataset.label || 'Field ini';
+
+            if (field.dataset.required === 'true' && !value) {
+                valid = false;
+                showSingleFieldError(field, label + ' wajib diisi.');
+
+                if (!firstInvalidField) {
+                    firstInvalidField = field;
+                }
+
+                return;
+            }
+
+            if (value && field.dataset.numberMin !== undefined) {
+                const minValue = Number(field.dataset.numberMin);
+                const numberValue = Number(value);
+
+                if (Number.isNaN(numberValue) || numberValue < minValue) {
+                    valid = false;
+
+                    if (minValue === 1) {
+                        showSingleFieldError(field, label + ' minimal 1.');
+                    } else {
+                        showSingleFieldError(field, label + ' harus berupa angka yang valid.');
+                    }
+
+                    if (!firstInvalidField) {
+                        firstInvalidField = field;
+                    }
+                }
+            }
+        });
+
+        if (!valid && firstInvalidField) {
+            showToast('error', 'Gagal', 'Lengkapi field yang wajib diisi.');
+
+            firstInvalidField.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+
+            setTimeout(function () {
+                firstInvalidField.focus();
+            }, 250);
+        }
+
+        return valid;
+    }
+
     function setField(name, value) {
         const field = editForm.querySelector('[name="' + name + '"]');
 
         if (field) {
             field.value = value || '';
+            clearSingleFieldError(field);
         }
     }
+
+    document.querySelectorAll('.pelatihan-form').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!validatePelatihanForm(form)) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        });
+
+        form.querySelectorAll('.form-control-field').forEach(function (field) {
+            field.addEventListener('input', function () {
+                clearSingleFieldError(field);
+            });
+
+            field.addEventListener('change', function () {
+                clearSingleFieldError(field);
+            });
+        });
+    });
 
     function hideActionDropdown() {
         if (!actionDropdownMenu) {
