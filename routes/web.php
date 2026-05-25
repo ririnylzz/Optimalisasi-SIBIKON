@@ -10,6 +10,7 @@ use App\Http\Controllers\Layanan\AsosiasiProfesiController;
 use App\Http\Controllers\Layanan\PenyediaJasaController;
 use App\Http\Controllers\PublicDashboardController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\RantaiPasokController;
 
 Route::get('/', function () {
     return view('welcome', [
@@ -93,11 +94,7 @@ Route::get('/fungsi/pengaturan/forum', function () {
     ]);
 })->name('forum');
 
-Route::get('/fungsi/pengaturan/rantai-pasok', function () {
-    return view('welcome', [
-        'page' => 'rantai-pasok',
-    ]);
-})->name('rantai-pasok');
+
 
 Route::get('/fungsi/pengaturan/daftar-sosil', function () {
     return view('welcome', [
@@ -234,9 +231,34 @@ Route::prefix('admin')
             'title' => 'Pemanfaat Produk',
         ])->name('pemanfaat-produk');
 
-        Route::view('/rantai-pasok', 'admin.placeholder', [
-            'title' => 'Rantai Pasok',
-        ])->name('rantai-pasok');
+        /*
+|--------------------------------------------------------------------------
+| Admin Rantai Pasok
+|--------------------------------------------------------------------------
+*/
+
+        Route::get('/rantai-pasok', [RantaiPasokController::class, 'index'])
+            ->name('rantai-pasok');
+
+        Route::post('/rantai-pasok', [RantaiPasokController::class, 'store'])
+            ->name('rantai-pasok.store');
+
+        Route::post('/rantai-pasok/import', [RantaiPasokController::class, 'import'])
+            ->name('rantai-pasok.import');
+
+        Route::delete('/rantai-pasok/bulk-destroy', [RantaiPasokController::class, 'bulkDestroy'])
+            ->name('rantai-pasok.bulk-destroy');
+
+        Route::delete('/rantai-pasok/destroy-all', [RantaiPasokController::class, 'destroyAll'])
+            ->name('rantai-pasok.destroy-all');
+
+        Route::put('/rantai-pasok/{rantaiPasok}', [RantaiPasokController::class, 'update'])
+            ->whereNumber('rantaiPasok')
+            ->name('rantai-pasok.update');
+
+        Route::delete('/rantai-pasok/{rantaiPasok}', [RantaiPasokController::class, 'destroy'])
+            ->whereNumber('rantaiPasok')
+            ->name('rantai-pasok.destroy');
 
         /*
         |--------------------------------------------------------------------------

@@ -312,7 +312,7 @@
     </div>
 </section>
 
-@include('pages.gis-map')
+
 
 @endsection
 
