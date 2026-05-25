@@ -13,38 +13,104 @@ class PelatihanTkkController extends Controller
         $search = $request->search;
 
         $pelatihan = PelatihanTkk::when($search, function ($query) use ($search) {
-            $query->where('nama_kegiatan', 'like', '%' . $search . '%')
-                ->orWhere('jabatan_kerja', 'like', '%' . $search . '%')
-                ->orWhere('lokasi', 'like', '%' . $search . '%');
-        })
-        ->latest()
-        ->paginate(10);
+                $query->where('nama_kegiatan', 'like', '%' . $search . '%')
+                    ->orWhere('jabatan_kerja', 'like', '%' . $search . '%')
+                    ->orWhere('lokasi', 'like', '%' . $search . '%')
+                    ->orWhere('tempat', 'like', '%' . $search . '%')
+                    ->orWhere('standar_kompetensi', 'like', '%' . $search . '%')
+                    ->orWhere('tempat_kegiatan', 'like', '%' . $search . '%')
+                    ->orWhere('provinsi', 'like', '%' . $search . '%')
+                    ->orWhere('kabupaten_kota', 'like', '%' . $search . '%')
+                    ->orWhere('tahun', 'like', '%' . $search . '%');
+            })
+            ->latest()
+            ->paginate(10);
 
         return view('admin.pelatihan-sertifikasi.index', compact('pelatihan'));
     }
 
    public function store(Request $request)
     {
-        PelatihanTkk::create([
-            'tahun' => $request->tahun,
-            'status' => $request->status,
-            'jenis_peserta' => $request->jenis_peserta,
-            'metode_kegiatan' => $request->metode_kegiatan,
-            'nama_kegiatan' => $request->nama_kegiatan,
-            'waktu_kegiatan' => $request->waktu_kegiatan,
-            'realisasi_peserta' => $request->realisasi_peserta,
-            'sumber_dana' => $request->sumber_dana,
-            'standar_kompetensi' => $request->standar_kompetensi,
-            'tuk' => $request->tuk,
-            'lsp' => $request->lsp,
-            'tempat_kegiatan' => $request->tempat_kegiatan,
-            'provinsi' => $request->provinsi,
-            'kabupaten_kota' => $request->kabupaten_kota,
-            'syarat_tambahan' => $request->syarat_tambahan,
+        $validated = $request->validate([
+            'tahun' => 'nullable',
+            'status' => 'nullable',
+            'jenis_peserta' => 'nullable',
+            'metode_kegiatan' => 'nullable',
+            'nama_kegiatan' => 'required',
+            'waktu_kegiatan' => 'nullable',
+            'realisasi_peserta' => 'nullable',
+            'sumber_dana' => 'nullable',
+            'standar_kompetensi' => 'nullable',
+            'tuk' => 'nullable',
+            'lsp' => 'nullable',
+            'tempat_kegiatan' => 'nullable',
+            'provinsi' => 'nullable',
+            'kabupaten_kota' => 'nullable',
+            'syarat_tambahan' => 'nullable',
         ]);
+
+        PelatihanTkk::create($validated);
 
         return redirect()
             ->route('admin.pelatihan-sertifikasi.index')
             ->with('success', 'Data berhasil ditambahkan');
+    }
+
+    public function show(PelatihanTkk $pelatihan)
+    {
+        return view('admin.pelatihan-sertifikasi.show', compact('pelatihan'));
+    }
+
+    public function update(Request $request, PelatihanTkk $pelatihan)
+    {
+        $validated = $this->validateRequest($request);
+
+        $pelatihan->update($this->preparePayload($validated));
+
+        return redirect()
+            ->route('admin.pelatihan-sertifikasi.index')
+            ->with('success', 'Data berhasil diperbarui');
+    }
+
+    public function destroy(PelatihanTkk $pelatihan)
+    {
+        $pelatihan->delete();
+
+        return redirect()
+            ->route('admin.pelatihan-sertifikasi.index')
+            ->with('success', 'Data berhasil dihapus');
+    }
+
+    private function validateRequest(Request $request): array
+    {
+        return $request->validate([
+            'tahun' => ['nullable', 'integer'],
+            'status' => ['required', 'in:dibuka,selesai'],
+            'jenis_peserta' => ['nullable', 'string', 'max:255'],
+            'metode_kegiatan' => ['nullable', 'string', 'max:255'],
+            'nama_kegiatan' => ['required', 'string', 'max:255'],
+            'waktu_kegiatan' => ['nullable', 'date'],
+            'realisasi_peserta' => ['nullable', 'integer', 'min:0'],
+            'sumber_dana' => ['nullable', 'string', 'max:255'],
+            'standar_kompetensi' => ['nullable', 'string', 'max:255'],
+            'tuk' => ['nullable', 'string', 'max:255'],
+            'lsp' => ['nullable', 'string', 'max:255'],
+            'tempat_kegiatan' => ['nullable', 'string', 'max:255'],
+            'provinsi' => ['nullable', 'string', 'max:255'],
+            'kabupaten_kota' => ['nullable', 'string', 'max:255'],
+            'syarat_tambahan' => ['nullable', 'string'],
+        ]);
+    }
+
+    private function preparePayload(array $validated): array
+    {
+        $validated['jabatan_kerja'] = $validated['standar_kompetensi'] ?? '-';
+        $validated['tanggal_mulai'] = $validated['waktu_kegiatan'] ?? now()->toDateString();
+        $validated['tanggal_selesai'] = $validated['waktu_kegiatan'] ?? now()->toDateString();
+        $validated['tempat'] = $validated['tempat_kegiatan'] ?? '-';
+        $validated['lokasi'] = $validated['kabupaten_kota'] ?? $validated['provinsi'] ?? '-';
+        $validated['peserta'] = $validated['realisasi_peserta'] ?? 0;
+
+        return $validated;
     }
 }
