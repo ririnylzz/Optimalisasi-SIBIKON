@@ -23,27 +23,25 @@ class PelatihanTkkController extends Controller
         return view('admin.pelatihan-sertifikasi.index', compact('pelatihan'));
     }
 
-    public function store(Request $request)
+   public function store(Request $request)
     {
-        $validated = $request->validate([
-            'tahun' => 'nullable',
-            'status' => 'nullable',
-            'jenis_peserta' => 'nullable',
-            'metode_kegiatan' => 'nullable',
-            'nama_kegiatan' => 'required',
-            'waktu_kegiatan' => 'nullable',
-            'realisasi_peserta' => 'nullable',
-            'sumber_dana' => 'nullable',
-            'standar_kompetensi' => 'nullable',
-            'tuk' => 'nullable',
-            'lsp' => 'nullable',
-            'tempat_kegiatan' => 'nullable',
-            'provinsi' => 'nullable',
-            'kabupaten_kota' => 'nullable',
-            'syarat_tambahan' => 'nullable',
+        PelatihanTkk::create([
+            'tahun' => $request->tahun,
+            'status' => $request->status,
+            'jenis_peserta' => $request->jenis_peserta,
+            'metode_kegiatan' => $request->metode_kegiatan,
+            'nama_kegiatan' => $request->nama_kegiatan,
+            'waktu_kegiatan' => $request->waktu_kegiatan,
+            'realisasi_peserta' => $request->realisasi_peserta,
+            'sumber_dana' => $request->sumber_dana,
+            'standar_kompetensi' => $request->standar_kompetensi,
+            'tuk' => $request->tuk,
+            'lsp' => $request->lsp,
+            'tempat_kegiatan' => $request->tempat_kegiatan,
+            'provinsi' => $request->provinsi,
+            'kabupaten_kota' => $request->kabupaten_kota,
+            'syarat_tambahan' => $request->syarat_tambahan,
         ]);
-
-        PelatihanTkk::create($validated);
 
         return redirect()
             ->route('admin.pelatihan-sertifikasi.index')

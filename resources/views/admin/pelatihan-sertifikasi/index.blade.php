@@ -158,25 +158,45 @@
                             {{ $item->kabupaten_kota }}
                         </td>
 
-                        <td class="px-6 py-5">
+                        <td class="px-6 py-5 text-center">
 
-                            <div class="flex items-center justify-center gap-2">
+                            <div class="relative inline-block text-left">
 
-                                {{-- EDIT --}}
                                 <button
+                                    type="button"
+                                    onclick="toggleDropdown({{ $item->id }})"
                                     class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-amber-200 bg-amber-50 text-amber-600 transition hover:bg-amber-100">
 
                                     ✏️
 
                                 </button>
 
-                                {{-- DELETE --}}
-                                <button
-                                    class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-600 transition hover:bg-rose-100">
+                                {{-- DROPDOWN --}}
+                                <div
+                                    id="dropdown-{{ $item->id }}"
+                                    class="absolute right-0 z-20 mt-2 hidden w-48 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
 
-                                    🗑️
+                                    {{-- EDIT --}}
+                                    <button
+                                        type="button"
+                                        class="flex w-full items-center gap-3 px-4 py-3 text-sm text-slate-700 transition hover:bg-slate-50">
 
-                                </button>
+                                        ✏️
+                                        Edit Kegiatan
+
+                                    </button>
+
+                                    {{-- DETAIL --}}
+                                    <button
+                                        type="button"
+                                        class="flex w-full items-center gap-3 border-t border-slate-100 px-4 py-3 text-sm text-slate-700 transition hover:bg-slate-50">
+
+                                        👁️
+                                        Detail Kegiatan
+
+                                    </button>
+
+                                </div>
 
                             </div>
 
@@ -689,6 +709,33 @@ provinsiSelect.addEventListener('change', function () {
         kabupatenSelect.appendChild(option);
 
     });
+
+});
+
+function toggleDropdown(id) {
+
+    const dropdown = document.getElementById(`dropdown-${id}`);
+
+    document.querySelectorAll('[id^="dropdown-"]').forEach(el => {
+
+        if (el.id !== `dropdown-${id}`) {
+            el.classList.add('hidden');
+        }
+
+    });
+
+    dropdown.classList.toggle('hidden');
+}
+
+window.addEventListener('click', function(e) {
+
+    if (!e.target.closest('.relative')) {
+
+        document.querySelectorAll('[id^="dropdown-"]').forEach(el => {
+            el.classList.add('hidden');
+        });
+
+    }
 
 });
 
