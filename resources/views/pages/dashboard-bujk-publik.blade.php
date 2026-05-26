@@ -116,9 +116,6 @@
                             <tr>
                                 <td class="px-4 py-3 text-sm font-bold text-slate-800">
                                     {{ $item['nama'] ?: '-' }}
-                                    <div class="mt-1 text-xs font-medium text-slate-500">
-                                        NIB: {{ $item['nib'] ?: '-' }}
-                                    </div>
                                 </td>
 
                                 <td class="px-4 py-3 text-sm text-slate-600">

@@ -19,7 +19,7 @@
                 </h1>
 
                 <p class="mt-2 max-w-2xl text-sm text-blue-100/80">
-                    Visualisasi data sertifikat badan usaha berdasarkan jenis usaha, wilayah, pelaksana sertifikasi, dan KBLI.
+                    Visualisasi data sertifikat badan usaha berdasarkan jenis usaha, wilayah, pelaksana sertifikasi, KBLI, kualifikasi, dan sifat SBU.
                 </p>
             </div>
 
@@ -94,13 +94,31 @@
         />
 
         <x-dashboard-chart-card
+            title="Kualifikasi SBU"
+            canvas="kualifikasiSbuChart"
+            height="h-[260px]"
+        />
+
+        <x-dashboard-chart-card
+            title="Sub Klasifikasi SBU"
+            canvas="subKlasifikasiSbuChart"
+            height="h-[260px]"
+        />
+
+        <x-dashboard-chart-card
+            title="Sifat Berdasarkan SBU"
+            canvas="sifatSbuChart"
+            height="h-[260px]"
+        />
+
+        <x-dashboard-chart-card
             title="Top 5 Asosiasi SBU"
             canvas="asosiasiSbuChart"
             height="h-[260px]"
         />
 
         {{-- Data Terbaru --}}
-        <div class="mb-9 sibikon-card overflow-hidden rounded-[20px] border border-slate-200 bg-white">
+        <div class="mb-9 sibikon-card overflow-hidden rounded-[20px] border border-slate-200 bg-white xl:col-span-2">
             <div class="border-b border-slate-100 px-4 py-3">
                 <h3 class="text-sm font-extrabold text-slate-900">
                     Data SBU Terbaru
@@ -118,6 +136,12 @@
                                 Jenis Usaha
                             </th>
                             <th class="px-4 py-3 text-left text-xs font-black uppercase tracking-wider text-slate-500">
+                                KBLI
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-black uppercase tracking-wider text-slate-500">
+                                Kualifikasi
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-black uppercase tracking-wider text-slate-500">
                                 Kab/Kota
                             </th>
                         </tr>
@@ -128,13 +152,18 @@
                             <tr>
                                 <td class="px-4 py-3 text-sm font-bold text-slate-800">
                                     {{ $item['nama'] ?: '-' }}
-                                    <div class="mt-1 text-xs font-medium text-slate-500">
-                                        NIB: {{ $item['nib'] ?: '-' }}
-                                    </div>
                                 </td>
 
                                 <td class="px-4 py-3 text-sm text-slate-600">
                                     {{ $item['jenis_usaha'] ?: '-' }}
+                                </td>
+
+                                <td class="px-4 py-3 text-sm text-slate-600">
+                                    {{ $item['kbli'] ?: '-' }}
+                                </td>
+
+                                <td class="px-4 py-3 text-sm text-slate-600">
+                                    {{ $item['kualifikasi'] ?: '-' }}
                                 </td>
 
                                 <td class="px-4 py-3 text-sm text-slate-600">
@@ -143,7 +172,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="3" class="px-4 py-10 text-center text-sm font-semibold text-slate-500">
+                                <td colspan="5" class="px-4 py-10 text-center text-sm font-semibold text-slate-500">
                                     Data SBU belum tersedia.
                                 </td>
                             </tr>
@@ -175,10 +204,10 @@
     const piePalette = [
         '#173A73',
         '#FACC15',
-        '#5B9BC8',
-        '#90C4DF',
         '#F97316',
-        '#22C55E'
+        '#C0267B',
+        '#22C55E',
+        '#06B6D4'
     ];
 
     function formatNumber(value) {
@@ -287,7 +316,7 @@
         });
     }
 
-    function doughnutChart(id, labels, values, colors = piePalette) {
+    function pieChart(id, labels, values, colors = piePalette) {
         const el = document.getElementById(id);
 
         if (!el) {
@@ -348,7 +377,7 @@
         });
     }
 
-    doughnutChart(
+    pieChart(
         'jenisUsahaSbuChart',
         @json(collect($jenisUsahaSummary ?? [])->pluck('label')->values()),
         @json(collect($jenisUsahaSummary ?? [])->pluck('value')->values()),
@@ -367,7 +396,7 @@
         'pelaksanaSbuChart',
         @json(collect($pelaksanaSummary ?? [])->pluck('label')->values()),
         @json(collect($pelaksanaSummary ?? [])->pluck('value')->values()),
-        true,
+        false,
         bluePalette
     );
 
@@ -375,7 +404,30 @@
         'kbliSbuChart',
         @json(collect($kbliSummary ?? [])->pluck('label')->values()),
         @json(collect($kbliSummary ?? [])->pluck('value')->values()),
-        true,
+        false,
+        bluePalette
+    );
+
+    pieChart(
+        'kualifikasiSbuChart',
+        @json(collect($kualifikasiSummary ?? [])->pluck('label')->values()),
+        @json(collect($kualifikasiSummary ?? [])->pluck('value')->values()),
+        piePalette
+    );
+
+    barChart(
+        'subKlasifikasiSbuChart',
+        @json(collect($subKlasifikasiSummary ?? [])->pluck('label')->values()),
+        @json(collect($subKlasifikasiSummary ?? [])->pluck('value')->values()),
+        false,
+        bluePalette
+    );
+
+    barChart(
+        'sifatSbuChart',
+        @json(collect($sifatSummary ?? [])->pluck('label')->values()),
+        @json(collect($sifatSummary ?? [])->pluck('value')->values()),
+        false,
         bluePalette
     );
 

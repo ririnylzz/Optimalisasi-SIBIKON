@@ -280,24 +280,22 @@
 
             $totalSbu = 0;
 
-            if ($schema->hasTable('bujk_sbu')) {
-                $sbuQuery = DB::table('bujk_sbu');
+            foreach (['bujk_sbu', 'sbu', 'bujk'] as $sbuTable) {
+                if (!$schema->hasTable($sbuTable)) {
+                    continue;
+                }
 
-                if ($schema->hasColumn('bujk_sbu', 'is_deleted')) {
+                $sbuQuery = DB::table($sbuTable);
+
+                if ($schema->hasColumn($sbuTable, 'is_deleted')) {
                     $sbuQuery->where('is_deleted', 0);
                 }
 
                 $totalSbu = $sbuQuery->count();
-            } elseif ($schema->hasTable('sbu')) {
-                $sbuQuery = DB::table('sbu');
 
-                if ($schema->hasColumn('sbu', 'is_deleted')) {
-                    $sbuQuery->where('is_deleted', 0);
+                if ($totalSbu > 0) {
+                    break;
                 }
-
-                $totalSbu = $sbuQuery->count();
-            } else {
-                $totalSbu = $totalBujk;
             }
 
             $statistik = [
