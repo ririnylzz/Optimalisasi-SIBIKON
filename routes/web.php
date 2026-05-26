@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\BujkController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PelatihanTkkController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\GisController;
 use App\Http\Controllers\Layanan\AsosiasiPerusahaanController;
 use App\Http\Controllers\Layanan\AsosiasiProfesiController;
@@ -52,7 +53,10 @@ Route::get('/registrasi', function () {
     return view('welcome', [
         'page' => 'regist',
     ]);
-})->name('regist');
+})->name('register');
+
+Route::post('/registrasi', [RegisterController::class, 'store'])
+    ->name('register.store');
 
 Route::get('/kontak', function () {
     return view('welcome', [

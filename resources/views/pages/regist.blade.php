@@ -41,8 +41,23 @@
                 <h2 class="text-center text-[#243966] text-2xl font-extrabold mb-5">
                     Registrasi
                 </h2>
+                
+                @if ($errors->any())
+                    <div class="mb-4 rounded-lg bg-red-100 p-4 text-sm text-red-700">
+                        <ul class="list-disc pl-5">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                @if (session('success'))
+                    <div class="mb-4 rounded-lg bg-green-100 p-4 text-sm text-green-700">
+                        {{ session('success') }}
+                    </div>
+                @endif
 
-                <form action="#" method="POST" class="space-y-4">
+                <form action="{{ route('register.store') }}" method="POST" class="space-y-4">
                     @csrf
 
                     {{-- STEP 1 --}}
@@ -116,8 +131,8 @@
                                     </svg>
                                 </span>
                                 <input
-                                    type="search"
-                                    name="reg_surel_pendaftar"
+                                    type="email"
+                                    name="email"
                                     placeholder="nama@email.com"
                                     class="sibikon-input w-full h-10 rounded-lg pl-12 pr-4 text-sm font-medium">
                             </div>
@@ -231,4 +246,9 @@
         document.getElementById('step-1').classList.remove('hidden');
         document.getElementById('btn-back').classList.add('hidden');
     }
+
+    // kalau ada error validasi, otomatis buka step 2
+    @if ($errors->any())
+        showStep2();
+    @endif
 </script>
