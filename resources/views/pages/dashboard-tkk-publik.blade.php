@@ -31,7 +31,7 @@
                     </p>
 
                     <h3 class="mt-1 text-2xl font-black text-[#FACC15]">
-                        {{ $totalTkk ?? 0 }}
+                        {{ number_format($totalTkk ?? 0, 0, ',', '.') }}
                     </h3>
                 </div>
 
@@ -41,7 +41,7 @@
                     </p>
 
                     <h3 class="mt-1 text-2xl font-black text-[#FACC15]">
-                        10
+                        {{ number_format($totalWilayah ?? 0, 0, ',', '.') }}
                     </h3>
                 </div>
             </div>
@@ -53,19 +53,13 @@
     <div class="grid grid-cols-1 gap-9 xl:grid-cols-2">
 
         <x-dashboard-chart-card
-            title="Status Sertifikasi"
-            canvas="statusSertifikasiChart"
-            height="h-[220px]"
-        />
-
-        <x-dashboard-chart-card
             title="Distribusi Jenjang"
             canvas="distribusiJenjangChart"
             height="h-[220px]"
         />
 
         <x-dashboard-chart-card
-            title="Top 5 Asosiasi"
+            title="Top 5 Asosiasi Jenjang 7-9"
             canvas="topAsosiasiChart"
             height="h-[240px]"
         />
@@ -113,15 +107,6 @@
     const gridColor = 'rgba(148, 163, 184, 0.16)';
     const textColor = '#475569';
 
-    const sibikonAccent = [
-        '#142B67',
-        '#FACC15',
-        '#F97316',
-        '#C0267B',
-        '#22C55E',
-        '#06B6D4'
-    ];
-
     const bluePalette = [
         '#173A73',
         '#2F67A0',
@@ -130,17 +115,13 @@
         '#B8DDED'
     ];
 
-    const statusPalette = [
-        '#142B67',
-        '#FACC15'
-    ];
-
     function formatNumber(value) {
         return new Intl.NumberFormat('id-ID').format(value);
     }
 
     function truncateLabel(label, max = 18) {
         if (!label) return '';
+
         return label.length > max ? label.substring(0, max) + '…' : label;
     }
 
@@ -155,8 +136,8 @@
     }
 
     function resolveColors(labels, colors) {
-        if (Array.isArray(colors) && colors.length === labels.length) {
-            return colors;
+        if (!Array.isArray(colors) || colors.length === 0) {
+            return '#173A73';
         }
 
         return labels.map((_, i) => colors[i % colors.length]);
@@ -164,7 +145,10 @@
 
     function barChart(id, labels, values, horizontal = false, colors = bluePalette) {
         const el = document.getElementById(id);
-        if (!el) return;
+
+        if (!el) {
+            return;
+        }
 
         new Chart(el, {
             type: 'bar',
@@ -182,7 +166,9 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false },
+                    legend: {
+                        display: false
+                    },
                     tooltip: tooltipLabel()
                 },
                 scales: {
@@ -190,75 +176,44 @@
                         beginAtZero: true,
                         ticks: {
                             color: textColor,
-                            font: { size: 11 },
+                            font: {
+                                size: 11
+                            },
                             maxRotation: 0,
                             minRotation: 0,
                             callback: function(value) {
-                                if (horizontal) return formatNumber(value);
+                                if (horizontal) {
+                                    return formatNumber(value);
+                                }
 
                                 const label = this.getLabelForValue(value);
+
                                 return truncateLabel(label, 11);
                             }
                         },
-                        grid: { color: gridColor }
+                        grid: {
+                            color: gridColor
+                        }
                     },
                     y: {
                         beginAtZero: true,
                         ticks: {
                             color: textColor,
-                            font: { size: 11 },
+                            font: {
+                                size: 11
+                            },
                             callback: function(value) {
                                 if (horizontal) {
                                     const label = this.getLabelForValue(value);
+
                                     return truncateLabel(label, 24);
                                 }
 
                                 return formatNumber(value);
                             }
                         },
-                        grid: { color: gridColor }
-                    }
-                }
-            }
-        });
-    }
-
-    function pieChart(id, labels, values) {
-        const el = document.getElementById(id);
-        if (!el) return;
-
-        new Chart(el, {
-            type: 'pie',
-            data: {
-                labels,
-                datasets: [{
-                    data: values,
-                    backgroundColor: sibikonAccent,
-                    borderWidth: 0,
-                    hoverOffset: 10
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: {
-                            color: textColor,
-                            usePointStyle: true,
-                            pointStyle: 'circle',
-                            padding: 14,
-                            font: { size: 12 }
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percent = total ? ((context.raw / total) * 100).toFixed(1) : 0;
-                                return `${context.label}: ${formatNumber(context.raw)} (${percent}%)`;
-                            }
+                        grid: {
+                            color: gridColor
                         }
                     }
                 }
@@ -268,7 +223,10 @@
 
     function lineChart(id, labels, values) {
         const el = document.getElementById(id);
-        if (!el) return;
+
+        if (!el) {
+            return;
+        }
 
         new Chart(el, {
             type: 'line',
@@ -292,114 +250,77 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false },
+                    legend: {
+                        display: false
+                    },
                     tooltip: tooltipLabel()
                 },
                 scales: {
                     x: {
                         ticks: {
                             color: textColor,
-                            font: { size: 11 }
+                            font: {
+                                size: 11
+                            }
                         },
-                        grid: { color: gridColor }
+                        grid: {
+                            color: gridColor
+                        }
                     },
                     y: {
                         beginAtZero: true,
                         ticks: {
                             color: textColor,
-                            font: { size: 11 },
+                            font: {
+                                size: 11
+                            },
                             callback: value => formatNumber(value)
                         },
-                        grid: { color: gridColor }
+                        grid: {
+                            color: gridColor
+                        }
                     }
                 }
             }
         });
     }
 
-    function hexToRgb(hex) {
-        const cleanHex = hex.replace('#', '');
-        const bigint = parseInt(cleanHex, 16);
-
-        return {
-            r: (bigint >> 16) & 255,
-            g: (bigint >> 8) & 255,
-            b: bigint & 255
-        };
-    }
-
-    function interpolateColor(color1, color2, factor) {
-        const c1 = hexToRgb(color1);
-        const c2 = hexToRgb(color2);
-
-        const r = Math.round(c1.r + (c2.r - c1.r) * factor);
-        const g = Math.round(c1.g + (c2.g - c1.g) * factor);
-        const b = Math.round(c1.b + (c2.b - c1.b) * factor);
-
-        return `rgb(${r}, ${g}, ${b})`;
-    }
-
-    function buildKabupatenColors(values) {
-        const maxValue = Math.max(...values);
-        const minValue = Math.min(...values);
-
-        const darkest = '#173A73';
-        const lightest = '#D9E8F4';
-
-        return values.map((value) => {
-            if (maxValue === minValue) return darkest;
-
-            const normalized = (maxValue - value) / (maxValue - minValue);
-            return interpolateColor(darkest, lightest, normalized);
-        });
-    }
-
-    pieChart(
-        'statusSertifikasiChart',
-        @json(collect($statusSertifikasi)->pluck('label')),
-        @json(collect($statusSertifikasi)->pluck('value'))
-    );
-
     barChart(
         'distribusiJenjangChart',
-        @json(collect($distribusiJenjang)->pluck('label')),
-        @json(collect($distribusiJenjang)->pluck('value')),
+        @json(collect($distribusiJenjang ?? [])->pluck('label')->values()),
+        @json(collect($distribusiJenjang ?? [])->pluck('value')->values()),
         false,
         bluePalette
     );
 
     barChart(
         'topAsosiasiChart',
-        @json(collect($topAsosiasi)->pluck('label')),
-        @json(collect($topAsosiasi)->pluck('value')),
+        @json(collect($topAsosiasi ?? [])->pluck('label')->values()),
+        @json(collect($topAsosiasi ?? [])->pluck('value')->values()),
         true,
         bluePalette
     );
 
     barChart(
         'topKlasifikasiChart',
-        @json(collect($topKlasifikasi)->pluck('label')),
-        @json(collect($topKlasifikasi)->pluck('value')),
+        @json(collect($topKlasifikasi ?? [])->pluck('label')->values()),
+        @json(collect($topKlasifikasi ?? [])->pluck('value')->values()),
         true,
         bluePalette
     );
 
-    const perbandinganKabupatenLabels = @json(collect($perbandinganKabupaten)->pluck('label'));
-    const perbandinganKabupatenValues = @json(collect($perbandinganKabupaten)->pluck('value'));
-    const perbandinganKabupatenColors = bluePalette;
-    
     barChart(
         'perbandinganKabupatenChart',
-        perbandinganKabupatenLabels,
-        perbandinganKabupatenValues,
+        @json(collect($perbandinganKabupaten ?? [])->pluck('label')->values()),
+        @json(collect($perbandinganKabupaten ?? [])->pluck('value')->values()),
         true,
-        perbandinganKabupatenColors
+        bluePalette
     );
 
     lineChart(
         'proyeksiKadaluarsaChart',
-        @json(collect($proyeksiKadaluarsa)->pluck('label')),
-        @json(collect($proyeksiKadaluarsa)->pluck('value'))
+        @json(collect($proyeksiKadaluarsa ?? [])->pluck('label')->values()),
+        @json(collect($proyeksiKadaluarsa ?? [])->pluck('value')->values())
     );
 </script>
 @endpush
