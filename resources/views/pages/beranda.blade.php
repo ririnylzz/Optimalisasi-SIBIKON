@@ -314,8 +314,6 @@
 
 @include('pages.gis-map')
 
-@include('pages.gis-map')
-
 @endsection
 
 @push('styles')

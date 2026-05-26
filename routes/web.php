@@ -20,9 +20,6 @@ Route::get('/', function () {
 Route::get('/gis-data/{category}', [GisController::class, 'data'])
     ->name('gis.data');
 
-Route::get('/gis-data/{category}', [GisController::class, 'data'])
-    ->name('gis.data');
-
 Route::get('/profil/tentang-kami', function () {
     return view('welcome', [
         'page' => 'tentang-kami',
@@ -135,12 +132,6 @@ Route::get('/fungsi/pengawasan/tertib-pemanfaatan', function () {
     ]);
 })->name('tertib-pemanfaatan');
 
-/*
-|--------------------------------------------------------------------------
-| Layanan Publik
-|--------------------------------------------------------------------------
-*/
-
 Route::get('/layanan/asosiasi-perusahaan', [AsosiasiPerusahaanController::class, 'index'])
     ->name('asosiasi-perusahaan');
 
@@ -153,12 +144,6 @@ Route::get('/layanan/penyedia-jasa/data', [PenyediaJasaController::class, 'data'
 Route::get('/layanan/penyedia-jasa', [PenyediaJasaController::class, 'index'])
     ->name('penyedia-jasa');
 
-/*
-|--------------------------------------------------------------------------
-| Dashboard Publik
-|--------------------------------------------------------------------------
-*/
-
 Route::get('/dashboard/tenaga-kerja-konstruksi', [PublicDashboardController::class, 'tenagaKerja'])
     ->name('dashboard.tenaga-kerja');
 
@@ -168,17 +153,10 @@ Route::get('/dashboard/bujk', [PublicDashboardController::class, 'bujk'])
 Route::get('/dashboard/sbu', [PublicDashboardController::class, 'sbu'])
     ->name('dashboard.sbu.publik');
 
-/*
-|--------------------------------------------------------------------------
-| Admin
-|--------------------------------------------------------------------------
-*/
-
 Route::prefix('admin')
     ->name('admin.')
     ->middleware('auth')
     ->group(function () {
-
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
 
@@ -237,12 +215,6 @@ Route::prefix('admin')
         Route::view('/rantai-pasok', 'admin.placeholder', [
             'title' => 'Rantai Pasok',
         ])->name('rantai-pasok');
-
-        /*
-        |--------------------------------------------------------------------------
-        | Admin BUJK
-        |--------------------------------------------------------------------------
-        */
 
         Route::get('/bujk', [BujkController::class, 'index'])
             ->name('bujk');
@@ -310,23 +282,11 @@ Route::prefix('admin')
             'title' => 'Peraturan',
         ])->name('peraturan');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Admin Dashboard TKK
-        |--------------------------------------------------------------------------
-        */
-
         Route::get('/tenaga-kerja-konstruksi', [DashboardController::class, 'tkk'])
             ->name('tenaga-kerja-konstruksi');
 
         Route::get('/tenaga-kerja-konstruksi/search', [DashboardController::class, 'searchTkk'])
             ->name('tenaga-kerja-konstruksi.search');
-
-        /*
-        |--------------------------------------------------------------------------
-        | Admin Pelatihan Sertifikasi TKK
-        |--------------------------------------------------------------------------
-        */
 
         Route::get('/pelatihan-sertifikasi', [PelatihanTkkController::class, 'index'])
             ->name('pelatihan-sertifikasi.index');
@@ -345,6 +305,28 @@ Route::prefix('admin')
         Route::delete('/pelatihan-sertifikasi/{pelatihan}', [PelatihanTkkController::class, 'destroy'])
             ->whereNumber('pelatihan')
             ->name('pelatihan-sertifikasi.destroy');
+
+        Route::post('/pelatihan-sertifikasi/{pelatihan}/peserta', [PelatihanTkkController::class, 'storePeserta'])
+            ->whereNumber('pelatihan')
+            ->name('pelatihan-sertifikasi.peserta.store');
+
+        Route::put('/pelatihan-sertifikasi/{pelatihan}/peserta/{peserta}', [PelatihanTkkController::class, 'updatePeserta'])
+            ->whereNumber('pelatihan')
+            ->whereNumber('peserta')
+            ->name('pelatihan-sertifikasi.peserta.update');
+
+        Route::delete('/pelatihan-sertifikasi/{pelatihan}/peserta/bulk-destroy', [PelatihanTkkController::class, 'bulkDestroyPeserta'])
+            ->whereNumber('pelatihan')
+            ->name('pelatihan-sertifikasi.peserta.bulk-destroy');
+
+        Route::delete('/pelatihan-sertifikasi/{pelatihan}/peserta/destroy-all', [PelatihanTkkController::class, 'destroyAllPeserta'])
+            ->whereNumber('pelatihan')
+            ->name('pelatihan-sertifikasi.peserta.destroy-all');
+
+        Route::delete('/pelatihan-sertifikasi/{pelatihan}/peserta/{peserta}', [PelatihanTkkController::class, 'destroyPeserta'])
+            ->whereNumber('pelatihan')
+            ->whereNumber('peserta')
+            ->name('pelatihan-sertifikasi.peserta.destroy');
 
         Route::view('/tertib-usaha', 'admin.placeholder', [
             'title' => 'Tertib Usaha',
