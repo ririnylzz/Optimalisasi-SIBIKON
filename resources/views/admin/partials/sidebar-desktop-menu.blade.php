@@ -224,17 +224,93 @@
             :class="(sidebarPinned || sidebarHovered) ? 'text-left px-2' : 'text-center justify-center'"
             class="{{ $sectionTitleClass }}"
         ></p>
+    <div class="space-y-1.5">
 
-        <div class="space-y-1.5">
-            <a href="{{ route('admin.tenaga-kerja-konstruksi') }}" class="{{ $menuBase }} {{ request()->routeIs('admin.tenaga-kerja-konstruksi') ? $menuActive : $menuIdle }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm0-5v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0L16.95 7.05M7.05 16.95l-1.414 1.414" /></svg>
-                <span x-show="sidebarPinned || sidebarHovered">Tenaga Kerja Konstruksi</span>
-            </a>
+        <!-- Tenaga Kerja Konstruksi -->
+        <a href="{{ route('admin.tenaga-kerja-konstruksi') }}"
+        class="{{ $menuBase }} {{ request()->routeIs('admin.tenaga-kerja-konstruksi') ? $menuActive : $menuIdle }}">
+            
+            <svg xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.8"
+                    d="M17 20h5V18a4 4 0 00-5-3.87M17 20H7m10 0v-2a5.002 5.002 0 00-9.288 0M15 7a3 3 0 11-6 0" />
+            </svg>
 
-            <a href="{{ route('admin.pelatihan-sertifikasi') }}" class="{{ $menuBase }} {{ request()->routeIs('admin.pelatihan-sertifikasi') ? $menuActive : $menuIdle }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.483 9.246 5 7.5 5 5.014 5 3 6.12 3 7.5v9C3 15.12 5.014 14 7.5 14c1.746 0 3.332.483 4.5 1.253m0-9C13.168 5.483 14.754 5 16.5 5c2.486 0 4.5 1.12 4.5 2.5v9c0-1.38-2.014-2.5-4.5-2.5-1.746 0-3.332.483-4.5 1.253" /></svg>
-                <span x-show="sidebarPinned || sidebarHovered">Pelatihan/Sertifikasi</span>
-            </a>
+            <span x-show="sidebarPinned || sidebarHovered">
+                Tenaga Kerja Konstruksi
+            </span>
+        </a>
+
+        <div x-data="{ open: {{ request()->routeIs('admin.pelatihan-sertifikasi.*') ? 'true' : 'false' }} }" class="space-y-1.5">
+
+            <button
+                type="button"
+                @click="open = !open"
+                class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-[13px] font-medium transition {{ request()->routeIs('admin.pelatihan-sertifikasi.*') ? $menuActive : $menuIdle }}"
+            >
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.483 9.246 5 7.5 5 5.014 5 3 6.12 3 7.5v9C3 15.12 5.014 14 7.5 14c1.746 0 3.332.483 4.5 1.253m0-9C13.168 5.483 14.754 5 16.5 5c2.486 0 4.5 1.12 4.5 2.5v9c0-1.38-2.014-2.5-4.5-2.5-1.746 0-3.332.483-4.5 1.253" />
+                    </svg>
+
+                    <span x-show="sidebarPinned || sidebarHovered">
+                        Pelatihan/Sertifikasi
+                    </span>
+                </div>
+
+                <svg
+                    x-show="sidebarPinned || sidebarHovered"
+                    :class="open ? 'rotate-90' : ''"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 transition-transform duration-200"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+
+            <div
+                x-show="open && (sidebarPinned || sidebarHovered)"
+                x-transition
+                class="relative ml-6 pl-4"
+            >
+                <div class="absolute bottom-2 left-[6px] top-1 w-px bg-white/15"></div>
+
+                <div class="space-y-1">
+
+                    <a href="#"
+                    class="{{ $subItemBase }} {{ $subItemIdle }}">
+                        <span class="absolute left-[-12px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-white/30"></span>
+                        Rencana Pelatihan (TNA)
+                    </a>
+
+                    <a href="{{ route('admin.pelatihan-sertifikasi.index') }}"
+                    class="{{ $subItemBase }} {{ request()->routeIs('admin.pelatihan-sertifikasi.index') ? $subItemActive : $subItemIdle }}">
+                        <span class="absolute left-[-12px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full {{ request()->routeIs('admin.pelatihan-sertifikasi.index') ? 'bg-[#F7E578]' : 'bg-white/30' }}"></span>
+                        Pelatihan dan Sertifikasi TKK Ahli
+                    </a>
+
+                    <a href="#"
+                    class="{{ $subItemBase }} {{ $subItemIdle }}">
+                        <span class="absolute left-[-12px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-white/30"></span>
+                        Bimbingan Teknis/Pelatihan
+                    </a>
+
+                    <a href="#"
+                    class="{{ $subItemBase }} {{ $subItemIdle }}">
+                        <span class="absolute left-[-12px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-white/30"></span>
+                        Pelatihan dan Sertifikasi Instruktur/Asesor
+                    </a>
+
+                </div>
+            </div>
         </div>
     </div>
 

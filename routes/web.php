@@ -2,78 +2,24 @@
 
 use App\Http\Controllers\Admin\BujkController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PelatihanTkkController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\GisController;
 use App\Http\Controllers\Layanan\AsosiasiPerusahaanController;
 use App\Http\Controllers\Layanan\AsosiasiProfesiController;
 use App\Http\Controllers\Layanan\PenyediaJasaController;
 use App\Http\Controllers\PublicDashboardController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
-    $kodeKabupaten = [
-        '64.01' => 'Paser',
-        '64.02' => 'Kutai Kartanegara',
-        '64.03' => 'Berau',
-        '64.07' => 'Kutai Barat',
-        '64.08' => 'Kutai Timur',
-        '64.09' => 'Penajam Paser Utara',
-        '64.11' => 'Mahakam Ulu',
-        '64.71' => 'Kota Balikpapan',
-        '64.72' => 'Kota Samarinda',
-        '64.74' => 'Kota Bontang',
-    ];
-
-    $bujkRows = DB::table('bujk')
-        ->select([
-            'id',
-            'nib',
-            'nama_bu',
-            'jenis_usaha',
-            'alamat',
-            'kabupaten',
-            // 'provinsi',
-            'telepon',
-            'email',
-            'website',
-            'is_deleted',
-        ])
-        ->where('is_deleted', 0)
-        ->whereIn('kabupaten', array_keys($kodeKabupaten))
-        ->get()
-        ->map(function ($row) use ($kodeKabupaten) {
-            return [
-                'id' => $row->id,
-                'nib' => $row->nib,
-                'nama_bu' => $row->nama_bu,
-                'jenis_usaha' => $row->jenis_usaha,
-                'alamat' => $row->alamat,
-                'kabupaten' => $row->kabupaten,
-                'kode_kabupaten' => $row->kabupaten,
-                // 'provinsi' => $row->provinsi,
-                'telepon' => $row->telepon,
-                'email' => $row->email,
-                'website' => $row->website,
-            ];
-        })
-        ->values();
-
-    $gisSummary = $bujkRows
-        ->groupBy('kabupaten')
-        ->map(function ($items, $kabupaten) {
-            return [
-                'kabupaten' => $kabupaten,
-                'total' => $items->count(),
-            ];
-        })
-        ->values();
-
-    $kabupatenOptions = collect($kodeKabupaten)->values()->sort()->values();
-
     return view('welcome', [
         'page' => 'beranda',
     ]);
 })->name('beranda');
+
+Route::get('/gis-data/{category}', [GisController::class, 'data'])
+    ->name('gis.data');
 
 Route::get('/profil/tentang-kami', function () {
     return view('welcome', [
@@ -93,15 +39,24 @@ Route::get('/profil/sop-renja', function () {
     ]);
 })->name('sop-renja');
 
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+Route::get('/login', [AuthController::class, 'showLogin'])
+    ->name('login');
+
+Route::post('/login', [AuthController::class, 'login'])
+    ->name('login.post');
+
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
 
 Route::get('/registrasi', function () {
     return view('welcome', [
         'page' => 'regist',
     ]);
-})->name('regist');
+})->name('register');
+
+Route::post('/registrasi', [RegisterController::class, 'store'])
+    ->name('register.store');
 
 Route::get('/kontak', function () {
     return view('welcome', [
@@ -181,12 +136,6 @@ Route::get('/fungsi/pengawasan/tertib-pemanfaatan', function () {
     ]);
 })->name('tertib-pemanfaatan');
 
-/*
-|--------------------------------------------------------------------------
-| Layanan Publik
-|--------------------------------------------------------------------------
-*/
-
 Route::get('/layanan/asosiasi-perusahaan', [AsosiasiPerusahaanController::class, 'index'])
     ->name('asosiasi-perusahaan');
 
@@ -198,12 +147,6 @@ Route::get('/layanan/penyedia-jasa/data', [PenyediaJasaController::class, 'data'
 
 Route::get('/layanan/penyedia-jasa', [PenyediaJasaController::class, 'index'])
     ->name('penyedia-jasa');
-
-/*
-|--------------------------------------------------------------------------
-| Dashboard Publik
-|--------------------------------------------------------------------------
-*/
 
 Route::get('/dashboard/tenaga-kerja-konstruksi', [PublicDashboardController::class, 'tenagaKerja'])
     ->name('dashboard.tenaga-kerja');
@@ -218,7 +161,8 @@ Route::prefix('admin')
     ->name('admin.')
     ->middleware('auth')
     ->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])
+            ->name('dashboard');
 
         Route::view('/pengaturan', 'admin.placeholder', [
             'title' => 'Pengaturan Akun',
@@ -276,9 +220,14 @@ Route::prefix('admin')
             'title' => 'Rantai Pasok',
         ])->name('rantai-pasok');
 
-        Route::get('/bujk', [BujkController::class, 'index'])->name('bujk');
-        Route::post('/bujk', [BujkController::class, 'store'])->name('bujk.store');
-        Route::post('/bujk/import', [BujkController::class, 'import'])->name('bujk.import');
+        Route::get('/bujk', [BujkController::class, 'index'])
+            ->name('bujk');
+
+        Route::post('/bujk', [BujkController::class, 'store'])
+            ->name('bujk.store');
+
+        Route::post('/bujk/import', [BujkController::class, 'import'])
+            ->name('bujk.import');
 
         Route::delete('/bujk/bulk-destroy', [BujkController::class, 'bulkDestroy'])
             ->name('bujk.bulk-destroy');
@@ -286,6 +235,11 @@ Route::prefix('admin')
         Route::delete('/bujk/destroy-all', [BujkController::class, 'destroyAll'])
             ->name('bujk.destroy-all');
 
+        Route::get('/bujk/regions/provinces', [BujkController::class, 'provinceOptions'])
+            ->name('bujk.regions.provinces');
+
+        Route::get('/bujk/regions/regencies', [BujkController::class, 'regencyOptions'])
+            ->name('bujk.regions.regencies');
         Route::get('/bujk/regions/provinces', [BujkController::class, 'provinceOptions'])
             ->name('bujk.regions.provinces');
 
@@ -335,9 +289,48 @@ Route::prefix('admin')
         Route::get('/tenaga-kerja-konstruksi', [DashboardController::class, 'tkk'])
             ->name('tenaga-kerja-konstruksi');
 
-        Route::view('/pelatihan-sertifikasi', 'admin.placeholder', [
-            'title' => 'Pelatihan / Sertifikasi',
-        ])->name('pelatihan-sertifikasi');
+        Route::get('/tenaga-kerja-konstruksi/search', [DashboardController::class, 'searchTkk'])
+            ->name('tenaga-kerja-konstruksi.search');
+
+        Route::get('/pelatihan-sertifikasi', [PelatihanTkkController::class, 'index'])
+            ->name('pelatihan-sertifikasi.index');
+
+        Route::post('/pelatihan-sertifikasi', [PelatihanTkkController::class, 'store'])
+            ->name('pelatihan-sertifikasi.store');
+
+        Route::get('/pelatihan-sertifikasi/{pelatihan}', [PelatihanTkkController::class, 'show'])
+            ->whereNumber('pelatihan')
+            ->name('pelatihan-sertifikasi.show');
+
+        Route::put('/pelatihan-sertifikasi/{pelatihan}', [PelatihanTkkController::class, 'update'])
+            ->whereNumber('pelatihan')
+            ->name('pelatihan-sertifikasi.update');
+
+        Route::delete('/pelatihan-sertifikasi/{pelatihan}', [PelatihanTkkController::class, 'destroy'])
+            ->whereNumber('pelatihan')
+            ->name('pelatihan-sertifikasi.destroy');
+
+        Route::post('/pelatihan-sertifikasi/{pelatihan}/peserta', [PelatihanTkkController::class, 'storePeserta'])
+            ->whereNumber('pelatihan')
+            ->name('pelatihan-sertifikasi.peserta.store');
+
+        Route::put('/pelatihan-sertifikasi/{pelatihan}/peserta/{peserta}', [PelatihanTkkController::class, 'updatePeserta'])
+            ->whereNumber('pelatihan')
+            ->whereNumber('peserta')
+            ->name('pelatihan-sertifikasi.peserta.update');
+
+        Route::delete('/pelatihan-sertifikasi/{pelatihan}/peserta/bulk-destroy', [PelatihanTkkController::class, 'bulkDestroyPeserta'])
+            ->whereNumber('pelatihan')
+            ->name('pelatihan-sertifikasi.peserta.bulk-destroy');
+
+        Route::delete('/pelatihan-sertifikasi/{pelatihan}/peserta/destroy-all', [PelatihanTkkController::class, 'destroyAllPeserta'])
+            ->whereNumber('pelatihan')
+            ->name('pelatihan-sertifikasi.peserta.destroy-all');
+
+        Route::delete('/pelatihan-sertifikasi/{pelatihan}/peserta/{peserta}', [PelatihanTkkController::class, 'destroyPeserta'])
+            ->whereNumber('pelatihan')
+            ->whereNumber('peserta')
+            ->name('pelatihan-sertifikasi.peserta.destroy');
 
         Route::view('/tertib-usaha', 'admin.placeholder', [
             'title' => 'Tertib Usaha',

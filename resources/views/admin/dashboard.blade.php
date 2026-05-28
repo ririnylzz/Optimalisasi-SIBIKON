@@ -5,26 +5,6 @@
 
 @section('content')
 <div class="space-y-6">
-    {{-- Placeholder GIS --}}
-    <div class="sibikon-card overflow-hidden rounded-[24px]">
-        <div class="border-b border-slate-200 bg-slate-100 px-6 py-4">
-            <h3 class="text-xl font-extrabold text-slate-900">Peta Sebaran BUJK</h3>
-            <p class="text-sm text-slate-500">Area ini disiapkan untuk integrasi GIS / Leaflet.</p>
-        </div>
-
-        <div class="relative flex min-h-[320px] items-center justify-center bg-[#EAF0F8]">
-            <div class="text-center">
-                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-white shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#3A4FAC]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                    </svg>
-                </div>
-
-                <h4 class="mt-4 text-xl font-extrabold text-slate-900">Area GIS</h4>
-                <p class="mt-1 text-sm text-slate-500">Nanti bagian ini bisa diganti dengan peta interaktif.</p>
-            </div>
-        </div>
-    </div>
 
     <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
         @foreach ($kpi as $index => $item)
@@ -182,41 +162,78 @@
     }
 
     function pieChart(id, labels, values) {
+
         const el = document.getElementById(id);
         if (!el) return;
 
         new Chart(el, {
-            type: 'pie', // 🔥 ini kuncinya
+            type: 'pie',
             data: {
                 labels,
                 datasets: [{
                     data: values,
                     backgroundColor: sibikonAccent,
                     borderWidth: 0,
-                    hoverOffset: 10
+                    hoverOffset: 6,
+                    radius: '78%' // bikin pie chart lebih kecil
                 }]
             },
+
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+
+                layout: {
+                    padding: 10
+                },
+
                 plugins: {
+
                     legend: {
                         position: 'right',
+
                         labels: {
+
                             color: textColor,
                             usePointStyle: true,
                             pointStyle: 'circle',
-                            padding: 14,
+                            padding: 12,
+
                             font: {
-                                size: 12
+                                size: 11
+                            },
+
+                            generateLabels(chart) {
+
+                                const data = chart.data;
+
+                                return data.labels.map((label, i) => {
+
+                                    const value = data.datasets[0].data[i];
+
+                                    return {
+                                        text: `${label} : ${formatNumber(value)}`,
+                                        fillStyle: data.datasets[0].backgroundColor[i],
+                                        strokeStyle: data.datasets[0].backgroundColor[i],
+                                        lineWidth: 0,
+                                        hidden: false,
+                                        index: i
+                                    };
+                                });
                             }
                         }
                     },
+
                     tooltip: {
                         callbacks: {
                             label: function(context) {
+
                                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percent = total ? ((context.raw / total) * 100).toFixed(1) : 0;
+
+                                const percent = total
+                                    ? ((context.raw / total) * 100).toFixed(1)
+                                    : 0;
+
                                 return `${context.label}: ${formatNumber(context.raw)} (${percent}%)`;
                             }
                         }
@@ -228,56 +245,55 @@
 
     barChart(
         'associationChart',
-        @json(collect($association) -> pluck('label')),
-        @json(collect($association) -> pluck('value')),
+        @json(collect($association)->pluck('label')),
+        @json(collect($association)->pluck('value')),
         true
     );
 
     pieChart(
         'jenisBujkChart',
-        @json(collect($jenisBujk) -> pluck('label')),
-        @json(collect($jenisBujk) -> pluck('value'))
+        @json(collect($jenisBujk)->pluck('label')),
+        @json(collect($jenisBujk)->pluck('value'))
     );
 
     pieChart(
         'jenisSbuChart',
-        @json(collect($jenisSbu) -> pluck('label')),
-        @json(collect($jenisSbu) -> pluck('value'))
+        @json(collect($jenisSbu)->pluck('label')),
+        @json(collect($jenisSbu)->pluck('value'))
     );
 
     barChart(
         'pelaksanaChart',
-        @json(collect($pelaksanaSbu) -> pluck('label')),
-        @json(collect($pelaksanaSbu) -> pluck('value')),
+        @json(collect($pelaksanaSbu)->pluck('label')),
+        @json(collect($pelaksanaSbu)->pluck('value')),
         false
     );
 
     barChart(
         'kbliChart',
-        @json(collect($kbliSbu) -> pluck('label')),
-        @json(collect($kbliSbu) -> pluck('value')),
+        @json(collect($kbliSbu)->pluck('label')),
+        @json(collect($kbliSbu)->pluck('value')),
         false
     );
 
     pieChart(
         'qualificationChart',
-        @json(collect($kualifikasiSbu) -> pluck('label')),
-        @json(collect($kualifikasiSbu) -> pluck('value'))
+        @json(collect($kualifikasiSbu)->pluck('label')),
+        @json(collect($kualifikasiSbu)->pluck('value'))
     );
 
     barChart(
         'subKlasifikasiChart',
-        @json(collect($subKlasifikasiSbu) -> pluck('label')),
-        @json(collect($subKlasifikasiSbu) -> pluck('value')),
+        @json(collect($subKlasifikasiSbu)->pluck('label')),
+        @json(collect($subKlasifikasiSbu)->pluck('value')),
         false
     );
 
     barChart(
         'sifatChart',
-        @json(collect($sifatSbu) -> pluck('label')),
-        @json(collect($sifatSbu) -> pluck('value')),
+        @json(collect($sifatSbu)->pluck('label')),
+        @json(collect($sifatSbu)->pluck('value')),
         false
     );
-
 </script>
 @endpush

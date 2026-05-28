@@ -74,7 +74,6 @@
                 <div class="flex flex-wrap gap-2">
                     @foreach ([7, 8, 9] as $jenjang)
                         <label class="inline-flex items-center gap-2 rounded-2xl border border-[#3A4FAC]/15 bg-[#EEF2FF] px-4 py-3 text-sm font-semibold text-[#142B67] transition hover:bg-[#E0E7FF]">
-
                             <input
                                 type="checkbox"
                                 name="jenjang[]"
@@ -103,8 +102,8 @@
 
     {{-- Charts Row 1 --}}
     <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <x-dashboard-chart-card title="Status Sertifikasi" canvas="statusSertifikasiChart" height="h-[340px]" />
-        <x-dashboard-chart-card title="Distribusi Jenjang" canvas="distribusiJenjangChart" height="h-[340px]" />
+        <x-dashboard-chart-card title="Status Sertifikasi" canvas="statusSertifikasiChart" height="h-[290px]" />
+        <x-dashboard-chart-card title="Distribusi Jenjang" canvas="distribusiJenjangChart" height="h-[290px]" />
     </div>
 
     {{-- Charts Row 2 --}}
@@ -140,37 +139,115 @@
     <div class="sibikon-card overflow-hidden rounded-[24px] border border-slate-200 bg-white">
         <div class="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-blue-50/60 px-6 py-4">
             <h3 class="text-lg font-extrabold text-slate-900">Data Tenaga Kerja Konstruksi</h3>
-            <p class="text-sm text-slate-500">Contoh tampilan data TKK. Nanti bagian ini bisa disambungkan ke database.</p>
         </div>
 
-        <div class="grid grid-cols-1 gap-3 border-b border-slate-100 bg-white p-4 md:grid-cols-3">
-            <input type="text" placeholder="Cari Nama..." class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm outline-none transition focus:border-[#3A4FAC] focus:bg-white focus:ring-4 focus:ring-[#3A4FAC]/10">
-            <input type="text" placeholder="Cari Kabupaten..." class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm outline-none transition focus:border-[#3A4FAC] focus:bg-white focus:ring-4 focus:ring-[#3A4FAC]/10">
-            <input type="text" placeholder="Cari Jabatan..." class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm outline-none transition focus:border-[#3A4FAC] focus:bg-white focus:ring-4 focus:ring-[#3A4FAC]/10">
-        </div>
+        <form
+            method="GET"
+            action="{{ route('admin.tenaga-kerja-konstruksi') }}"
+            class="flex flex-col gap-3 border-b border-slate-100 bg-white p-4 md:flex-row"
+        >
+            {{-- Biar filter atas tidak hilang --}}
+            <input type="hidden" name="kabupaten" value="{{ $selectedKabupaten }}">
+            <input type="hidden" name="mode" value="{{ $selectedMode }}">
 
-        <div class="overflow-x-auto">
+            @foreach ($selectedJenjang as $jenjang)
+                <input type="hidden" name="jenjang[]" value="{{ $jenjang }}">
+            @endforeach
+
+            {{-- Search Input --}}
+            <div class="flex-1">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Cari data tenaga kerja..."
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-[#3A4FAC] focus:bg-white focus:ring-4 focus:ring-[#3A4FAC]/10"
+                >
+            </div>
+
+            {{-- Search Category --}}
+            <div class="md:w-[240px]">
+                <select
+                    id="searchCategory"
+                    class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
+                >
+                    <option value="nama" {{ request('search_by') == 'nama' ? 'selected' : '' }}>
+                        Cari Berdasarkan Nama
+                    </option>
+
+                    <option value="kabupaten" {{ request('search_by') == 'kabupaten' ? 'selected' : '' }}>
+                        Cari Berdasarkan Kabupaten
+                    </option>
+
+                    <option value="jabatan" {{ request('search_by') == 'jabatan' ? 'selected' : '' }}>
+                        Cari Berdasarkan Jabatan
+                    </option>
+                </select>
+            </div>
+        </form>
+
+        <div class="overflow-x-auto min-h-[440px]">
             <table class="min-w-full divide-y divide-slate-100">
                 <thead class="bg-slate-50">
                     <tr>
-                        <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-[0.14em] text-slate-500">Nama</th>
-                        <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-[0.14em] text-slate-500">Kabupaten</th>
-                        <th class="px-6 py-4 text-left text-xs font-extrabold uppercase tracking-[0.14em] text-slate-500">Jabatan Kerja</th>
-                        <th class="px-6 py-4 text-center text-xs font-extrabold uppercase tracking-[0.14em] text-slate-500">Jenjang</th>
-                        <th class="px-6 py-4 text-center text-xs font-extrabold uppercase tracking-[0.14em] text-slate-500">Status</th>
+                        <th class="px-4 py-2 text-left text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">
+                            Nama
+                        </th>
+
+                        <th class="px-4 py-2 text-left text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">
+                            Kabupaten
+                        </th>
+
+                        <th class="px-4 py-2 text-left text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">
+                            Jabatan Kerja
+                        </th>
+
+                        <th class="px-4 py-2 text-center text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">
+                            Jenjang
+                        </th>
+
+                        <th class="px-4 py-2 text-center text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">
+                            Status
+                        </th>
                     </tr>
                 </thead>
 
-                <tbody class="divide-y divide-slate-100 bg-white">
+                <tbody id="tkkTableBody" class="divide-y divide-slate-100 bg-white">
                     @foreach ($tkkRows as $row)
-                        <tr class="transition hover:bg-blue-50/40">
-                            <td class="whitespace-nowrap px-6 py-4 text-sm font-semibold text-slate-700">{{ $row['nama'] }}</td>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-600">{{ $row['kabupaten'] }}</td>
-                            <td class="min-w-[360px] px-6 py-4 text-sm text-slate-600">{{ $row['jabatan'] }}</td>
-                            <td class="whitespace-nowrap px-6 py-4 text-center text-sm font-extrabold text-[#142B67]">{{ $row['jenjang'] }}</td>
-                            <td class="whitespace-nowrap px-6 py-4 text-center">
-                                <span class="inline-flex rounded-full bg-[#142B67]/10 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-[#142B67]">
-                                    {{ $row['status'] }}
+                        @php
+                            $statusRaw = $row['status'] ?? '-';
+                            $statusText = ucfirst(strtolower($statusRaw));
+                        @endphp
+
+                        <tr
+                            class="transition hover:bg-blue-50/30"
+                            data-nama="{{ strtolower($row['nama'] ?? '') }}"
+                            data-kabupaten="{{ strtolower($row['kabupaten'] ?? '') }}"
+                            data-jabatan="{{ strtolower($row['jabatan'] ?? '') }}"
+                        >
+                            <td class="whitespace-nowrap px-4 py-2 text-[13px] font-semibold text-slate-700">
+                                {{ $row['nama'] }}
+                            </td>
+
+                            <td class="whitespace-nowrap px-4 py-2 text-[13px] text-slate-600">
+                                {{ $row['kabupaten'] }}
+                            </td>
+
+                            <td class="min-w-[260px] px-4 py-2 text-[13px] text-slate-600">
+                                {{ $row['jabatan'] }}
+                            </td>
+
+                            <td class="whitespace-nowrap px-4 py-2 text-center text-[13px] font-extrabold text-[#142B67]">
+                                {{ $row['jenjang'] }}
+                            </td>
+
+                            <td class="whitespace-nowrap px-4 py-2 text-center">
+                                <span class="
+                                    inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-[0.06em]
+                                    {{ strtolower($statusRaw) === 'aktif'
+                                        ? 'bg-emerald-100 text-emerald-700'
+                                        : 'bg-red-100 text-red-700' }}
+                                ">
+                                    {{ $statusText }}
                                 </span>
                             </td>
                         </tr>
@@ -180,13 +257,40 @@
         </div>
 
         <div class="flex flex-col gap-3 border-t border-slate-100 bg-white px-6 py-4 text-sm sm:flex-row sm:items-center sm:justify-between">
-            <p class="font-semibold text-slate-600">
-                Hal: <span class="font-extrabold text-slate-900">1 - {{ min(10, $totalTkk ?? 0) }}</span> dari <span class="font-extrabold text-slate-900">{{ $totalTkk ?? 0 }}</span>
+           <p id="tableInfo" class="font-semibold text-slate-600">
+                Hal:
+                <span class="font-extrabold text-slate-900">
+                    1 - {{ min(10, $totalTkk ?? 0) }}
+                </span>
+                dari
+                <span class="font-extrabold text-slate-900">
+                    {{ $totalTkk ?? 0 }}
+                </span>
             </p>
 
-            <div class="flex gap-2">
-                <button class="rounded-xl border border-slate-200 bg-slate-100 px-4 py-2 text-sm font-bold text-slate-400">Prev</button>
-                <button class="rounded-xl border border-[#142B67] bg-[#142B67] px-4 py-2 text-sm font-bold text-white">Next</button>
+            <div class="flex items-center gap-2">
+
+                <button
+                    id="prevBtn"
+                    type="button"
+                    onclick="fetchSearchData(currentPage - 1)"
+                    class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                    Prev
+                </button>
+
+                <div id="paginationNumbers" class="flex items-center gap-1">
+                </div>
+
+                <button
+                    id="nextBtn"
+                    type="button"
+                    onclick="fetchSearchData(currentPage + 1)"
+                    class="rounded-xl border border-[#142B67] bg-[#142B67] px-3 py-2 text-sm font-bold text-white transition hover:bg-[#1d3b8f] disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                    Next
+                </button>
+
             </div>
         </div>
     </div>
@@ -223,6 +327,25 @@
 
     function formatNumber(value) {
         return new Intl.NumberFormat('id-ID').format(value);
+    }
+
+    function formatStatusText(status) {
+        if (!status) {
+            return '-';
+        }
+
+        const normalized = String(status).toLowerCase();
+
+        return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '-')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
     }
 
     function truncateLabel(label, max = 18) {
@@ -310,6 +433,7 @@
     }
 
     function pieChart(id, labels, values) {
+
         const el = document.getElementById(id);
         if (!el) return;
 
@@ -321,28 +445,67 @@
                     data: values,
                     backgroundColor: sibikonAccent,
                     borderWidth: 0,
-                    hoverOffset: 10
+                    hoverOffset: 6,
+                    radius: '78%'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+
+                layout: {
+                    padding: 10
+                },
+
                 plugins: {
+
                     legend: {
                         position: 'right',
+
                         labels: {
+
                             color: textColor,
                             usePointStyle: true,
                             pointStyle: 'circle',
                             padding: 14,
-                            font: { size: 12 }
+
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            },
+
+                            generateLabels(chart) {
+
+                                const data = chart.data;
+
+                                return data.labels.map((label, i) => {
+
+                                    const value = data.datasets[0].data[i];
+
+                                    return {
+                                        text: `${label} : ${formatNumber(value)}`,
+                                        fillStyle: data.datasets[0].backgroundColor[i],
+                                        strokeStyle: data.datasets[0].backgroundColor[i],
+                                        lineWidth: 0,
+                                        hidden: false,
+                                        index: i,
+                                        pointStyle: 'circle'
+                                    };
+                                });
+                            }
                         }
                     },
+
                     tooltip: {
                         callbacks: {
                             label: function(context) {
+
                                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percent = total ? ((context.raw / total) * 100).toFixed(1) : 0;
+
+                                const percent = total
+                                    ? ((context.raw / total) * 100).toFixed(1)
+                                    : 0;
+
                                 return `${context.label}: ${formatNumber(context.raw)} (${percent}%)`;
                             }
                         }
@@ -486,6 +649,245 @@
         'proyeksiKadaluarsaChart',
         @json(collect($proyeksiKadaluarsa)->pluck('label')),
         @json(collect($proyeksiKadaluarsa)->pluck('value'))
+    );
+
+    // ======================
+    // AJAX LIVE SEARCH
+    // ======================
+
+    const searchInput = document.getElementById('searchInput');
+    const searchCategory = document.getElementById('searchCategory');
+    const tableBody = document.getElementById('tkkTableBody');
+    const tableInfo = document.getElementById('tableInfo');
+
+    var currentPage = 1;
+    var debounceTimer;
+
+    async function fetchSearchData(page = 1) {
+
+        const keyword = searchInput.value;
+        const category = searchCategory.value;
+
+        currentPage = page;
+
+        try {
+
+            const response = await fetch(
+                `/admin/tenaga-kerja-konstruksi/search?keyword=${encodeURIComponent(keyword)}&category=${category}&page=${page}`
+            );
+
+            const result = await response.json();
+
+            renderTable(result.data);
+
+            updatePagination(
+                result.total,
+                result.current_page,
+                result.last_page
+            );
+
+        } catch (error) {
+            console.error('Search error:', error);
+        }
+    }
+
+    function renderTable(rows) {
+
+        if (rows.length === 0) {
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="px-6 py-10 text-center text-sm text-slate-400">
+                        Data tidak ditemukan
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        let html = '';
+
+        rows.forEach((row) => {
+
+            const rawStatus = row.status ?? '-';
+            const statusText = formatStatusText(rawStatus);
+
+            const statusClass =
+                String(rawStatus).toLowerCase() === 'aktif'
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'bg-red-100 text-red-700';
+
+            html += `
+                <tr class="transition hover:bg-blue-50/30">
+
+                    <td class="whitespace-nowrap px-4 py-2 text-[13px] font-semibold text-slate-700">
+                        ${escapeHtml(row.nama)}
+                    </td>
+
+                    <td class="whitespace-nowrap px-4 py-2 text-[13px] text-slate-600">
+                        ${escapeHtml(row.kabupaten)}
+                    </td>
+
+                    <td class="min-w-[260px] px-4 py-2 text-[13px] text-slate-600">
+                        ${escapeHtml(row.jabatan)}
+                    </td>
+
+                    <td class="whitespace-nowrap px-4 py-2 text-center text-[13px] font-extrabold text-[#142B67]">
+                        ${escapeHtml(row.jenjang)}
+                    </td>
+
+                    <td class="whitespace-nowrap px-4 py-2 text-center">
+                        <span class="inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-[0.06em] ${statusClass}">
+                            ${escapeHtml(statusText)}
+                        </span>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tableBody.innerHTML = html;
+
+        const total = rows.length;
+
+        tableInfo.innerHTML = `
+            Hal:
+            <span class="font-extrabold text-slate-900">
+                ${total > 0 ? `1 - ${total}` : '0'}
+            </span>
+            dari
+            <span class="font-extrabold text-slate-900">
+                ${total}
+            </span>
+        `;
+    }
+
+    searchInput.addEventListener('input', () => {
+
+        clearTimeout(debounceTimer);
+
+        debounceTimer = setTimeout(() => {
+            fetchSearchData(1);
+        }, 300);
+    });
+
+    function updatePagination(total, currentPage, lastPage) {
+
+        const start = total === 0
+            ? 0
+            : ((currentPage - 1) * 10) + 1;
+
+        const end = Math.min(currentPage * 10, total);
+
+        tableInfo.innerHTML = `
+            Hal:
+            <span class="font-extrabold text-slate-900">
+                ${start} - ${end}
+            </span>
+            dari
+            <span class="font-extrabold text-slate-900">
+                ${total}
+            </span>
+        `;
+
+        document.getElementById('prevBtn').disabled = currentPage <= 1;
+
+        document.getElementById('nextBtn').disabled = currentPage >= lastPage;
+
+        const paginationNumbers = document.getElementById('paginationNumbers');
+
+        let paginationHtml = '';
+
+        function createPageButton(page) {
+
+            return `
+                <button
+                    onclick="fetchSearchData(${page})"
+                    class="
+                        min-w-[36px]
+                        rounded-xl
+                        px-3
+                        py-2
+                        text-sm
+                        font-bold
+                        transition
+                        ${
+                            page === currentPage
+                                ? 'bg-[#142B67] text-white'
+                                : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-100'
+                        }
+                    "
+                >
+                    ${page}
+                </button>
+            `;
+        }
+
+        if (lastPage <= 7) {
+
+            for (let i = 1; i <= lastPage; i++) {
+                paginationHtml += createPageButton(i);
+            }
+
+        } else {
+
+            if (currentPage <= 3) {
+
+                for (let i = 1; i <= 3; i++) {
+                    paginationHtml += createPageButton(i);
+                }
+
+                paginationHtml += `
+                    <span class="px-1 text-slate-400">...</span>
+                `;
+
+                for (let i = lastPage - 2; i <= lastPage; i++) {
+                    paginationHtml += createPageButton(i);
+                }
+
+            } else if (currentPage > 3 && currentPage < lastPage - 2) {
+
+                paginationHtml += createPageButton(1);
+
+                paginationHtml += `
+                    <span class="px-1 text-slate-400">...</span>
+                `;
+
+                for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+                    paginationHtml += createPageButton(i);
+                }
+
+                paginationHtml += `
+                    <span class="px-1 text-slate-400">...</span>
+                `;
+
+                paginationHtml += createPageButton(lastPage);
+
+            } else {
+
+                paginationHtml += createPageButton(1);
+
+                paginationHtml += `
+                    <span class="px-1 text-slate-400">...</span>
+                `;
+
+                for (let i = lastPage - 2; i <= lastPage; i++) {
+                    paginationHtml += createPageButton(i);
+                }
+            }
+        }
+
+        paginationNumbers.innerHTML = paginationHtml;
+    }
+
+    searchCategory.addEventListener('change', function () {
+        fetchSearchData(1);
+    });
+
+    updatePagination(
+        {{ $totalTkk ?? 0 }},
+        1,
+        {{ ceil(($totalTkk ?? 0) / 10) }}
     );
 </script>
 @endpush

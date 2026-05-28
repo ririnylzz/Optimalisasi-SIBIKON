@@ -208,7 +208,7 @@
 
                     <p class="text-center text-sm text-[#6B7898]">
                         Belum punya akun?
-                        <a href="{{ route('regist') }}" class="text-[#243966] font-semibold hover:underline">
+                        <a href="{{ route('register') }}" class="text-[#243966] font-semibold hover:underline">
                             Daftar sekarang
                         </a>
                     </p>

@@ -2,159 +2,690 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class PublicDashboardController extends Controller
 {
     public function tenagaKerja()
     {
-        $kabupatenOptions = [
-            'Samarinda',
-            'Balikpapan',
-            'Bontang',
-            'Kutai Kartanegara',
-        ];
+        $items = $this->getPublicTkkItems()
+            ->filter(fn ($item) => in_array((string) $item['jenjang'], ['7', '8', '9'], true))
+            ->values();
 
-        $selectedKabupaten = 'semua';
-        $selectedMode = 'semua_skk';
-        $selectedJenjang = [];
+        $totalTkk = $items->count();
 
-        $statusSertifikasi = collect([
-            ['label' => 'Aktif', 'value' => 890],
-            ['label' => 'Kadaluarsa', 'value' => 120],
+        $totalWilayah = $items
+            ->pluck('kabupaten')
+            ->filter()
+            ->unique()
+            ->count();
+
+        $distribusiJenjang = $items
+            ->filter(fn ($item) => filled($item['jenjang']))
+            ->groupBy('jenjang')
+            ->map(fn ($group, $jenjang) => [
+                'label' => 'Jenjang ' . $jenjang,
+                'value' => $group->count(),
+                'raw_label' => (string) $jenjang,
+            ])
+            ->sortBy(fn ($item) => (int) $item['raw_label'])
+            ->map(fn ($item) => [
+                'label' => $item['label'],
+                'value' => $item['value'],
+            ])
+            ->values();
+
+        $topAsosiasi = $items
+            ->filter(fn ($item) => filled($item['asosiasi']))
+            ->groupBy('asosiasi')
+            ->map(fn ($group, $asosiasi) => [
+                'label' => $asosiasi,
+                'value' => $group->count(),
+            ])
+            ->sortByDesc('value')
+            ->take(5)
+            ->values();
+
+        $topKlasifikasi = $items
+            ->filter(fn ($item) => filled($item['klasifikasi']))
+            ->groupBy('klasifikasi')
+            ->map(fn ($group, $klasifikasi) => [
+                'label' => $klasifikasi,
+                'value' => $group->count(),
+            ])
+            ->sortByDesc('value')
+            ->take(5)
+            ->values();
+
+        $perbandinganKabupaten = $items
+            ->filter(fn ($item) => filled($item['kabupaten']))
+            ->groupBy('kabupaten')
+            ->map(fn ($group, $kabupaten) => [
+                'label' => $kabupaten,
+                'value' => $group->count(),
+            ])
+            ->sortByDesc('value')
+            ->values();
+
+        $proyeksiKadaluarsa = collect(range(0, 5))
+            ->map(function ($yearOffset) use ($items) {
+                $year = now()->year + $yearOffset;
+
+                return [
+                    'label' => (string) $year,
+                    'value' => $items
+                        ->filter(fn ($item) => $this->isSameExpiredYear($item['tanggal_kadaluwarsa'], $year))
+                        ->count(),
+                ];
+            })
+            ->values();
+
+        return view('pages.dashboard-tkk-publik', [
+            'totalTkk' => $totalTkk,
+            'totalWilayah' => $totalWilayah,
+            'distribusiJenjang' => $distribusiJenjang,
+            'topAsosiasi' => $topAsosiasi,
+            'topKlasifikasi' => $topKlasifikasi,
+            'perbandinganKabupaten' => $perbandinganKabupaten,
+            'proyeksiKadaluarsa' => $proyeksiKadaluarsa,
         ]);
-
-        $distribusiJenjang = collect([
-            ['label' => 'Jenjang 7', 'value' => 320],
-            ['label' => 'Jenjang 8', 'value' => 280],
-            ['label' => 'Jenjang 9', 'value' => 150],
-        ]);
-
-        $topAsosiasi = collect([
-            ['label' => 'Asosiasi A', 'value' => 120],
-            ['label' => 'Asosiasi B', 'value' => 95],
-        ]);
-
-        $topKlasifikasi = collect([
-            ['label' => 'Klasifikasi A', 'value' => 80],
-            ['label' => 'Klasifikasi B', 'value' => 65],
-        ]);
-
-        $perbandinganKabupaten = collect([
-            ['label' => 'Samarinda', 'value' => 300],
-            ['label' => 'Balikpapan', 'value' => 250],
-        ]);
-
-        $proyeksiKadaluarsa = collect([
-            ['label' => 'Jan', 'value' => 20],
-            ['label' => 'Feb', 'value' => 35],
-        ]);
-
-        $tkkRows = [
-            [
-                'nama' => 'Budi',
-                'kabupaten' => 'Samarinda',
-                'jabatan' => 'Site Engineer',
-                'jenjang' => 7,
-                'status' => 'Aktif',
-            ],
-        ];
-
-        $totalTkk = count($tkkRows);
-
-        return view('pages.dashboard-tkk-publik', compact(
-            'kabupatenOptions',
-            'selectedKabupaten',
-            'selectedMode',
-            'selectedJenjang',
-            'statusSertifikasi',
-            'distribusiJenjang',
-            'topAsosiasi',
-            'topKlasifikasi',
-            'perbandinganKabupaten',
-            'proyeksiKadaluarsa',
-            'tkkRows',
-            'totalTkk'
-        ));
     }
 
-    // DASHBOARD BUJK
     public function bujk()
     {
+        $items = $this->getPublicBujkItems();
+
+        $totalBujk = $items->count();
+
+        $totalWilayah = $items
+            ->pluck('kabupaten')
+            ->filter()
+            ->unique()
+            ->count();
+
+        $totalKonstruksi = $items
+            ->filter(fn ($item) => $item['jenis_usaha'] === 'Konstruksi')
+            ->count();
+
+        $totalKonsultan = $items
+            ->filter(fn ($item) => $item['jenis_usaha'] === 'Konsultan Konstruksi')
+            ->count();
+
+        $totalKontak = $items
+            ->filter(fn ($item) => filled($item['telepon']) || filled($item['email']) || filled($item['website']))
+            ->count();
+
         $kpi = [
             [
-                'label' => 'BUJK',
-                'title' => 'Badan Usaha Jasa Konstruksi',
-                'value' => 747,
+                'label' => 'Total BUJK',
+                'value' => $totalBujk,
+                'caption' => 'Badan usaha jasa konstruksi',
+            ],
+            [
+                'label' => 'Wilayah',
+                'value' => $totalWilayah,
+                'caption' => 'Kabupaten/kota terdata',
+            ],
+            [
+                'label' => 'Konstruksi',
+                'value' => $totalKonstruksi,
+                'caption' => 'Jenis usaha konstruksi',
+            ],
+            [
+                'label' => 'Konsultan',
+                'value' => $totalKonsultan,
+                'caption' => 'Jenis usaha konsultan',
             ],
         ];
 
-        $association = collect([
-            ['label' => 'Asosiasi A', 'value' => 120],
-            ['label' => 'Asosiasi B', 'value' => 90],
+        $jenisUsahaSummary = $items
+            ->filter(fn ($item) => filled($item['jenis_usaha']))
+            ->groupBy('jenis_usaha')
+            ->map(fn ($group, $jenisUsaha) => [
+                'label' => $jenisUsaha,
+                'value' => $group->count(),
+            ])
+            ->sortByDesc('value')
+            ->values();
+
+        $kabupatenSummary = $items
+            ->filter(fn ($item) => filled($item['kabupaten']))
+            ->groupBy('kabupaten')
+            ->map(fn ($group, $kabupaten) => [
+                'label' => $kabupaten,
+                'value' => $group->count(),
+            ])
+            ->sortByDesc('value')
+            ->values();
+
+        $kontakSummary = collect([
+            [
+                'label' => 'Ada Kontak',
+                'value' => $totalKontak,
+            ],
+            [
+                'label' => 'Belum Ada Kontak',
+                'value' => max($totalBujk - $totalKontak, 0),
+            ],
         ]);
 
-        $jenisBujk = collect([
-            ['label' => 'Kecil', 'value' => 200],
-            ['label' => 'Menengah', 'value' => 120],
-        ]);
+        $latestBujk = $items
+            ->sortByDesc('id')
+            ->take(5)
+            ->values();
 
-        return view('pages.dashboard-bujk-publik', compact(
-            'kpi',
-            'association',
-            'jenisBujk'
-        ));
+        return view('pages.dashboard-bujk-publik', [
+            'kpi' => $kpi,
+            'totalBujk' => $totalBujk,
+            'totalWilayah' => $totalWilayah,
+            'jenisUsahaSummary' => $jenisUsahaSummary,
+            'kabupatenSummary' => $kabupatenSummary,
+            'kontakSummary' => $kontakSummary,
+            'latestBujk' => $latestBujk,
+        ]);
     }
 
-    // DASHBOARD SBU
     public function sbu()
     {
+        $items = $this->getPublicSbuItems();
+
+        $totalSbu = $items->count();
+
+        $totalWilayah = $items
+            ->pluck('kabupaten')
+            ->filter()
+            ->unique()
+            ->count();
+
+        $totalKonstruksi = $items
+            ->filter(fn ($item) => $item['jenis_usaha'] === 'Konstruksi')
+            ->count();
+
+        $totalKonsultan = $items
+            ->filter(fn ($item) => $item['jenis_usaha'] === 'Konsultan Konstruksi')
+            ->count();
+
         $kpi = [
             [
-                'label' => 'SBU',
-                'title' => 'Sertifikat Badan Usaha',
-                'value' => 172,
+                'label' => 'Total SBU',
+                'value' => $totalSbu,
+                'caption' => 'Sertifikat badan usaha',
+            ],
+            [
+                'label' => 'Wilayah',
+                'value' => $totalWilayah,
+                'caption' => 'Kabupaten/kota terdata',
+            ],
+            [
+                'label' => 'Konstruksi',
+                'value' => $totalKonstruksi,
+                'caption' => 'Jenis usaha konstruksi',
+            ],
+            [
+                'label' => 'Konsultan',
+                'value' => $totalKonsultan,
+                'caption' => 'Jenis usaha konsultan',
             ],
         ];
 
-        $jenisSbu = collect([
-            ['label' => 'JK', 'value' => 150],
-            ['label' => 'Konsultan', 'value' => 60],
-        ]);
+        $jenisUsahaSummary = $items
+            ->filter(fn ($item) => filled($item['jenis_usaha']))
+            ->groupBy('jenis_usaha')
+            ->map(fn ($group, $jenisUsaha) => [
+                'label' => $jenisUsaha,
+                'value' => $group->count(),
+            ])
+            ->sortByDesc('value')
+            ->values();
 
-        $pelaksanaSbu = collect([
-            ['label' => 'LPJK', 'value' => 100],
-            ['label' => 'LSBU', 'value' => 80],
-        ]);
+        $kabupatenSummary = $items
+            ->filter(fn ($item) => filled($item['kabupaten']))
+            ->groupBy('kabupaten')
+            ->map(fn ($group, $kabupaten) => [
+                'label' => $kabupaten,
+                'value' => $group->count(),
+            ])
+            ->sortByDesc('value')
+            ->values();
 
-        $kbliSbu = collect([
-            ['label' => '41011', 'value' => 50],
-            ['label' => '41012', 'value' => 35],
-        ]);
+        $asosiasiSummary = $items
+            ->filter(fn ($item) => filled($item['asosiasi']))
+            ->groupBy('asosiasi')
+            ->map(fn ($group, $asosiasi) => [
+                'label' => $asosiasi,
+                'value' => $group->count(),
+            ])
+            ->sortByDesc('value')
+            ->take(5)
+            ->values();
 
-        $kualifikasiSbu = collect([
-            ['label' => 'Kecil', 'value' => 90],
-            ['label' => 'Menengah', 'value' => 60],
-        ]);
+        $pelaksanaSummary = $items
+            ->filter(fn ($item) => filled($item['pelaksana']))
+            ->groupBy('pelaksana')
+            ->map(fn ($group, $pelaksana) => [
+                'label' => $pelaksana,
+                'value' => $group->count(),
+            ])
+            ->sortByDesc('value')
+            ->take(5)
+            ->values();
 
-        $subKlasifikasiSbu = collect([
-            ['label' => 'Bangunan Gedung', 'value' => 100],
-            ['label' => 'Jalan', 'value' => 80],
-        ]);
+        $kbliSummary = $items
+            ->filter(fn ($item) => filled($item['kbli']))
+            ->groupBy('kbli')
+            ->map(fn ($group, $kbli) => [
+                'label' => $kbli,
+                'value' => $group->count(),
+            ])
+            ->sortByDesc('value')
+            ->take(5)
+            ->values();
 
-        $sifatSbu = collect([
-            ['label' => 'Umum', 'value' => 120],
-            ['label' => 'Spesialis', 'value' => 50],
-        ]);
+        $kualifikasiSummary = $items
+            ->filter(fn ($item) => filled($item['kualifikasi']))
+            ->groupBy('kualifikasi')
+            ->map(fn ($group, $kualifikasi) => [
+                'label' => $kualifikasi,
+                'value' => $group->count(),
+            ])
+            ->sortByDesc('value')
+            ->values();
 
-        return view('pages.dashboard-sbu-publik', compact(
-            'kpi',
-            'jenisSbu',
-            'pelaksanaSbu',
-            'kbliSbu',
-            'kualifikasiSbu',
-            'subKlasifikasiSbu',
-            'sifatSbu'
-        ));
+        $subKlasifikasiSummary = $items
+            ->filter(fn ($item) => filled($item['sub_klasifikasi']))
+            ->groupBy('sub_klasifikasi')
+            ->map(fn ($group, $subKlasifikasi) => [
+                'label' => $subKlasifikasi,
+                'value' => $group->count(),
+            ])
+            ->sortByDesc('value')
+            ->take(5)
+            ->values();
+
+        $sifatSummary = $items
+            ->filter(fn ($item) => filled($item['sifat']))
+            ->groupBy('sifat')
+            ->map(fn ($group, $sifat) => [
+                'label' => $sifat,
+                'value' => $group->count(),
+            ])
+            ->sortByDesc('value')
+            ->take(5)
+            ->values();
+
+        $latestSbu = $items
+            ->sortByDesc('id')
+            ->take(5)
+            ->values();
+
+        return view('pages.dashboard-sbu-publik', [
+            'kpi' => $kpi,
+            'totalSbu' => $totalSbu,
+            'totalWilayah' => $totalWilayah,
+            'jenisUsahaSummary' => $jenisUsahaSummary,
+            'kabupatenSummary' => $kabupatenSummary,
+            'asosiasiSummary' => $asosiasiSummary,
+            'pelaksanaSummary' => $pelaksanaSummary,
+            'kbliSummary' => $kbliSummary,
+            'kualifikasiSummary' => $kualifikasiSummary,
+            'subKlasifikasiSummary' => $subKlasifikasiSummary,
+            'sifatSummary' => $sifatSummary,
+            'latestSbu' => $latestSbu,
+        ]);
+    }
+
+    private function getPublicSbuItems(): Collection
+    {
+        $table = $this->getSbuSourceTable();
+
+        if (!$table) {
+            return collect();
+        }
+
+        $query = DB::table($table);
+
+        if (Schema::hasColumn($table, 'is_deleted')) {
+            $query->where('is_deleted', 0);
+        }
+
+        return $query
+            ->get()
+            ->map(function ($row) {
+                return [
+                    'id' => $this->publicValue($row, ['id', 'ID']),
+                    'nib' => $this->publicValueSmart($row, ['nib']),
+                    'nama' => $this->publicValueSmart($row, ['nama_bujk', 'nama', 'nama_badan_usaha']),
+                    'jenis_usaha' => $this->normalizeJenisBujk(
+                        $this->publicValueSmart($row, ['jenis_usaha', 'jenis_bujk', 'jenis'])
+                    ),
+                    'asosiasi' => $this->publicValueSmart($row, ['asosiasi', 'asosiasi_bujk', 'nama_asosiasi']),
+                    'pelaksana' => $this->publicValueSmart($row, [
+                        'pelaksana_sertifikasi',
+                        'pelaksana',
+                        'lsbu',
+                        'nama_lsbu',
+                        'lembaga_sertifikasi',
+                        'lembaga_sertifikasi_badan_usaha',
+                    ]),
+                    'kbli' => $this->publicValueSmart($row, ['kbli', 'kode_kbli']),
+                    'kualifikasi' => $this->normalizeKualifikasiSbu(
+                        $this->publicValueSmart($row, ['kualifikasi_sbu', 'kualifikasi', 'grade'])
+                    ),
+                    'sub_klasifikasi' => $this->publicValueSmart($row, [
+                        'sub_klasifikasi_sbu',
+                        'sub_klasifikasi',
+                        'subklasifikasi',
+                        'kode_sub_klasifikasi',
+                        'kode_subklasifikasi',
+                        'subklas',
+                    ]),
+                    'sifat' => $this->publicValueSmart($row, ['sifat_sbu', 'sifat_usaha', 'sifat']),
+                    'kabupaten' => $this->normalizePublicKabupaten(
+                        $this->publicValueSmart($row, ['kab_kota_bujk', 'kabupaten_kota', 'kab_kota', 'kabupaten', 'kota'])
+                    ),
+                ];
+            })
+            ->filter(fn ($item) => filled($item['nama']) || filled($item['nib']) || filled($item['jenis_usaha']))
+            ->values();
+    }
+
+    private function getSbuSourceTable(): ?string
+    {
+        $candidateTables = [
+            'bujk_sbu',
+            'sbu',
+            'bujk',
+        ];
+
+        foreach ($candidateTables as $table) {
+            if (!Schema::hasTable($table)) {
+                continue;
+            }
+
+            $query = DB::table($table);
+
+            if (Schema::hasColumn($table, 'is_deleted')) {
+                $query->where('is_deleted', 0);
+            }
+
+            if ($query->count() > 0) {
+                return $table;
+            }
+        }
+
+        return null;
+    }
+
+    private function getPublicBujkItems(): Collection
+    {
+        if (!Schema::hasTable('bujk')) {
+            return collect();
+        }
+
+        $query = DB::table('bujk');
+
+        if (Schema::hasColumn('bujk', 'is_deleted')) {
+            $query->where('is_deleted', 0);
+        }
+
+        return $query
+            ->get()
+            ->map(function ($row) {
+                return [
+                    'id' => $this->publicValue($row, ['id', 'ID']),
+                    'nib' => $this->publicValueSmart($row, ['nib']),
+                    'nama' => $this->publicValueSmart($row, ['nama_bujk', 'nama', 'nama_badan_usaha']),
+                    'jenis_usaha' => $this->normalizeJenisBujk(
+                        $this->publicValueSmart($row, ['jenis_usaha', 'jenis_bujk', 'jenis'])
+                    ),
+                    'alamat' => $this->publicValueSmart($row, ['alamat_bujk', 'alamat']),
+                    'npwp' => $this->publicValueSmart($row, ['npwp']),
+                    'kabupaten' => $this->normalizePublicKabupaten(
+                        $this->publicValueSmart($row, ['kab_kota_bujk', 'kabupaten_kota', 'kab_kota', 'kabupaten', 'kota'])
+                    ),
+                    'provinsi' => $this->publicValueSmart($row, ['prov_bujk', 'provinsi']) ?: 'Kalimantan Timur',
+                    'telepon' => $this->publicValueSmart($row, ['telp_bujk', 'telepon', 'no_telp', 'nomor_telepon']),
+                    'email' => $this->publicValueSmart($row, ['email_bujk', 'email']),
+                    'website' => $this->publicValueSmart($row, ['website_bujk', 'website']),
+                    'asosiasi' => $this->publicValueSmart($row, ['asosiasi', 'asosiasi_bujk', 'nama_asosiasi']),
+                    'kbli' => $this->publicValueSmart($row, ['kbli', 'kode_kbli']),
+                ];
+            })
+            ->filter(fn ($item) => filled($item['nama']) || filled($item['nib']))
+            ->values();
+    }
+
+    private function getPublicTkkItems(): Collection
+    {
+        $table = $this->getTkkTableName();
+
+        if (!$table) {
+            return collect();
+        }
+
+        return DB::table($table)
+            ->get()
+            ->map(function ($row) {
+                $tanggalKadaluwarsa = $this->publicValueSmart($row, [
+                    'tanggal_kadaluwarsa',
+                    'tgl_kadaluwarsa',
+                    'tanggal_masa_berlaku',
+                    'masa_berlaku',
+                ]);
+
+                return [
+                    'id' => $this->publicValue($row, ['id', 'ID']),
+                    'nama' => $this->publicValueSmart($row, ['nama', 'name']),
+                    'kabupaten' => $this->normalizePublicKabupaten(
+                        $this->publicValueSmart($row, ['kabupaten_kota', 'kab_kota', 'kabupaten', 'kota'])
+                    ),
+                    'jenjang' => $this->normalizePublicJenjang(
+                        $this->publicValueSmart($row, ['jenjang', 'id_kualifikasi', 'kualifikasi'])
+                    ),
+                    'klasifikasi' => $this->publicValueSmart($row, ['klasifikasi']),
+                    'jabatan_kerja' => $this->publicValueSmart($row, ['jabatan_kerja', 'jabatan']),
+                    'asosiasi' => $this->publicValueSmart($row, ['asosiasi']),
+                    'tanggal_kadaluwarsa' => $tanggalKadaluwarsa,
+                ];
+            })
+            ->filter(function ($item) {
+                return filled($item['nama'])
+                    || filled($item['kabupaten'])
+                    || filled($item['jenjang'])
+                    || filled($item['asosiasi'])
+                    || filled($item['klasifikasi']);
+            })
+            ->values();
+    }
+
+    private function getTkkTableName(): ?string
+    {
+        if (Schema::hasTable('tkk')) {
+            return 'tkk';
+        }
+
+        if (Schema::hasTable('tkk_data')) {
+            return 'tkk_data';
+        }
+
+        return null;
+    }
+
+    private function publicValue(object $row, array $columns): mixed
+    {
+        foreach ($columns as $column) {
+            if (property_exists($row, $column)) {
+                return $row->{$column};
+            }
+        }
+
+        return null;
+    }
+
+    private function publicValueSmart(object $row, array $keys): mixed
+    {
+        $vars = get_object_vars($row);
+
+        foreach ($keys as $key) {
+            foreach ($vars as $column => $value) {
+                if (strtolower($column) === strtolower($key) && filled($value)) {
+                    return $value;
+                }
+            }
+        }
+
+        foreach ($keys as $key) {
+            foreach ($vars as $column => $value) {
+                $normalizedColumn = strtolower(str_replace([' ', '-', '/'], '_', $column));
+                $normalizedKey = strtolower(str_replace([' ', '-', '/'], '_', $key));
+
+                if (str_contains($normalizedColumn, $normalizedKey) && filled($value)) {
+                    return $value;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private function normalizeJenisBujk($value): string
+    {
+        if (blank($value)) {
+            return 'Tidak Diketahui';
+        }
+
+        $value = trim((string) $value);
+        $lower = strtolower($value);
+
+        if (str_contains($lower, 'konsultan')) {
+            return 'Konsultan Konstruksi';
+        }
+
+        if (str_contains($lower, 'konstruksi')) {
+            return 'Konstruksi';
+        }
+
+        return $value;
+    }
+
+    private function normalizeKualifikasiSbu($value): ?string
+    {
+        if (blank($value)) {
+            return null;
+        }
+
+        $value = trim((string) $value);
+        $upper = strtoupper($value);
+
+        if (in_array($upper, ['K', 'KECIL'], true)) {
+            return 'K';
+        }
+
+        if (in_array($upper, ['M', 'MENENGAH'], true)) {
+            return 'M';
+        }
+
+        if (in_array($upper, ['B', 'BESAR'], true)) {
+            return 'B';
+        }
+
+        if (str_contains(strtolower($value), 'spesialis')) {
+            return 'Spesialis';
+        }
+
+        return $value;
+    }
+
+    private function normalizePublicJenjang($value): ?string
+    {
+        if (blank($value)) {
+            return null;
+        }
+
+        $value = trim((string) $value);
+
+        if (preg_match('/\d+/', $value, $matches)) {
+            return $matches[0];
+        }
+
+        return $value;
+    }
+
+    private function normalizePublicKabupaten($value): ?string
+    {
+        if (blank($value)) {
+            return null;
+        }
+
+        $value = trim((string) $value);
+        $upperValue = strtoupper($value);
+
+        $map = [
+            '64.01' => 'KABUPATEN PASER',
+            '64.02' => 'KABUPATEN KUTAI KARTANEGARA',
+            '64.03' => 'KABUPATEN BERAU',
+            '64.07' => 'KABUPATEN KUTAI BARAT',
+            '64.08' => 'KABUPATEN KUTAI TIMUR',
+            '64.09' => 'KABUPATEN PENAJAM PASER UTARA',
+            '64.11' => 'KABUPATEN MAHAKAM ULU',
+            '64.71' => 'KOTA BALIKPAPAN',
+            '64.72' => 'KOTA SAMARINDA',
+            '64.74' => 'KOTA BONTANG',
+
+            'PASER' => 'KABUPATEN PASER',
+            'KAB. PASER' => 'KABUPATEN PASER',
+            'KABUPATEN PASER' => 'KABUPATEN PASER',
+
+            'KUTAI KARTANEGARA' => 'KABUPATEN KUTAI KARTANEGARA',
+            'KAB. KUTAI KARTANEGARA' => 'KABUPATEN KUTAI KARTANEGARA',
+            'KABUPATEN KUTAI KARTANEGARA' => 'KABUPATEN KUTAI KARTANEGARA',
+
+            'BERAU' => 'KABUPATEN BERAU',
+            'KAB. BERAU' => 'KABUPATEN BERAU',
+            'KABUPATEN BERAU' => 'KABUPATEN BERAU',
+
+            'KUTAI BARAT' => 'KABUPATEN KUTAI BARAT',
+            'KAB. KUTAI BARAT' => 'KABUPATEN KUTAI BARAT',
+            'KABUPATEN KUTAI BARAT' => 'KABUPATEN KUTAI BARAT',
+
+            'KUTAI TIMUR' => 'KABUPATEN KUTAI TIMUR',
+            'KAB. KUTAI TIMUR' => 'KABUPATEN KUTAI TIMUR',
+            'KABUPATEN KUTAI TIMUR' => 'KABUPATEN KUTAI TIMUR',
+
+            'PENAJAM PASER UTARA' => 'KABUPATEN PENAJAM PASER UTARA',
+            'KAB. PENAJAM PASER UTARA' => 'KABUPATEN PENAJAM PASER UTARA',
+            'KABUPATEN PENAJAM PASER UTARA' => 'KABUPATEN PENAJAM PASER UTARA',
+
+            'MAHAKAM ULU' => 'KABUPATEN MAHAKAM ULU',
+            'KAB. MAHAKAM ULU' => 'KABUPATEN MAHAKAM ULU',
+            'KABUPATEN MAHAKAM ULU' => 'KABUPATEN MAHAKAM ULU',
+
+            'BALIKPAPAN' => 'KOTA BALIKPAPAN',
+            'KOTA BALIKPAPAN' => 'KOTA BALIKPAPAN',
+
+            'SAMARINDA' => 'KOTA SAMARINDA',
+            'KOTA SAMARINDA' => 'KOTA SAMARINDA',
+
+            'BONTANG' => 'KOTA BONTANG',
+            'KOTA BONTANG' => 'KOTA BONTANG',
+        ];
+
+        return $map[$upperValue] ?? $upperValue;
+    }
+
+    private function isSameExpiredYear($date, int $year): bool
+    {
+        if (blank($date)) {
+            return false;
+        }
+
+        try {
+            return Carbon::parse($date)->year === $year;
+        } catch (\Throwable) {
+            return false;
+        }
     }
 }
