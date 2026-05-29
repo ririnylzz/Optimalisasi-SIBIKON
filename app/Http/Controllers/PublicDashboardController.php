@@ -13,6 +13,22 @@ class PublicDashboardController extends Controller
     {
         $items = $this->getPublicTkkItems()
             ->filter(fn($item) => in_array((string) $item['jenjang'], ['7', '8', '9'], true))
+            ->groupBy(function ($item) {
+
+                // prioritas pakai nama + jenjang
+                if (!empty($item['nama']) && !empty($item['jenjang'])) {
+                    return strtolower(trim($item['nama'])) . '|jenjang:' . $item['jenjang'];
+                }
+
+                // fallback nama
+                if (!empty($item['nama'])) {
+                    return strtolower(trim($item['nama']));
+                }
+
+                // fallback id
+                return 'id:' . $item['id'];
+            })
+            ->map(fn($group) => $group->first())
             ->values();
 
         $totalTkk = $items->count();
@@ -96,16 +112,21 @@ class PublicDashboardController extends Controller
 
     public function tkkAktif()
     {
+        $today = now()->startOfDay();
+        $endOfYear = now()->endOfYear();
+
         $items = $this->getPublicTkkItems()
-            ->filter(function ($item) {
+            ->filter(fn($item) => in_array((string) $item['jenjang'], ['7', '8', '9'], true))
+            ->filter(function ($item) use ($today) {
+
                 if (blank($item['tanggal_kadaluwarsa'])) {
                     return false;
                 }
 
                 try {
-                    $expired = Carbon::parse($item['tanggal_kadaluwarsa']);
+                    $expired = Carbon::parse($item['tanggal_kadaluwarsa'])->startOfDay();
 
-                    return $expired->isFuture();
+                    return $expired->greaterThanOrEqualTo($today);
                 } catch (\Throwable) {
                     return false;
                 }
@@ -119,6 +140,28 @@ class PublicDashboardController extends Controller
             ->filter()
             ->unique()
             ->count();
+
+        $kadaluarsaTahunIni = $items
+            ->filter(function ($item) use ($today, $endOfYear) {
+
+                if (blank($item['tanggal_kadaluwarsa'])) {
+                    return false;
+                }
+
+                try {
+                    $expired = Carbon::parse($item['tanggal_kadaluwarsa'])->startOfDay();
+
+                    return $expired->betweenIncluded($today, $endOfYear);
+                } catch (\Throwable) {
+                    return false;
+                }
+            })
+            ->count();
+
+        $totalAktifNormal = max(
+            $totalTkkAktif - $kadaluarsaTahunIni,
+            0
+        );
 
         $distribusiJenjang = $items
             ->filter(fn($item) => filled($item['jenjang']))
@@ -138,7 +181,7 @@ class PublicDashboardController extends Controller
         $statusSertifikat = collect([
             [
                 'label' => 'Aktif',
-                'value' => $items->count(),
+                'value' => $totalAktifNormal,
             ],
             [
                 'label' => 'Kadaluarsa Tahun Ini',
@@ -151,8 +194,10 @@ class PublicDashboardController extends Controller
                         try {
                             $expired = Carbon::parse($item['tanggal_kadaluwarsa']);
 
-                            return $expired->year === now()->year
-                                && $expired->isPast();
+                            $today = now()->startOfDay();
+                            $endOfYear = now()->endOfYear();
+
+                            return $expired->betweenIncluded($today, $endOfYear);
                         } catch (\Throwable) {
                             return false;
                         }
@@ -229,6 +274,22 @@ class PublicDashboardController extends Controller
     public function bujk()
     {
         $items = $this->getPublicBujkItems();
+
+        $items = $items
+            ->groupBy(function ($item) {
+
+                if (!empty($item['nib'])) {
+                    return 'nib:' . $item['nib'];
+                }
+
+                if (!empty($item['nama'])) {
+                    return 'nama:' . $item['nama'];
+                }
+
+                return 'id:' . $item['id'];
+            })
+            ->map(fn($group) => $group->first())
+            ->values();
 
         $totalBujk = $items->count();
 
