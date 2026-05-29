@@ -12,7 +12,7 @@ class PublicDashboardController extends Controller
     public function tenagaKerja()
     {
         $items = $this->getPublicTkkItems()
-            ->filter(fn ($item) => in_array((string) $item['jenjang'], ['7', '8', '9'], true))
+            ->filter(fn($item) => in_array((string) $item['jenjang'], ['7', '8', '9'], true))
             ->values();
 
         $totalTkk = $items->count();
@@ -24,24 +24,24 @@ class PublicDashboardController extends Controller
             ->count();
 
         $distribusiJenjang = $items
-            ->filter(fn ($item) => filled($item['jenjang']))
+            ->filter(fn($item) => filled($item['jenjang']))
             ->groupBy('jenjang')
-            ->map(fn ($group, $jenjang) => [
+            ->map(fn($group, $jenjang) => [
                 'label' => 'Jenjang ' . $jenjang,
                 'value' => $group->count(),
                 'raw_label' => (string) $jenjang,
             ])
-            ->sortBy(fn ($item) => (int) $item['raw_label'])
-            ->map(fn ($item) => [
+            ->sortBy(fn($item) => (int) $item['raw_label'])
+            ->map(fn($item) => [
                 'label' => $item['label'],
                 'value' => $item['value'],
             ])
             ->values();
 
         $topAsosiasi = $items
-            ->filter(fn ($item) => filled($item['asosiasi']))
+            ->filter(fn($item) => filled($item['asosiasi']))
             ->groupBy('asosiasi')
-            ->map(fn ($group, $asosiasi) => [
+            ->map(fn($group, $asosiasi) => [
                 'label' => $asosiasi,
                 'value' => $group->count(),
             ])
@@ -50,9 +50,9 @@ class PublicDashboardController extends Controller
             ->values();
 
         $topKlasifikasi = $items
-            ->filter(fn ($item) => filled($item['klasifikasi']))
+            ->filter(fn($item) => filled($item['klasifikasi']))
             ->groupBy('klasifikasi')
-            ->map(fn ($group, $klasifikasi) => [
+            ->map(fn($group, $klasifikasi) => [
                 'label' => $klasifikasi,
                 'value' => $group->count(),
             ])
@@ -61,9 +61,9 @@ class PublicDashboardController extends Controller
             ->values();
 
         $perbandinganKabupaten = $items
-            ->filter(fn ($item) => filled($item['kabupaten']))
+            ->filter(fn($item) => filled($item['kabupaten']))
             ->groupBy('kabupaten')
-            ->map(fn ($group, $kabupaten) => [
+            ->map(fn($group, $kabupaten) => [
                 'label' => $kabupaten,
                 'value' => $group->count(),
             ])
@@ -77,7 +77,7 @@ class PublicDashboardController extends Controller
                 return [
                     'label' => (string) $year,
                     'value' => $items
-                        ->filter(fn ($item) => $this->isSameExpiredYear($item['tanggal_kadaluwarsa'], $year))
+                        ->filter(fn($item) => $this->isSameExpiredYear($item['tanggal_kadaluwarsa'], $year))
                         ->count(),
                 ];
             })
@@ -90,6 +90,117 @@ class PublicDashboardController extends Controller
             'topAsosiasi' => $topAsosiasi,
             'topKlasifikasi' => $topKlasifikasi,
             'perbandinganKabupaten' => $perbandinganKabupaten,
+            'proyeksiKadaluarsa' => $proyeksiKadaluarsa,
+        ]);
+    }
+
+    public function tkkAktif()
+    {
+        $items = $this->getPublicTkkItems()
+            ->filter(function ($item) {
+                if (blank($item['tanggal_kadaluwarsa'])) {
+                    return false;
+                }
+
+                try {
+                    return Carbon::parse($item['tanggal_kadaluwarsa'])->isFuture();
+                } catch (\Throwable) {
+                    return false;
+                }
+            })
+            ->values();
+
+        $totalTkkAktif = $items->count();
+
+        $totalWilayah = $items
+            ->pluck('kabupaten')
+            ->filter()
+            ->unique()
+            ->count();
+
+        $distribusiJenjang = $items
+            ->filter(fn($item) => filled($item['jenjang']))
+            ->groupBy('jenjang')
+            ->map(fn($group, $jenjang) => [
+                'label' => 'Jenjang ' . $jenjang,
+                'value' => $group->count(),
+                'raw_label' => (string) $jenjang,
+            ])
+            ->sortBy(fn($item) => (int) $item['raw_label'])
+            ->map(fn($item) => [
+                'label' => $item['label'],
+                'value' => $item['value'],
+            ])
+            ->values();
+
+        $statusSertifikat = collect([
+            [
+                'label' => 'Aktif',
+                'value' => $items->count(),
+            ],
+            [
+                'label' => 'Kadaluarsa Tahun Ini',
+                'value' => $this->getPublicTkkItems()
+                    ->filter(function ($item) {
+                        if (blank($item['tanggal_kadaluwarsa'])) {
+                            return false;
+                        }
+
+                        try {
+                            return Carbon::parse($item['tanggal_kadaluwarsa'])->year === now()->year
+                                && Carbon::parse($item['tanggal_kadaluwarsa'])->isPast();
+                        } catch (\Throwable) {
+                            return false;
+                        }
+                    })
+                    ->count(),
+            ],
+        ]);
+
+        $topKabupaten = $items
+            ->filter(fn($item) => filled($item['kabupaten']))
+            ->groupBy('kabupaten')
+            ->map(fn($group, $kabupaten) => [
+                'label' => $kabupaten,
+                'value' => $group->count(),
+            ])
+            ->sortByDesc('value')
+            ->values();
+
+        $topKlasifikasi = $items
+            ->filter(fn($item) => filled($item['klasifikasi']))
+            ->groupBy('klasifikasi')
+            ->map(fn($group, $klasifikasi) => [
+                'label' => $klasifikasi,
+                'value' => $group->count(),
+            ])
+            ->sortByDesc('value')
+            ->take(5)
+            ->values();
+
+        $proyeksiKadaluarsa = collect(range(0, 5))
+            ->map(function ($yearOffset) use ($items) {
+                $year = now()->year + $yearOffset;
+
+                return [
+                    'label' => (string) $year,
+                    'value' => $items
+                        ->filter(fn($item) => $this->isSameExpiredYear(
+                            $item['tanggal_kadaluwarsa'],
+                            $year
+                        ))
+                        ->count(),
+                ];
+            })
+            ->values();
+
+        return view('pages.dashboard-tkk-aktif-publik', [
+            'totalTkkAktif' => $totalTkkAktif,
+            'totalWilayah' => $totalWilayah,
+            'distribusiJenjang' => $distribusiJenjang,
+            'statusSertifikat' => $statusSertifikat,
+            'topKabupaten' => $topKabupaten,
+            'topKlasifikasi' => $topKlasifikasi,
             'proyeksiKadaluarsa' => $proyeksiKadaluarsa,
         ]);
     }
@@ -107,15 +218,15 @@ class PublicDashboardController extends Controller
             ->count();
 
         $totalKonstruksi = $items
-            ->filter(fn ($item) => $item['jenis_usaha'] === 'Konstruksi')
+            ->filter(fn($item) => $item['jenis_usaha'] === 'Konstruksi')
             ->count();
 
         $totalKonsultan = $items
-            ->filter(fn ($item) => $item['jenis_usaha'] === 'Konsultan Konstruksi')
+            ->filter(fn($item) => $item['jenis_usaha'] === 'Konsultan Konstruksi')
             ->count();
 
         $totalKontak = $items
-            ->filter(fn ($item) => filled($item['telepon']) || filled($item['email']) || filled($item['website']))
+            ->filter(fn($item) => filled($item['telepon']) || filled($item['email']) || filled($item['website']))
             ->count();
 
         $kpi = [
@@ -142,9 +253,9 @@ class PublicDashboardController extends Controller
         ];
 
         $jenisUsahaSummary = $items
-            ->filter(fn ($item) => filled($item['jenis_usaha']))
+            ->filter(fn($item) => filled($item['jenis_usaha']))
             ->groupBy('jenis_usaha')
-            ->map(fn ($group, $jenisUsaha) => [
+            ->map(fn($group, $jenisUsaha) => [
                 'label' => $jenisUsaha,
                 'value' => $group->count(),
             ])
@@ -152,9 +263,9 @@ class PublicDashboardController extends Controller
             ->values();
 
         $kabupatenSummary = $items
-            ->filter(fn ($item) => filled($item['kabupaten']))
+            ->filter(fn($item) => filled($item['kabupaten']))
             ->groupBy('kabupaten')
-            ->map(fn ($group, $kabupaten) => [
+            ->map(fn($group, $kabupaten) => [
                 'label' => $kabupaten,
                 'value' => $group->count(),
             ])
@@ -201,11 +312,11 @@ class PublicDashboardController extends Controller
             ->count();
 
         $totalKonstruksi = $items
-            ->filter(fn ($item) => $item['jenis_usaha'] === 'Konstruksi')
+            ->filter(fn($item) => $item['jenis_usaha'] === 'Konstruksi')
             ->count();
 
         $totalKonsultan = $items
-            ->filter(fn ($item) => $item['jenis_usaha'] === 'Konsultan Konstruksi')
+            ->filter(fn($item) => $item['jenis_usaha'] === 'Konsultan Konstruksi')
             ->count();
 
         $kpi = [
@@ -232,9 +343,9 @@ class PublicDashboardController extends Controller
         ];
 
         $jenisUsahaSummary = $items
-            ->filter(fn ($item) => filled($item['jenis_usaha']))
+            ->filter(fn($item) => filled($item['jenis_usaha']))
             ->groupBy('jenis_usaha')
-            ->map(fn ($group, $jenisUsaha) => [
+            ->map(fn($group, $jenisUsaha) => [
                 'label' => $jenisUsaha,
                 'value' => $group->count(),
             ])
@@ -242,9 +353,9 @@ class PublicDashboardController extends Controller
             ->values();
 
         $kabupatenSummary = $items
-            ->filter(fn ($item) => filled($item['kabupaten']))
+            ->filter(fn($item) => filled($item['kabupaten']))
             ->groupBy('kabupaten')
-            ->map(fn ($group, $kabupaten) => [
+            ->map(fn($group, $kabupaten) => [
                 'label' => $kabupaten,
                 'value' => $group->count(),
             ])
@@ -252,9 +363,9 @@ class PublicDashboardController extends Controller
             ->values();
 
         $asosiasiSummary = $items
-            ->filter(fn ($item) => filled($item['asosiasi']))
+            ->filter(fn($item) => filled($item['asosiasi']))
             ->groupBy('asosiasi')
-            ->map(fn ($group, $asosiasi) => [
+            ->map(fn($group, $asosiasi) => [
                 'label' => $asosiasi,
                 'value' => $group->count(),
             ])
@@ -263,9 +374,9 @@ class PublicDashboardController extends Controller
             ->values();
 
         $pelaksanaSummary = $items
-            ->filter(fn ($item) => filled($item['pelaksana']))
+            ->filter(fn($item) => filled($item['pelaksana']))
             ->groupBy('pelaksana')
-            ->map(fn ($group, $pelaksana) => [
+            ->map(fn($group, $pelaksana) => [
                 'label' => $pelaksana,
                 'value' => $group->count(),
             ])
@@ -274,9 +385,9 @@ class PublicDashboardController extends Controller
             ->values();
 
         $kbliSummary = $items
-            ->filter(fn ($item) => filled($item['kbli']))
+            ->filter(fn($item) => filled($item['kbli']))
             ->groupBy('kbli')
-            ->map(fn ($group, $kbli) => [
+            ->map(fn($group, $kbli) => [
                 'label' => $kbli,
                 'value' => $group->count(),
             ])
@@ -285,9 +396,9 @@ class PublicDashboardController extends Controller
             ->values();
 
         $kualifikasiSummary = $items
-            ->filter(fn ($item) => filled($item['kualifikasi']))
+            ->filter(fn($item) => filled($item['kualifikasi']))
             ->groupBy('kualifikasi')
-            ->map(fn ($group, $kualifikasi) => [
+            ->map(fn($group, $kualifikasi) => [
                 'label' => $kualifikasi,
                 'value' => $group->count(),
             ])
@@ -295,9 +406,9 @@ class PublicDashboardController extends Controller
             ->values();
 
         $subKlasifikasiSummary = $items
-            ->filter(fn ($item) => filled($item['sub_klasifikasi']))
+            ->filter(fn($item) => filled($item['sub_klasifikasi']))
             ->groupBy('sub_klasifikasi')
-            ->map(fn ($group, $subKlasifikasi) => [
+            ->map(fn($group, $subKlasifikasi) => [
                 'label' => $subKlasifikasi,
                 'value' => $group->count(),
             ])
@@ -306,9 +417,9 @@ class PublicDashboardController extends Controller
             ->values();
 
         $sifatSummary = $items
-            ->filter(fn ($item) => filled($item['sifat']))
+            ->filter(fn($item) => filled($item['sifat']))
             ->groupBy('sifat')
-            ->map(fn ($group, $sifat) => [
+            ->map(fn($group, $sifat) => [
                 'label' => $sifat,
                 'value' => $group->count(),
             ])
@@ -388,7 +499,7 @@ class PublicDashboardController extends Controller
                     ),
                 ];
             })
-            ->filter(fn ($item) => filled($item['nama']) || filled($item['nib']) || filled($item['jenis_usaha']))
+            ->filter(fn($item) => filled($item['nama']) || filled($item['nib']) || filled($item['jenis_usaha']))
             ->values();
     }
 
@@ -454,7 +565,7 @@ class PublicDashboardController extends Controller
                     'kbli' => $this->publicValueSmart($row, ['kbli', 'kode_kbli']),
                 ];
             })
-            ->filter(fn ($item) => filled($item['nama']) || filled($item['nib']))
+            ->filter(fn($item) => filled($item['nama']) || filled($item['nib']))
             ->values();
     }
 

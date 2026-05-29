@@ -10,13 +10,11 @@ use App\Http\Controllers\Layanan\AsosiasiPerusahaanController;
 use App\Http\Controllers\Layanan\AsosiasiProfesiController;
 use App\Http\Controllers\Layanan\PenyediaJasaController;
 use App\Http\Controllers\PublicDashboardController;
+use App\Http\Controllers\KegiatanController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome', [
-        'page' => 'beranda',
-    ]);
-})->name('beranda');
+Route::get('/', [KegiatanController::class, 'beranda'])
+    ->name('beranda');
 
 Route::get('/gis-data/{category}', [GisController::class, 'data'])
     ->name('gis.data');
@@ -76,23 +74,14 @@ Route::get('/detail-berita', function () {
     ]);
 })->name('detail-berita');
 
-Route::get('/fungsi/pengaturan/rakor', function () {
-    return view('welcome', [
-        'page' => 'rakor',
-    ]);
-})->name('rakor');
+Route::get('/fungsi/pengaturan/rakor', [KegiatanController::class, 'rakor'])
+    ->name('rakor');
 
-Route::get('/fungsi/pengaturan/sosialisasi', function () {
-    return view('welcome', [
-        'page' => 'sosialisasi',
-    ]);
-})->name('sosialisasi');
+Route::get('/fungsi/pengaturan/sosialisasi', [KegiatanController::class, 'sosialisasi'])
+    ->name('sosialisasi');
 
-Route::get('/fungsi/pengaturan/forum', function () {
-    return view('welcome', [
-        'page' => 'forum',
-    ]);
-})->name('forum');
+Route::get('/fungsi/pengaturan/forum', [KegiatanController::class, 'forum'])
+    ->name('forum');
 
 Route::get('/fungsi/pengaturan/rantai-pasok', function () {
     return view('welcome', [
@@ -150,6 +139,9 @@ Route::get('/layanan/penyedia-jasa', [PenyediaJasaController::class, 'index'])
 
 Route::get('/dashboard/tenaga-kerja-konstruksi', [PublicDashboardController::class, 'tenagaKerja'])
     ->name('dashboard.tenaga-kerja');
+
+Route::get('/dashboard/tkk-aktif', [PublicDashboardController::class, 'tkkAktif'])
+    ->name('dashboard.tkk-aktif');
 
 Route::get('/dashboard/bujk', [PublicDashboardController::class, 'bujk'])
     ->name('dashboard.bujk.publik');
