@@ -103,7 +103,9 @@ class PublicDashboardController extends Controller
                 }
 
                 try {
-                    return Carbon::parse($item['tanggal_kadaluwarsa'])->isFuture();
+                    $expired = Carbon::parse($item['tanggal_kadaluwarsa']);
+
+                    return $expired->isFuture();
                 } catch (\Throwable) {
                     return false;
                 }
@@ -140,15 +142,17 @@ class PublicDashboardController extends Controller
             ],
             [
                 'label' => 'Kadaluarsa Tahun Ini',
-                'value' => $this->getPublicTkkItems()
+                'value' => $items
                     ->filter(function ($item) {
                         if (blank($item['tanggal_kadaluwarsa'])) {
                             return false;
                         }
 
                         try {
-                            return Carbon::parse($item['tanggal_kadaluwarsa'])->year === now()->year
-                                && Carbon::parse($item['tanggal_kadaluwarsa'])->isPast();
+                            $expired = Carbon::parse($item['tanggal_kadaluwarsa']);
+
+                            return $expired->year === now()->year
+                                && $expired->isPast();
                         } catch (\Throwable) {
                             return false;
                         }
@@ -156,6 +160,9 @@ class PublicDashboardController extends Controller
                     ->count(),
             ],
         ]);
+
+        $totalAkanKadaluarsa = $statusSertifikat
+            ->firstWhere('label', 'Kadaluarsa Tahun Ini')['value'] ?? 0;
 
         $topKabupaten = $items
             ->filter(fn($item) => filled($item['kabupaten']))
@@ -165,6 +172,7 @@ class PublicDashboardController extends Controller
                 'value' => $group->count(),
             ])
             ->sortByDesc('value')
+            ->take(5)
             ->values();
 
         $topKlasifikasi = $items
@@ -197,11 +205,24 @@ class PublicDashboardController extends Controller
         return view('pages.dashboard-tkk-aktif-publik', [
             'totalTkkAktif' => $totalTkkAktif,
             'totalWilayah' => $totalWilayah,
+
             'distribusiJenjang' => $distribusiJenjang,
+            'distribusiMasaBerlaku' => $distribusiJenjang,
+
             'statusSertifikat' => $statusSertifikat,
+            'perbandinganStatus' => $statusSertifikat,
+
             'topKabupaten' => $topKabupaten,
+            'topKabupatenAktif' => $topKabupaten,
+
             'topKlasifikasi' => $topKlasifikasi,
+            'topJenjangAktif' => $distribusiJenjang,
+
             'proyeksiKadaluarsa' => $proyeksiKadaluarsa,
+            'trenKadaluarsa' => $proyeksiKadaluarsa,
+
+            'totalAkanKadaluarsa' => $statusSertifikat
+                ->firstWhere('label', 'Kadaluarsa Tahun Ini')['value'] ?? 0,
         ]);
     }
 

@@ -56,26 +56,22 @@
         <x-dashboard-chart-card
             title="Distribusi Masa Berlaku"
             canvas="masaBerlakuChart"
-            height="h-[240px]"
-        />
+            height="h-[240px]" />
 
         <x-dashboard-chart-card
             title="Top 5 Kabupaten/Kota TKK Aktif"
             canvas="kabupatenAktifChart"
-            height="h-[240px]"
-        />
+            height="h-[240px]" />
 
         <x-dashboard-chart-card
             title="Top 5 Jenjang Sertifikat Aktif"
             canvas="jenjangAktifChart"
-            height="h-[240px]"
-        />
+            height="h-[240px]" />
 
         <x-dashboard-chart-card
             title="Perbandingan Status Sertifikat"
             canvas="statusSertifikatChart"
-            height="h-[240px]"
-        />
+            height="h-[240px]" />
 
         <div class="mb-9 sibikon-card overflow-hidden rounded-[20px] border border-slate-200 bg-white xl:col-span-2">
             <div class="border-b border-slate-100 px-4 py-3">
@@ -89,8 +85,7 @@
                 <img
                     src="{{ asset('images/logo-sibikon.png') }}"
                     alt="Logo Sibikon"
-                    class="pointer-events-none absolute left-1/2 top-1/2 w-36 -translate-x-1/2 -translate-y-1/2 opacity-[0.05]"
-                >
+                    class="pointer-events-none absolute left-1/2 top-1/2 w-36 -translate-x-1/2 -translate-y-1/2 opacity-[0.05]">
 
                 <div class="relative z-10 h-[300px]">
                     <canvas id="trenKadaluarsaChart"></canvas>
@@ -132,9 +127,9 @@
     function truncateLabel(label, max = 18) {
         if (!label) return '';
 
-        return label.length > max
-            ? label.substring(0, max) + '…'
-            : label;
+        return label.length > max ?
+            label.substring(0, max) + '…' :
+            label;
     }
 
     function tooltipLabel() {
@@ -343,16 +338,16 @@
     // Distribusi Masa Berlaku
     doughnutChart(
         'masaBerlakuChart',
-        @json(collect($distribusiMasaBerlaku ?? [])->pluck('label')->values()),
-        @json(collect($distribusiMasaBerlaku ?? [])->pluck('value')->values()),
+        @json(collect($distribusiJenjang ?? []) -> pluck('label') -> values()),
+        @json(collect($distribusiJenjang ?? []) -> pluck('value') -> values()),
         statusPalette
     );
 
     // Kabupaten Aktif
     barChart(
         'kabupatenAktifChart',
-        @json(collect($topKabupatenAktif ?? [])->pluck('label')->values()),
-        @json(collect($topKabupatenAktif ?? [])->pluck('value')->values()),
+        @json(collect($topKabupatenAktif ?? []) -> pluck('label') -> values()),
+        @json(collect($topKabupatenAktif ?? []) -> pluck('value') -> values()),
         true,
         bluePalette
     );
@@ -360,8 +355,8 @@
     // Jenjang Aktif
     barChart(
         'jenjangAktifChart',
-        @json(collect($topJenjangAktif ?? [])->pluck('label')->values()),
-        @json(collect($topJenjangAktif ?? [])->pluck('value')->values()),
+        @json(collect($topJenjangAktif ?? []) -> pluck('label') -> values()),
+        @json(collect($topJenjangAktif ?? []) -> pluck('value') -> values()),
         true,
         bluePalette
     );
@@ -369,16 +364,16 @@
     // Status Sertifikat
     doughnutChart(
         'statusSertifikatChart',
-        @json(collect($perbandinganStatus ?? [])->pluck('label')->values()),
-        @json(collect($perbandinganStatus ?? [])->pluck('value')->values()),
+        @json(collect($perbandinganStatus ?? []) -> pluck('label') -> values()),
+        @json(collect($perbandinganStatus ?? []) -> pluck('value') -> values()),
         ['#16A34A', '#DC2626']
     );
 
     // Tren Kadaluarsa
     lineChart(
         'trenKadaluarsaChart',
-        @json(collect($trenKadaluarsa ?? [])->pluck('label')->values()),
-        @json(collect($trenKadaluarsa ?? [])->pluck('value')->values())
+        @json(collect($trenKadaluarsa ?? []) -> pluck('label') -> values()),
+        @json(collect($trenKadaluarsa ?? []) -> pluck('value') -> values())
     );
 </script>
 @endpush
