@@ -19,7 +19,7 @@
             class="flex flex-wrap items-end gap-5 p-6"
         >
             {{-- Kabupaten --}}
-            <div class="min-w-[220px] flex-1">
+            <div class="min-w-[180px] flex-1">
                 <label class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
                     Filter Kabupaten
                 </label>
@@ -42,7 +42,7 @@
             </div>
 
             {{-- Mode --}}
-            <div class="min-w-[260px] flex-1">
+            <div class="min-w-[220px] flex-1">
                 <label class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
                     Mode Tampilan Data
                 </label>
@@ -62,6 +62,29 @@
                     <option value="kadaluarsa_tahun_ini" {{ $selectedMode === 'kadaluarsa_tahun_ini' ? 'selected' : '' }}>
                         SKK Kadaluarsa Tahun Ini
                     </option>
+                </select>
+            </div>
+
+            {{-- Tahun Kadaluarsa --}}
+            <div class="min-w-[180px]">
+                <label class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
+                    Tahun SKK
+                </label>
+
+                <select
+                    name="tahun"
+                    class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
+                >
+                    <option value="semua">Semua Tahun</option>
+
+                    @foreach ($tahunOptions as $tahun)
+                        <option
+                            value="{{ $tahun }}"
+                            {{ $selectedTahun == $tahun ? 'selected' : '' }}
+                        >
+                            {{ $tahun }}
+                        </option>
+                    @endforeach
                 </select>
             </div>
 

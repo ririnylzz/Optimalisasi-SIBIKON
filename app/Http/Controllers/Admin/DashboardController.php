@@ -288,6 +288,7 @@ class DashboardController extends Controller
 
         $selectedKabupaten = $request->query('kabupaten', 'semua');
         $selectedMode = $request->query('mode', 'semua_skk');
+        $selectedTahun = $request->query('tahun', 'semua');
         $selectedJenjang = $request->query('jenjang', [7, 8, 9]);
 
         if (!is_array($selectedJenjang)) {
@@ -346,6 +347,7 @@ class DashboardController extends Controller
         $filteredRows = $allRows->filter(function ($row) use (
             $selectedKabupaten,
             $selectedJenjang,
+            $selectedTahun,
             $search,
             $searchBy
         ) {
@@ -378,7 +380,11 @@ class DashboardController extends Controller
 
             $matchJenjang = in_array((string) $row->jenjang, $selectedJenjang, true);
 
-            return $matchKabupaten && $matchJenjang && $matchSearch;
+            $matchTahun = $selectedTahun === 'semua'
+                || $selectedTahun === ''
+                || Carbon::parse($row->tanggal_kadaluwarsa)->year === (int) $selectedTahun;
+
+            return $matchKabupaten && $matchJenjang && $matchSearch && $matchTahun;
         });
 
         if ($selectedMode === 'aktif') {
@@ -494,6 +500,15 @@ class DashboardController extends Controller
             })
             ->values();
 
+        $tahunOptions = $allRows
+            ->filter(fn ($row) => !empty($row->tanggal_kadaluwarsa))
+            ->map(function ($row) {
+                return Carbon::parse($row->tanggal_kadaluwarsa)->year;
+            })
+            ->unique()
+            ->sort()
+            ->values();
+
         $kabupatenOptions = $allRows
             ->pluck('kabupaten')
             ->filter()
@@ -535,6 +550,8 @@ class DashboardController extends Controller
             'perbandinganKabupaten',
             'proyeksiKadaluarsa',
             'kabupatenOptions',
+            'tahunOptions',
+            'selectedTahun',
             'tkkRows',
             'totalTkk',
             'selectedKabupaten',
