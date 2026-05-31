@@ -2,6 +2,12 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+    .hero-logo {
+        transition: opacity 1s ease-in-out;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -54,6 +60,50 @@
                         class="hero-logo absolute inset-0 m-auto w-[250px] scale-110 max-w-full drop-shadow-2xl opacity-0">
 
                 </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{{-- RUNNING TEXT --}}
+<section class="border-b border-[#143B5D]/15 bg-[#eef3f8]">
+    <div class="flex items-stretch overflow-hidden">
+
+        {{-- Left Label --}}
+        <div
+            class="flex shrink-0 items-center bg-[#f1d00a] px-6 py-3">
+
+            <span class="text-base font-bold text-[#143B5D]">
+                📢 Informasi Kegiatan
+            </span>
+        </div>
+
+        {{-- Right Running Area --}}
+        <div class="relative flex flex-1 items-center overflow-hidden bg-[#143B5D]">
+
+            <div class="running-track flex items-center">
+
+                @foreach ($runningText as $item)
+                <div class="running-item flex items-center text-sm">
+
+                    {{-- Tanggal --}}
+                    <span class="font-semibold text-[#f1d00a]">
+                        {{ $item['tanggal'] }}
+                    </span>
+
+                    {{-- Judul --}}
+                    <span class="ml-2 text-white/90">
+                        {{ $item['judul'] }}
+                    </span>
+
+                    {{-- Kabupaten --}}
+                    <span class="ml-2 text-white/90">
+                        — {{ $item['kabupaten'] }}
+                    </span>
+                </div>
+                @endforeach
+
             </div>
 
         </div>
@@ -158,13 +208,13 @@
 
         {{-- Tombol --}}
         <div class="mt-16 flex justify-center">
-            <button id="toggle-layanan" type="button"
+            <button
+                id="toggle-layanan"
+                type="button"
                 class="inline-flex items-center justify-center rounded-full bg-[#143B5D] px-8 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-[#0F2E49]">
                 Lihat Selengkapnya
             </button>
         </div>
-    </div>
-
     </div>
 </section>
 
@@ -173,30 +223,168 @@
     <div class="mx-auto max-w-7xl">
 
         @php
+        $schema = app('db')->connection()->getSchemaBuilder();
+
+        $getColumnValue = function ($row, array $columns) {
+        foreach ($columns as $column) {
+        if (property_exists($row, $column)) {
+        return $row->{$column};
+        }
+        }
+
+        return null;
+        };
+
+        $normalizeJenjang = function ($value) {
+        if (blank($value)) {
+        return null;
+        }
+
+        $value = trim((string) $value);
+
+        if (preg_match('/\d+/', $value, $matches)) {
+        return $matches[0];
+        }
+
+        return $value;
+        };
+
+        $normalizeJenisBujk = function ($value) {
+        if (blank($value)) {
+        return 'Tidak Diketahui';
+        }
+
+        $value = trim((string) $value);
+        $lower = strtolower($value);
+
+        $parts = [];
+
+        if (str_contains($lower, 'konstruksi') && !str_contains($lower, 'konsultan')) {
+        $parts[] = 'Konstruksi';
+        }
+
+        if (str_contains($lower, 'konsultan')) {
+        $parts[] = 'Konsultan Konstruksi';
+        }
+
+        if (empty($parts)) {
+        return $value;
+        }
+
+        return implode(' & ', array_unique($parts));
+        };
+
+        $tkkTable = null;
+
+        if ($schema->hasTable('tkk')) {
+        $tkkTable = 'tkk';
+        } elseif ($schema->hasTable('tkk_data')) {
+        $tkkTable = 'tkk_data';
+        }
+        $tenagaAhli = 0;
+        $tkkAktif = 0;
+
+        if ($tkkTable) {
+        $tkkItems = DB::table($tkkTable)
+        ->get()
+        ->map(function ($row) use ($getColumnValue, $normalizeJenjang) {
+        return [
+        'jenjang' => $normalizeJenjang(
+        $getColumnValue($row, [
+        'Jenjang',
+        'jenjang',
+        'id_kualifikasi',
+        'kualifikasi',
+        ])
+        ),
+
+        'tanggal_kadaluwarsa' => $getColumnValue($row, [
+        'tanggal_kadaluwarsa',
+        'tgl_kadaluwarsa',
+        'tanggal_masa_berlaku',
+        'masa_berlaku',
+        ]),
+        ];
+        });
+
+        // TKK Ahli = jenjang 7-9
+        $tenagaAhli = $tkkItems
+        ->filter(fn ($item) => in_array((string) $item['jenjang'], ['7', '8', '9'], true))
+        ->count();
+
+        // TKK Aktif = sertifikat masih berlaku
+        $tkkAktif = $tkkItems
+        ->filter(function ($item) {
+
+        if (blank($item['tanggal_kadaluwarsa'])) {
+        return false;
+        }
+
+        try {
+        return \Carbon\Carbon::parse($item['tanggal_kadaluwarsa'])->isFuture();
+        } catch (\Throwable) {
+        return false;
+        }
+        })
+        ->count();
+        }
+
+        $totalBujk = 0;
+
+        if ($schema->hasTable('bujk')) {
+        $bujkQuery = DB::table('bujk');
+
+        if ($schema->hasColumn('bujk', 'is_deleted')) {
+        $bujkQuery->where('is_deleted', 0);
+        }
+
+        $totalBujk = $bujkQuery->count();
+        }
+
+        $totalSbu = 0;
+
+        foreach (['bujk_sbu', 'sbu', 'bujk'] as $sbuTable) {
+        if (!$schema->hasTable($sbuTable)) {
+        continue;
+        }
+
+        $sbuQuery = DB::table($sbuTable);
+
+        if ($schema->hasColumn($sbuTable, 'is_deleted')) {
+        $sbuQuery->where('is_deleted', 0);
+        }
+
+        $totalSbu = $sbuQuery->count();
+
+        if ($totalSbu > 0) {
+        break;
+        }
+        }
+
         $statistik = [
         [
-        'angka' => '890',
-        'label' => 'Tenaga Ahli',
+        'angka' => number_format($tenagaAhli, 0, ',', '.'),
+        'label' => 'TKK Ahli',
         'icon' => 'tenaga-ahli',
-        'url' => route('dashboard.tenaga-kerja')
+        'url' => route('dashboard.tenaga-kerja'),
         ],
         [
-        'angka' => '1751',
-        'label' => 'Tenaga Terampil',
+        'angka' => number_format($tkkAktif, 0, ',', '.'),
+        'label' => 'TKK Aktif',
         'icon' => 'tenaga-terampil',
-        'url' => route('dashboard.tenaga-kerja')
+        'url' => route('dashboard.tkk-aktif'),
         ],
         [
-        'angka' => '747',
+        'angka' => number_format($totalBujk, 0, ',', '.'),
         'label' => 'BUJK',
         'icon' => 'nib',
-        'url' => route('dashboard.bujk.publik')
+        'url' => route('dashboard.bujk.publik'),
         ],
         [
-        'angka' => '172',
+        'angka' => number_format($totalSbu, 0, ',', '.'),
         'label' => 'SBU',
         'icon' => 'sbu',
-        'url' => route('dashboard.sbu.publik')
+        'url' => route('dashboard.sbu.publik'),
         ],
         ];
         @endphp
@@ -207,7 +395,11 @@
             <div class="grid w-full grid-cols-1 gap-8 sm:grid-cols-2">
 
                 @foreach ($statistik as $item)
-                <div class="group relative overflow-hidden rounded-[24px] border border-[#c5cae9]/60 bg-white px-7 py-7 shadow-[0_14px_35px_rgba(33,50,94,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(33,50,94,0.14)]">
+                <div
+                    role="button"
+                    tabindex="0"
+                    data-statistik-url="{{ $item['url'] }}"
+                    class="statistik-card group relative cursor-pointer overflow-hidden rounded-[24px] border border-[#c5cae9]/60 bg-white px-7 py-7 shadow-[0_14px_35px_rgba(33,50,94,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(33,50,94,0.14)]">
 
                     {{-- Top Accent --}}
                     <span class="absolute left-0 top-0 h-1.5 w-full bg-[#21325e]"></span>
@@ -215,8 +407,7 @@
                     <div class="flex items-center gap-5">
 
                         {{-- Icon --}}
-                        <a href="{{ $item['url'] }}"
-                            class="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-[#eef2ff] text-[#21325e] transition duration-300 hover:scale-105 hover:bg-[#f7e578] hover:text-black hover:shadow-lg">
+                        <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-[#eef2ff] text-[#21325e] transition duration-300 group-hover:scale-105 group-hover:bg-[#f7e578] group-hover:text-black group-hover:shadow-lg">
 
                             {{-- Tenaga Ahli --}}
                             @if ($item['icon'] === 'tenaga-ahli')
@@ -276,7 +467,7 @@
                                     d="M10.5 17l-1 3 2.5-1.3L14.5 20l-1-3" />
                             </svg>
                             @endif
-                        </a>
+                        </div>
 
                         {{-- Text --}}
                         <div>
@@ -313,15 +504,43 @@
 </section>
 
 @include('pages.gis-map')
-
 @endsection
 
 @push('styles')
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-
 <style>
-    .hero-logo {
-        transition: opacity 1s ease-in-out;
+    .running-text {
+        overflow: hidden;
+        position: relative;
+    }
+
+    .running-track {
+        display: flex;
+        align-items: center;
+        width: max-content;
+        white-space: nowrap;
+
+        animation: marquee 42s linear infinite;
+
+        padding-left: 100%;
+    }
+
+    .running-track:hover {
+        animation-play-state: paused;
+    }
+
+    .running-item {
+        flex-shrink: 0;
+        margin-right: 80px;
+    }
+
+    @keyframes marquee {
+        from {
+            transform: translateX(0);
+        }
+
+        to {
+            transform: translateX(-100%);
+        }
     }
 </style>
 @endpush
@@ -332,16 +551,38 @@
         const button = document.getElementById('toggle-layanan');
         const extraCards = document.querySelectorAll('.layanan-extra');
 
-        if (!button || !extraCards.length) return;
+        if (button && extraCards.length) {
+            button.addEventListener('click', function() {
+                const isHidden = extraCards[0].classList.contains('hidden');
 
-        button.addEventListener('click', function() {
-            const isHidden = extraCards[0].classList.contains('hidden');
+                extraCards.forEach(function(card) {
+                    card.classList.toggle('hidden');
+                });
 
-            extraCards.forEach(function(card) {
-                card.classList.toggle('hidden');
+                button.textContent = isHidden ? 'Tampilkan Lebih Sedikit' : 'Lihat Selengkapnya';
+            });
+        }
+
+        document.querySelectorAll('.statistik-card').forEach(function(card) {
+            card.addEventListener('click', function() {
+                const url = this.dataset.statistikUrl;
+
+                if (url) {
+                    window.location.href = url;
+                }
             });
 
-            button.textContent = isHidden ? 'Tampilkan Lebih Sedikit' : 'Lihat Selengkapnya';
+            card.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+
+                    const url = this.dataset.statistikUrl;
+
+                    if (url) {
+                        window.location.href = url;
+                    }
+                }
+            });
         });
     });
 </script>

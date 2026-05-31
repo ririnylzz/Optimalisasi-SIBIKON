@@ -204,29 +204,57 @@
                                 {{ $lokasi }}
                             </td>
 
-                        <td class="px-6 py-5">
+                            <td class="px-6 py-5">
+                                <div class="flex items-center justify-center">
+                                    <button
+                                        type="button"
+                                        class="action-dropdown-trigger inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-400 bg-blue-50 px-3 text-sm font-semibold text-blue-600 transition hover:bg-blue-100 hover:text-blue-700"
+                                        data-update-url="{{ route('admin.pelatihan-sertifikasi.update', $item) }}"
+                                        data-detail-url="{{ route('admin.pelatihan-sertifikasi.show', $item) }}"
+                                        data-delete-url="{{ route('admin.pelatihan-sertifikasi.destroy', $item) }}"
+                                        data-tahun="{{ $item->tahun }}"
+                                        data-status="{{ $item->status }}"
+                                        data-jenis-peserta="{{ $item->jenis_peserta }}"
+                                        data-metode-kegiatan="{{ $item->metode_kegiatan }}"
+                                        data-nama-kegiatan="{{ $item->nama_kegiatan }}"
+                                        data-waktu-kegiatan="{{ $item->waktu_kegiatan }}"
+                                        data-realisasi-peserta="{{ $item->realisasi_peserta ?? $item->peserta }}"
+                                        data-sumber-dana="{{ $item->sumber_dana }}"
+                                        data-standar-kompetensi="{{ $item->standar_kompetensi ?? $item->jabatan_kerja }}"
+                                        data-tuk="{{ $item->tuk }}"
+                                        data-lsp="{{ $item->lsp }}"
+                                        data-tempat-kegiatan="{{ $item->tempat_kegiatan ?? $item->tempat }}"
+                                        data-provinsi="{{ $item->provinsi }}"
+                                        data-kabupaten-kota="{{ $item->kabupaten_kota ?? $item->lokasi }}"
+                                        data-syarat-tambahan="{{ $item->syarat_tambahan }}"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-4 w-4"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            stroke-width="2">
+                                            <path stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                                            <path stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M19.5 7.125L16.875 4.5" />
+                                        </svg>
 
-                            <div class="flex items-center justify-center gap-2">
-
-                                {{-- EDIT --}}
-                                <button
-                                    class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-amber-200 bg-amber-50 text-amber-600 transition hover:bg-amber-100">
-
-                                    ✏️
-
-                                </button>
-
-                                {{-- DELETE --}}
-                                <button
-                                    class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-600 transition hover:bg-rose-100">
-
-                                    🗑️
-
-                                </button>
-
-                            </div>
-
-                        </td>
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-4 w-4"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            stroke-width="2">
+                                            <path stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
 
                         </tr>
 
