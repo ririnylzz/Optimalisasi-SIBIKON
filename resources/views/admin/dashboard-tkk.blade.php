@@ -16,17 +16,17 @@
 
         <form method="GET"
             action="{{ route('admin.tenaga-kerja-konstruksi') }}"
-            class="flex flex-wrap items-end gap-5 p-6"
+            class="flex flex-wrap items-end gap-3 p-5"
         >
             {{-- Kabupaten --}}
-            <div class="min-w-[180px] flex-1">
+            <div class="min-w-[160px] flex-1">
                 <label class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
                     Filter Kabupaten
                 </label>
 
                 <select
                     name="kabupaten"
-                    class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
+                    class="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-[13px] font-semibold text-slate-700 transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
                 >
                     <option value="semua">Semua Kabupaten</option>
 
@@ -42,14 +42,14 @@
             </div>
 
             {{-- Mode --}}
-            <div class="min-w-[220px] flex-1">
+            <div class="min-w-[190px] flex-1">
                 <label class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
                     Mode Tampilan Data
                 </label>
 
                 <select
                     name="mode"
-                    class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
+                    class="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-[13px] font-semibold text-slate-700 transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
                 >
                     <option value="semua_skk" {{ $selectedMode === 'semua_skk' ? 'selected' : '' }}>
                         TKK Ahli (Semua SKK)
@@ -66,14 +66,14 @@
             </div>
 
             {{-- Tahun Kadaluarsa --}}
-            <div class="min-w-[180px]">
+            <div class="min-w-[140px]">
                 <label class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
                     Tahun SKK
                 </label>
 
                 <select
                     name="tahun"
-                    class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
+                    class="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-[13px] font-semibold text-slate-700 transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
                 >
                     <option value="semua">Semua Tahun</option>
 
@@ -88,8 +88,31 @@
                 </select>
             </div>
 
+            {{-- Asosiasi --}}
+            <div class="min-w-[180px] flex-1">
+                <label class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
+                    Filter Asosiasi
+                </label>
+
+                <select
+                    name="asosiasi"
+                    class="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-[13px] font-semibold text-slate-700 transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
+                >
+                    <option value="semua">Semua Asosiasi</option>
+
+                    @foreach ($asosiasiOptions as $asosiasi)
+                        <option
+                            value="{{ $asosiasi }}"
+                            {{ $selectedAsosiasi === $asosiasi ? 'selected' : '' }}
+                        >
+                            {{ $asosiasi }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
             {{-- Jenjang --}}
-            <div class="min-w-[240px]">
+            <div class="min-w-[200px]">
                 <label class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
                     Pilih Jenjang
                 </label>
@@ -115,28 +138,28 @@
             <div>
                 <button
                     type="submit"
-                    class="rounded-2xl bg-gradient-to-br from-[#142B67] via-[#1E3A7A] to-[#2F49A8] px-6 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(20,43,103,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(20,43,103,0.24)]"
+                    class="rounded-2xl bg-gradient-to-br from-[#142B67] via-[#1E3A7A] to-[#2F49A8] px-5 py-2.5 text-[13px] font-bold text-white shadow-[0_12px_30px_rgba(20,43,103,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(20,43,103,0.24)]"
                 >
-                    Terapkan Filter
+                    Terapkan
                 </button>
             </div>
         </form>
     </div>
 
     {{-- Charts Row 1 --}}
-    <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+    <div class="grid grid-cols-1 gap-3 xl:grid-cols-2">
         <x-dashboard-chart-card title="Status Sertifikasi" canvas="statusSertifikasiChart" height="h-[290px]" />
         <x-dashboard-chart-card title="Distribusi Jenjang" canvas="distribusiJenjangChart" height="h-[290px]" />
     </div>
 
     {{-- Charts Row 2 --}}
-    <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+    <div class="grid grid-cols-1 gap-3 xl:grid-cols-2">
         <x-dashboard-chart-card title="Top 5 Asosiasi Jenjang 7-9" canvas="topAsosiasiChart" height="h-[340px]" />
         <x-dashboard-chart-card title="Top 5 Klasifikasi" canvas="topKlasifikasiChart" height="h-[340px]" />
     </div>
 
     {{-- Charts Row 3 --}}
-    <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+    <div class="grid grid-cols-1 gap-3 xl:grid-cols-2">
         <x-dashboard-chart-card title="Perbandingan TKK Kab/Kota" canvas="perbandinganKabupatenChart" height="h-[360px]" />
 
         <div class="sibikon-card overflow-hidden rounded-[20px] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(20,43,103,0.10)]">
@@ -171,6 +194,7 @@
         >
             {{-- Biar filter atas tidak hilang --}}
             <input type="hidden" name="kabupaten" value="{{ $selectedKabupaten }}">
+            <input type="hidden" name="asosiasi" value="{{ $selectedAsosiasi }}">
             <input type="hidden" name="mode" value="{{ $selectedMode }}">
 
             @foreach ($selectedJenjang as $jenjang)
@@ -183,7 +207,7 @@
                     type="text"
                     id="searchInput"
                     placeholder="Cari data tenaga kerja..."
-                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-[#3A4FAC] focus:bg-white focus:ring-4 focus:ring-[#3A4FAC]/10"
+                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-[13px] text-slate-700 outline-none transition focus:border-[#3A4FAC] focus:bg-white focus:ring-4 focus:ring-[#3A4FAC]/10"
                 >
             </div>
 
@@ -191,7 +215,7 @@
             <div class="md:w-[240px]">
                 <select
                     id="searchCategory"
-                    class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
+                    class="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-[13px] font-semibold text-slate-700 outline-none transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
                 >
                     <option value="nama" {{ request('search_by') == 'nama' ? 'selected' : '' }}>
                         Cari Berdasarkan Nama
@@ -455,6 +479,106 @@
         });
     }
 
+    function createTopKlasifikasiChart(data) {
+
+        const el = document.getElementById('topKlasifikasiChart');
+
+        if (!el) return;
+
+        new Chart(el, {
+
+            type: 'bar',
+
+            data: {
+                labels: data.map(item => item.label),
+
+                datasets: [{
+                    data: data.map(item => item.value),
+                    backgroundColor: bluePalette,
+                    borderRadius: 8,
+                    maxBarThickness: 36
+                }]
+            },
+
+            options: {
+
+                indexAxis: 'y',
+
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+                        display: false
+                    },
+
+                    tooltip: {
+
+                        callbacks: {
+
+                            title: function(context) {
+                                return context[0].label;
+                            },
+
+                            label: function(context) {
+
+                                const item = data[context.dataIndex];
+
+                                return `Total TKK: ${formatNumber(item.value)}`;
+                            },
+
+                            afterLabel: function(context) {
+
+                                const item = data[context.dataIndex];
+
+                                if (!item.jabatan || item.jabatan.length === 0) {
+                                    return 'Tidak ada jabatan';
+                                }
+
+                                return [
+                                    'Jabatan Kerja:',
+                                    ...item.jabatan.map(j => `• ${j}`)
+                                ];
+                            }
+                        }
+                    }
+                },
+
+                scales: {
+
+                    x: {
+                        beginAtZero: true,
+
+                        ticks: {
+                            color: textColor,
+                            callback: value => formatNumber(value)
+                        },
+
+                        grid: {
+                            color: gridColor
+                        }
+                    },
+
+                    y: {
+
+                        ticks: {
+                            color: textColor,
+                            callback: function(value) {
+                                const label = this.getLabelForValue(value);
+                                return truncateLabel(label, 24);
+                            }
+                        },
+
+                        grid: {
+                            color: gridColor
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     function pieChart(id, labels, values) {
 
         const el = document.getElementById(id);
@@ -648,12 +772,16 @@
         bluePalette
     );
 
-    barChart(
-        'topKlasifikasiChart',
-        @json(collect($topKlasifikasi)->pluck('label')),
-        @json(collect($topKlasifikasi)->pluck('value')),
-        true,
-        bluePalette
+    // barChart(
+    //     'topKlasifikasiChart',
+    //     @json(collect($topKlasifikasi)->pluck('label')),
+    //     @json(collect($topKlasifikasi)->pluck('value')),
+    //     true,
+    //     bluePalette
+    // );
+
+    createTopKlasifikasiChart(
+        @json($topKlasifikasi)
     );
 
     const perbandinganKabupatenLabels = @json(collect($perbandinganKabupaten)->pluck('label'));
