@@ -12,7 +12,7 @@
 
             <div>
                 <p class="text-xs font-semibold uppercase tracking-[0.18em] text-blue-100/70">
-                    Sistem Informasi Bina Konstruksi
+                    Sistem Informasi Bina Konstruksi Provinsi Kalimantan Timur
                 </p>
 
                 <h1 class="mt-2 text-2xl font-black">

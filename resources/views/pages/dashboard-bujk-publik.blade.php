@@ -4,6 +4,21 @@
 @section('page-subtitle', 'Dashboard Badan Usaha Jasa Konstruksi')
 
 @section('content')
+@php
+$latestDataDate = $latestDataDate ?? null;
+$latestDataDateLabel = null;
+
+if (!blank($latestDataDate)) {
+try {
+$latestDataDateLabel = \Illuminate\Support\Carbon::parse($latestDataDate)
+->locale('id')
+->translatedFormat('d F Y');
+} catch (\Throwable $exception) {
+$latestDataDateLabel = $latestDataDate;
+}
+}
+@endphp
+
 <div class="mx-auto max-w-6xl space-y-6">
 
     {{-- Header --}}
@@ -11,16 +26,20 @@
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
                 <p class="text-xs font-semibold uppercase tracking-[0.18em] text-blue-100/70">
-                    Sistem Informasi Bina Konstruksi
+                    Sistem Informasi Bina Konstruksi Provinsi Kalimantan Timur
                 </p>
 
                 <h1 class="mt-2 text-2xl font-black">
                     Dashboard Badan Usaha Jasa Konstruksi
                 </h1>
 
-                <p class="mt-2 max-w-2xl text-sm text-blue-100/80">
-                    Visualisasi data BUJK berdasarkan jenis usaha, wilayah, dan kelengkapan kontak.
-                </p>
+                @if($latestDataDateLabel)
+                <div class="mt-4">
+                    <span class="inline-flex items-center rounded-full border border-blue-200/30 bg-white/10 px-4 py-2 text-xs font-semibold text-blue-50 backdrop-blur">
+                        Data terbaru per {{ \Carbon\Carbon::parse($latestDataDate)->translatedFormat('d F Y') }}
+                    </span>
+                </div>
+                @endif
             </div>
 
             <div class="grid grid-cols-2 gap-3">
@@ -50,19 +69,19 @@
     {{-- KPI --}}
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         @foreach (($kpi ?? []) as $item)
-            <div class="rounded-[20px] border border-slate-200 bg-white px-5 py-5 shadow-sm">
-                <p class="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
-                    {{ $item['label'] }}
-                </p>
+        <div class="rounded-[20px] border border-slate-200 bg-white px-5 py-5 shadow-sm">
+            <p class="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+                {{ $item['label'] }}
+            </p>
 
-                <h2 class="mt-3 text-3xl font-black text-[#142B67]">
-                    {{ number_format($item['value'] ?? 0, 0, ',', '.') }}
-                </h2>
+            <h2 class="mt-3 text-3xl font-black text-[#142B67]">
+                {{ number_format($item['value'] ?? 0, 0, ',', '.') }}
+            </h2>
 
-                <p class="mt-2 text-sm text-slate-500">
-                    {{ $item['caption'] }}
-                </p>
-            </div>
+            <p class="mt-2 text-sm text-slate-500">
+                {{ $item['caption'] }}
+            </p>
+        </div>
         @endforeach
     </div>
 
@@ -72,20 +91,17 @@
         <x-dashboard-chart-card
             title="Distribusi Jenis Usaha"
             canvas="jenisUsahaChart"
-            height="h-[260px]"
-        />
+            height="h-[260px]" />
 
         <x-dashboard-chart-card
             title="Perbandingan BUJK Kab/Kota"
             canvas="kabupatenChart"
-            height="h-[320px]"
-        />
+            height="h-[320px]" />
 
         <x-dashboard-chart-card
             title="Kelengkapan Kontak"
             canvas="kontakChart"
-            height="h-[260px]"
-        />
+            height="h-[260px]" />
 
         {{-- Data Terbaru --}}
         <div class="mb-9 sibikon-card overflow-hidden rounded-[20px] border border-slate-200 bg-white">
@@ -113,25 +129,25 @@
 
                     <tbody class="divide-y divide-slate-100 bg-white">
                         @forelse (($latestBujk ?? []) as $item)
-                            <tr>
-                                <td class="px-4 py-3 text-sm font-bold text-slate-800">
-                                    {{ $item['nama'] ?: '-' }}
-                                </td>
+                        <tr>
+                            <td class="px-4 py-3 text-sm font-bold text-slate-800">
+                                {{ $item['nama'] ?: '-' }}
+                            </td>
 
-                                <td class="px-4 py-3 text-sm text-slate-600">
-                                    {{ $item['jenis_usaha'] ?: '-' }}
-                                </td>
+                            <td class="px-4 py-3 text-sm text-slate-600">
+                                {{ $item['jenis_usaha'] ?: '-' }}
+                            </td>
 
-                                <td class="px-4 py-3 text-sm text-slate-600">
-                                    {{ $item['kabupaten'] ?: '-' }}
-                                </td>
-                            </tr>
+                            <td class="px-4 py-3 text-sm text-slate-600">
+                                {{ $item['kabupaten'] ?: '-' }}
+                            </td>
+                        </tr>
                         @empty
-                            <tr>
-                                <td colspan="3" class="px-4 py-10 text-center text-sm font-semibold text-slate-500">
-                                    Data BUJK belum tersedia.
-                                </td>
-                            </tr>
+                        <tr>
+                            <td colspan="3" class="px-4 py-10 text-center text-sm font-semibold text-slate-500">
+                                Data BUJK belum tersedia.
+                            </td>
+                        </tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -312,24 +328,24 @@
 
     barChart(
         'jenisUsahaChart',
-        @json(collect($jenisUsahaSummary ?? [])->pluck('label')->values()),
-        @json(collect($jenisUsahaSummary ?? [])->pluck('value')->values()),
+        @json(collect($jenisUsahaSummary ?? []) -> pluck('label') -> values()),
+        @json(collect($jenisUsahaSummary ?? []) -> pluck('value') -> values()),
         false,
         bluePalette
     );
 
     barChart(
         'kabupatenChart',
-        @json(collect($kabupatenSummary ?? [])->pluck('label')->values()),
-        @json(collect($kabupatenSummary ?? [])->pluck('value')->values()),
+        @json(collect($kabupatenSummary ?? []) -> pluck('label') -> values()),
+        @json(collect($kabupatenSummary ?? []) -> pluck('value') -> values()),
         true,
         bluePalette
     );
 
     doughnutChart(
         'kontakChart',
-        @json(collect($kontakSummary ?? [])->pluck('label')->values()),
-        @json(collect($kontakSummary ?? [])->pluck('value')->values()),
+        @json(collect($kontakSummary ?? []) -> pluck('label') -> values()),
+        @json(collect($kontakSummary ?? []) -> pluck('value') -> values()),
         statusPalette
     );
 </script>

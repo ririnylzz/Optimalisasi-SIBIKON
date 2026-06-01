@@ -4,7 +4,44 @@
 @section('page-subtitle', 'Dashboard Tenaga Kerja Konstruksi')
 
 @section('content')
+@php
+$latestDataDate = $latestDataDate ?? null;
+$latestDataDateLabel = null;
+
+if (!blank($latestDataDate)) {
+try {
+$latestDataDateLabel = \Illuminate\Support\Carbon::parse($latestDataDate)
+->locale('id')
+->translatedFormat('d F Y');
+} catch (\Throwable $exception) {
+$latestDataDateLabel = $latestDataDate;
+}
+}
+@endphp
 <div class="space-y-6">
+    {{-- Header --}}
+    <div class="mt-1 rounded-[22px] bg-gradient-to-r from-[#142B67] via-[#1E3A7A] to-[#2F49A8] px-6 py-5 text-white shadow-lg">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-blue-100/70">
+                    Sistem Informasi Bina Konstruksi Provinsi Kalimantan Timur
+                </p>
+
+                <h1 class="mt-2 text-2xl font-black">
+                    Dashboard Tenaga Kerja Konstruksi
+                </h1>
+
+                @if($latestDataDateLabel)
+                <div class="mt-4">
+                    <span class="inline-flex items-center rounded-full border border-blue-200/30 bg-white/10 px-4 py-2 text-xs font-semibold text-blue-50 backdrop-blur">
+                        Data terbaru per {{ $latestDataDateLabel }}
+                    </span>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
     {{-- Filter --}}
     <div class="sibikon-card overflow-hidden rounded-[24px] border border-slate-200 bg-white">
         <div class="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-blue-50/60 px-6 py-4">

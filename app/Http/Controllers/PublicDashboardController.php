@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class PublicDashboardController extends Controller
 {
@@ -370,6 +371,14 @@ class PublicDashboardController extends Controller
             ->take(5)
             ->values();
 
+        $latestDataDate = null;
+
+        if (Storage::disk('local')->exists('bujk/latest-data-date.txt')) {
+            $latestDataDate = trim(
+                Storage::disk('local')->get('bujk/latest-data-date.txt')
+            );
+        }
+
         return view('pages.dashboard-bujk-publik', [
             'kpi' => $kpi,
             'totalBujk' => $totalBujk,
@@ -378,6 +387,7 @@ class PublicDashboardController extends Controller
             'kabupatenSummary' => $kabupatenSummary,
             'kontakSummary' => $kontakSummary,
             'latestBujk' => $latestBujk,
+            'latestDataDate' => $latestDataDate,
         ]);
     }
 
@@ -514,6 +524,14 @@ class PublicDashboardController extends Controller
             ->take(5)
             ->values();
 
+        $latestDataDate = null;
+
+        if (Storage::disk('local')->exists('bujk/latest-data-date.txt')) {
+            $latestDataDate = trim(
+                Storage::disk('local')->get('bujk/latest-data-date.txt')
+            );
+        }
+
         return view('pages.dashboard-sbu-publik', [
             'kpi' => $kpi,
             'totalSbu' => $totalSbu,
@@ -527,6 +545,7 @@ class PublicDashboardController extends Controller
             'subKlasifikasiSummary' => $subKlasifikasiSummary,
             'sifatSummary' => $sifatSummary,
             'latestSbu' => $latestSbu,
+            'latestDataDate' => $latestDataDate,
         ]);
     }
 

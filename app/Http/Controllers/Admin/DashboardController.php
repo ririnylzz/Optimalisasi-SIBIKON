@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class DashboardController extends Controller
 {
@@ -268,6 +269,14 @@ class DashboardController extends Controller
             ],
         ];
 
+        $latestDataDate = null;
+
+        if (Storage::disk('local')->exists('bujk/latest-data-date.txt')) {
+            $latestDataDate = trim(
+                Storage::disk('local')->get('bujk/latest-data-date.txt')
+            );
+        }
+
         return view('admin.dashboard', compact(
             'association',
             'jenisBujk',
@@ -278,6 +287,7 @@ class DashboardController extends Controller
             'subKlasifikasiSbu',
             'sifatSbu',
             'kpi',
+            'latestDataDate'
         ));
     }
 
@@ -563,6 +573,14 @@ class DashboardController extends Controller
             })
             ->values();
 
+        $latestDataDate = null;
+
+        if (Storage::disk('local')->exists('bujk/latest-data-date.txt')) {
+            $latestDataDate = trim(
+                Storage::disk('local')->get('bujk/latest-data-date.txt')
+            );
+        }
+
         return view('admin.dashboard-tkk', compact(
             'kpi',
             'statusSertifikasi',
@@ -580,7 +598,8 @@ class DashboardController extends Controller
             'totalTkk',
             'selectedKabupaten',
             'selectedMode',
-            'selectedJenjang'
+            'selectedJenjang',
+            'latestDataDate'
         ));
     }
 
