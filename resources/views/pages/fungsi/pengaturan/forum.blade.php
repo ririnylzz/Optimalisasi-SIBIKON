@@ -79,55 +79,51 @@
                         </thead>
 
                         <tbody class="divide-y divide-[#e6ebf2] text-sm text-slate-600">
+                            @forelse ($kegiatan as $index => $item)
                             <tr class="align-top">
-                                <td class="px-5 py-6 font-semibold">1.</td>
-                                <td class="px-5 py-6">
-                                    <a href="#" class="font-bold leading-7 text-blue-600 hover:underline">
-                                        Forum Diskusi Pengembangan Jasa Konstruksi Kalimantan Timur
-                                    </a>
+                                <td class="px-5 py-6 font-semibold">
+                                    {{ $index + 1 }}.
                                 </td>
-                                <td class="px-5 py-6 leading-7">25 Agustus 2025</td>
-                                <td class="px-5 py-6 leading-7">
-                                    Ruang Pertemuan Dinas PUPRPERA Provinsi Kalimantan Timur
-                                </td>
-                                <td class="px-5 py-6 font-bold uppercase">Samarinda</td>
-                                <td class="px-5 py-6">
-                                    <span class="inline-flex rounded-md bg-blue-600 px-3 py-2 text-xs font-extrabold text-white">
-                                        Forum Konstruksi
-                                    </span>
-                                </td>
-                                <td class="px-5 py-6">
-                                    <a href="#"
-                                        class="inline-flex rounded-md bg-yellow-400 px-4 py-2 text-xs font-extrabold text-slate-900 transition hover:bg-yellow-300">
-                                        Daftar
-                                    </a>
-                                </td>
-                            </tr>
 
-                            <tr class="align-top">
-                                <td class="px-5 py-6 font-semibold">2.</td>
-                                <td class="px-5 py-6">
-                                    <a href="#" class="font-bold leading-7 text-blue-600 hover:underline">
-                                        Forum Konsultasi Publik Pembinaan Jasa Konstruksi
-                                    </a>
-                                </td>
-                                <td class="px-5 py-6 leading-7">19 April 2025</td>
-                                <td class="px-5 py-6 leading-7">
-                                    Balikpapan, Kalimantan Timur
-                                </td>
-                                <td class="px-5 py-6 font-bold uppercase">Balikpapan</td>
-                                <td class="px-5 py-6">
-                                    <span class="inline-flex rounded-md bg-blue-600 px-3 py-2 text-xs font-extrabold text-white">
-                                        Masyarakat
-                                    </span>
-                                </td>
                                 <td class="px-5 py-6">
                                     <a href="#"
+                                        class="font-bold leading-7 text-blue-600 hover:underline">
+                                        {{ $item['judul'] }}
+                                    </a>
+                                </td>
+
+                                <td class="px-5 py-6 leading-7">
+                                    {{ $item['tanggal'] }}
+                                </td>
+
+                                <td class="px-5 py-6 leading-7">
+                                    {{ $item['tempat'] }}
+                                </td>
+
+                                <td class="px-5 py-6 font-bold uppercase">
+                                    {{ $item['kabupaten'] }}
+                                </td>
+
+                                <td class="px-5 py-6">
+                                    <span class="inline-flex rounded-md bg-blue-600 px-3 py-2 text-xs font-extrabold text-white">
+                                        {{ $item['peserta'] }}
+                                    </span>
+                                </td>
+
+                                <td class="px-5 py-6">
+                                    <a href="{{ $item['link'] }}"
                                         class="inline-flex rounded-md bg-yellow-400 px-4 py-2 text-xs font-extrabold text-slate-900 transition hover:bg-yellow-300">
                                         Daftar
                                     </a>
                                 </td>
                             </tr>
+                            @empty
+                            <tr>
+                                <td colspan="7" class="px-5 py-10 text-center text-slate-500">
+                                    Belum ada data kegiatan.
+                                </td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

@@ -16,23 +16,23 @@
 
         {{-- Top Bar Logo Instansi --}}
         <div class="hidden bg-white md:block">
-            <div class="mx-auto flex h-11 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+            <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center gap-4">
                     <img
                         src="{{ asset('images/logo-dinas.png') }}"
                         alt="Dinas PUPRPERA Provinsi Kalimantan Timur"
-                        class="h-8 w-auto object-contain">
+                        class="h-12 w-auto object-contain">
 
                     <img
                         src="{{ asset('images/logo-gubernur.png') }}"
                         alt="Logo Gubernur Kalimantan Timur"
-                        class="h-8 w-auto object-contain">
+                        class="h-12 w-auto object-contain">
                 </div>
 
                 <img
                     src="{{ asset('images/logo-berakhlak.png') }}"
                     alt="BerAKHLAK"
-                    class="h-7 w-auto object-contain">
+                    class="h-11 w-auto object-contain">
             </div>
         </div>
 
@@ -258,7 +258,7 @@
         </div>
     </header>
 
-    <div class="w-full overflow-x-hidden pt-[100px] md:pt-[120px]">
+    <div class="w-full overflow-x-hidden pt-[90px] md:pt-[160px]">
         @yield('content')
     </div>
 
@@ -463,25 +463,40 @@
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
 
+        // Toggle menu utama mobile
         mobileMenuButton.addEventListener('click', function() {
             mobileMenu.classList.toggle('hidden');
         });
 
-        function toggleMobileDropdown(id) {
-            const dropdown = document.getElementById(id);
-            const icon = id === 'profil-dropdown' ? document.getElementById('profil-dropdown-icon') : document.getElementById('fungsi-dropdown-icon');
-            dropdown.classList.toggle('hidden');
-            icon.classList.toggle('rotate-180');
-        }
+        // Dropdown mobile
+        const mobileDropdownButtons = document.querySelectorAll('.mobile-dropdown-button');
 
-        // Tutup semua dropdown jika klik di luar
+        mobileDropdownButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.dataset.target;
+                const dropdown = document.getElementById(targetId);
+                const icon = this.querySelector('.mobile-dropdown-icon');
+
+                dropdown.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+        });
+
+        // Tutup menu jika klik luar
         document.addEventListener('click', function(e) {
-            if (!mobileMenu.contains(e.target) && !mobileMenuButton.contains(e.target)) {
+            if (
+                !mobileMenu.contains(e.target) &&
+                !mobileMenuButton.contains(e.target)
+            ) {
                 mobileMenu.classList.add('hidden');
-                document.getElementById('profil-dropdown').classList.add('hidden');
-                document.getElementById('profil-dropdown-icon').classList.remove('rotate-180');
-                document.getElementById('fungsi-dropdown').classList.add('hidden');
-                document.getElementById('fungsi-dropdown-icon').classList.remove('rotate-180');
+
+                document.querySelectorAll('[id^="mobile-"][id$="-dropdown"]').forEach(dropdown => {
+                    dropdown.classList.add('hidden');
+                });
+
+                document.querySelectorAll('.mobile-dropdown-icon').forEach(icon => {
+                    icon.classList.remove('rotate-180');
+                });
             }
         });
     </script>

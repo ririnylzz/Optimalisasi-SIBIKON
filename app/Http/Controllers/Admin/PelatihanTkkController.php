@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PelatihanTkk;
+use App\Models\PelatihanTkkPeserta;
 use Illuminate\Http\Request;
 
 class PelatihanTkkController extends Controller
@@ -29,11 +30,27 @@ class PelatihanTkkController extends Controller
         return view('admin.pelatihan-sertifikasi.index', compact('pelatihan'));
     }
 
-    public function store(Request $request)
+   public function store(Request $request)
     {
-        $validated = $this->validateRequest($request);
+        $validated = $request->validate([
+            'tahun' => 'nullable',
+            'status' => 'nullable',
+            'jenis_peserta' => 'nullable',
+            'metode_kegiatan' => 'nullable',
+            'nama_kegiatan' => 'required',
+            'waktu_kegiatan' => 'nullable',
+            'realisasi_peserta' => 'nullable',
+            'sumber_dana' => 'nullable',
+            'standar_kompetensi' => 'nullable',
+            'tuk' => 'nullable',
+            'lsp' => 'nullable',
+            'tempat_kegiatan' => 'nullable',
+            'provinsi' => 'nullable',
+            'kabupaten_kota' => 'nullable',
+            'syarat_tambahan' => 'nullable',
+        ]);
 
-        PelatihanTkk::create($this->preparePayload($validated));
+        PelatihanTkk::create($validated);
 
         return redirect()
             ->route('admin.pelatihan-sertifikasi.index')
@@ -42,7 +59,36 @@ class PelatihanTkkController extends Controller
 
     public function show(PelatihanTkk $pelatihan)
     {
-        return view('admin.pelatihan-sertifikasi.show', compact('pelatihan'));
+        $pesertaRows = PelatihanTkkPeserta::where('pelatihan_tkk_id', $pelatihan->id)
+            ->latest()
+            ->get();
+
+        $pendaftarByKabupaten = $pesertaRows
+            ->groupBy(fn ($item) => $item->kab_kota ?: 'Tidak Diketahui')
+            ->map(function ($items, $kabupaten) {
+                return [
+                    'kabupaten' => $kabupaten,
+                    'jumlah' => $items->count(),
+                ];
+            })
+            ->values();
+
+        $pendaftarByStatus = $pesertaRows
+            ->groupBy(fn ($item) => $item->status_peserta ?: 'Calon Peserta')
+            ->map(function ($items, $status) {
+                return [
+                    'status' => $status,
+                    'jumlah' => $items->count(),
+                ];
+            })
+            ->values();
+
+        return view('admin.pelatihan-sertifikasi.show', compact(
+            'pelatihan',
+            'pesertaRows',
+            'pendaftarByKabupaten',
+            'pendaftarByStatus'
+        ));
     }
 
     public function update(Request $request, PelatihanTkk $pelatihan)
@@ -63,6 +109,128 @@ class PelatihanTkkController extends Controller
         return redirect()
             ->route('admin.pelatihan-sertifikasi.index')
             ->with('success', 'Data berhasil dihapus');
+    }
+
+    public function storePeserta(Request $request, PelatihanTkk $pelatihan)
+    {
+        $validated = $this->validatePesertaRequest($request);
+
+        $validated['pelatihan_tkk_id'] = $pelatihan->id;
+
+        PelatihanTkkPeserta::create($validated);
+
+        return redirect()
+            ->route('admin.pelatihan-sertifikasi.show', $pelatihan)
+            ->with('success', 'Data peserta berhasil ditambahkan');
+    }
+
+    public function updatePeserta(Request $request, PelatihanTkk $pelatihan, PelatihanTkkPeserta $peserta)
+    {
+        if ((int) $peserta->pelatihan_tkk_id !== (int) $pelatihan->id) {
+            abort(404);
+        }
+
+        $validated = $this->validatePesertaRequest($request);
+
+        $peserta->update($validated);
+
+        return redirect()
+            ->route('admin.pelatihan-sertifikasi.show', $pelatihan)
+            ->with('success', 'Data peserta berhasil diperbarui');
+    }
+
+    public function destroyPeserta(PelatihanTkk $pelatihan, PelatihanTkkPeserta $peserta)
+    {
+        if ((int) $peserta->pelatihan_tkk_id !== (int) $pelatihan->id) {
+            abort(404);
+        }
+
+        $peserta->delete();
+
+        return redirect()
+            ->route('admin.pelatihan-sertifikasi.show', $pelatihan)
+            ->with('success', 'Data peserta berhasil dihapus');
+    }
+
+    public function bulkDestroyPeserta(Request $request, PelatihanTkk $pelatihan)
+    {
+        $validated = $request->validate(
+            [
+                'peserta_ids' => ['required', 'array', 'min:1'],
+                'peserta_ids.*' => ['required', 'integer'],
+            ],
+            [
+                'peserta_ids.required' => 'Pilih minimal satu peserta yang ingin dihapus.',
+                'peserta_ids.array' => 'Data peserta tidak valid.',
+                'peserta_ids.min' => 'Pilih minimal satu peserta yang ingin dihapus.',
+            ]
+        );
+
+        PelatihanTkkPeserta::where('pelatihan_tkk_id', $pelatihan->id)
+            ->whereIn('id', $validated['peserta_ids'])
+            ->delete();
+
+        return redirect()
+            ->route('admin.pelatihan-sertifikasi.show', $pelatihan)
+            ->with('success', 'Data peserta terpilih berhasil dihapus');
+    }
+
+    public function destroyAllPeserta(PelatihanTkk $pelatihan)
+    {
+        PelatihanTkkPeserta::where('pelatihan_tkk_id', $pelatihan->id)->delete();
+
+        return redirect()
+            ->route('admin.pelatihan-sertifikasi.show', $pelatihan)
+            ->with('success', 'Semua data peserta berhasil dihapus');
+    }
+
+    private function validatePesertaRequest(Request $request): array
+    {
+        return $request->validate(
+            [
+                'nama' => ['required', 'string', 'max:255'],
+                'nik' => ['required', 'regex:/^[0-9]+$/', 'max:255'],
+                'email' => ['required', 'email', 'max:255'],
+                'telp' => ['required', 'regex:/^[0-9]+$/', 'max:255'],
+                'pendidikan_jurusan' => ['required', 'in:D4,S1,S2,S3'],
+                'asn' => ['required', 'in:Ya,Tidak'],
+                'jabatan_instansi' => ['required', 'string', 'max:255'],
+                'alamat' => ['required', 'string'],
+                'provinsi' => ['required', 'string', 'max:255'],
+                'kab_kota' => ['required', 'string', 'max:255'],
+                'waktu_daftar' => ['required', 'date'],
+                'status_peserta' => ['required', 'string', 'max:255'],
+            ],
+            [
+                'nama.required' => 'Nama wajib diisi.',
+
+                'nik.required' => 'NIK wajib diisi.',
+                'nik.regex' => 'NIK harus diisi dengan angka.',
+
+                'email.required' => 'Email wajib diisi.',
+                'email.email' => 'Format email tidak valid.',
+
+                'telp.required' => 'No. Telp wajib diisi.',
+                'telp.regex' => 'No. Telp harus diisi dengan angka.',
+
+                'pendidikan_jurusan.required' => 'Pendidikan/Jurusan wajib dipilih.',
+                'pendidikan_jurusan.in' => 'Pendidikan/Jurusan tidak valid.',
+
+                'asn.required' => 'ASN wajib dipilih.',
+                'asn.in' => 'Pilihan ASN tidak valid.',
+
+                'jabatan_instansi.required' => 'Jabatan/Instansi wajib diisi.',
+                'alamat.required' => 'Alamat wajib diisi.',
+
+                'provinsi.required' => 'Provinsi wajib dipilih.',
+                'kab_kota.required' => 'Kab./Kota wajib dipilih.',
+
+                'waktu_daftar.required' => 'Waktu Daftar wajib diisi.',
+                'waktu_daftar.date' => 'Waktu Daftar tidak valid.',
+
+                'status_peserta.required' => 'Status Peserta wajib dipilih.',
+            ]
+        );
     }
 
     private function validateRequest(Request $request): array
