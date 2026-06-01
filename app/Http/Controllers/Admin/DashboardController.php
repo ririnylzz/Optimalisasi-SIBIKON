@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 class DashboardController extends Controller
 {
+    protected string $latestTkkDataDatePath = 'tkk/latest-data-date.txt';
     public function index()
     {
         $bujkRows = DB::table('bujk')
@@ -603,24 +604,39 @@ class DashboardController extends Controller
         ));
     }
 
+    public function tkkData(Request $request)
+    {
+        $editingTkk = $request->filled('edit')
+            ? Tkk::query()->findOrFail((int) $request->query('edit'))
+            : null;
+
+        $rows = Tkk::query()
+            ->orderByDesc('updated_at')
+            ->orderByDesc('id')
+            ->limit(10)
+            ->get();
+
+        $tkkRows = $rows->map(fn ($row) => $this->formatTkkRow($row))->values();
+
+        $totalTkk = Tkk::query()->count();
+        $latestDataDate = $this->getLatestTkkDataDate();
+
+        return view('admin.tkk-data', [
+            'tkkRows' => $tkkRows,
+            'totalTkk' => $totalTkk,
+            'editingTkk' => $editingTkk,
+            'kabupatenOptions' => $this->kaltimKabupatenOptions(),
+            'latestDataDate' => $latestDataDate,
+        ]);
+    }
+
     public function searchTkk(Request $request)
     {
-        $keyword = strtolower($request->query('keyword', ''));
+        $keyword = trim((string) $request->query('keyword', ''));
         $category = $request->query('category', 'nama');
-        $page = (int) $request->query('page', 1);
+        $page = max((int) $request->query('page', 1), 1);
 
         $perPage = 10;
-        $offset = ($page - 1) * $perPage;
-
-        $allowedCategories = [
-            'nama',
-            'kabupaten',
-            'jabatan',
-        ];
-
-        if (!in_array($category, $allowedCategories, true)) {
-            $category = 'nama';
-        }
 
         $columnMap = [
             'nama' => 'nama',
@@ -628,63 +644,359 @@ class DashboardController extends Controller
             'jabatan' => 'jabatan_kerja',
         ];
 
+        if (!array_key_exists($category, $columnMap)) {
+            $category = 'nama';
+        }
+
         $column = $columnMap[$category];
 
-        $query = DB::table('tkk')
-            ->select(
-                'nama',
-                'kabupaten',
-                'jabatan_kerja',
-                'jenjang',
-                'tanggal_aktif',
-                'tanggal_kadaluwarsa'
-            )
-            ->when($keyword, function ($query) use ($column, $keyword) {
-                $query->whereRaw("LOWER($column) LIKE ?", ["%{$keyword}%"]);
-            });
+        $query = Tkk::query();
 
-        $total = $query->count();
+        if ($keyword !== '') {
+            $query->whereRaw('LOWER(' . $column . ') LIKE ?', ['%' . strtolower($keyword) . '%']);
+        }
+
+        $total = (clone $query)->count();
 
         $rows = $query
-            ->offset($offset)
-            ->limit($perPage)
+            ->orderByDesc('updated_at')
+            ->orderByDesc('id')
+            ->forPage($page, $perPage)
             ->get();
 
-        $today = Carbon::now()->startOfDay();
-
-        $data = $rows->map(function ($row) use ($today) {
-
-            $status = 'Belum Aktif';
-
-            if ($row->tanggal_aktif && $row->tanggal_kadaluwarsa) {
-
-                $aktif = Carbon::parse($row->tanggal_aktif)->startOfDay();
-                $kadaluarsa = Carbon::parse($row->tanggal_kadaluwarsa)->startOfDay();
-
-                if (
-                    $aktif->lessThanOrEqualTo($today) &&
-                    $kadaluarsa->greaterThanOrEqualTo($today)
-                ) {
-                    $status = 'Aktif';
-                } elseif ($kadaluarsa->lt($today)) {
-                    $status = 'Kadaluarsa';
-                }
-            }
-
-            return [
-                'nama' => $row->nama,
-                'kabupaten' => $row->kabupaten,
-                'jabatan' => $row->jabatan_kerja,
-                'jenjang' => $row->jenjang,
-                'status' => $status,
-            ];
-        });
-
         return response()->json([
-            'data' => $data,
+            'data' => $rows->map(fn ($row) => $this->formatTkkRow($row))->values(),
             'total' => $total,
             'current_page' => $page,
-            'last_page' => (int) ceil($total / $perPage),
+            'last_page' => max((int) ceil($total / $perPage), 1),
         ]);
+    }
+
+    public function storeTkk(Request $request): RedirectResponse
+    {
+        Tkk::query()->create($this->validateTkkPayload($request));
+
+        return redirect()
+            ->route('admin.tenaga-kerja-konstruksi')
+            ->with('success', 'Data TKK berhasil ditambahkan.');
+    }
+
+    public function updateTkk(Request $request, Tkk $tkk): RedirectResponse
+    {
+        $tkk->update($this->validateTkkPayload($request));
+
+        return redirect()
+            ->route('admin.tenaga-kerja-konstruksi')
+            ->with('success', 'Data TKK berhasil diperbarui.');
+    }
+
+    public function destroyTkk(Tkk $tkk): RedirectResponse
+        {
+            $tkk->delete();
+
+            return redirect()
+                ->route('admin.tenaga-kerja-konstruksi')
+                ->with('success', 'Data TKK berhasil dihapus.');
+        }
+
+        public function bulkDestroyTkk(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['required', 'integer', 'exists:tkk,id'],
+        ], [
+            'ids.required' => 'Pilih minimal satu data TKK.',
+            'ids.min' => 'Pilih minimal satu data TKK.',
+            'ids.*.exists' => 'Ada data TKK yang tidak ditemukan.',
+        ]);
+
+        $ids = collect($validated['ids'])
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
+
+        $affected = Tkk::query()
+            ->whereIn('id', $ids)
+            ->delete();
+
+        return redirect()
+            ->route('admin.tenaga-kerja-konstruksi')
+            ->with(
+                $affected > 0 ? 'success' : 'error',
+                $affected > 0
+                    ? $affected . ' data TKK berhasil dihapus.'
+                    : 'Tidak ada data TKK yang dihapus.'
+            );
+    }
+
+    public function destroyAllTkk(): RedirectResponse
+    {
+        $affected = Tkk::query()->count();
+
+        if ($affected < 1) {
+            return redirect()
+                ->route('admin.tenaga-kerja-konstruksi')
+                ->with('error', 'Tidak ada data TKK untuk dihapus.');
+        }
+
+        Tkk::query()->delete();
+
+        return redirect()
+            ->route('admin.tenaga-kerja-konstruksi')
+            ->with('success', 'Semua data TKK berhasil dihapus (' . $affected . ' data).');
+    }
+
+    private function kaltimKabupatenOptions(): array
+    {
+        return [
+            'Berau' => 'Kabupaten Berau',
+            'Kutai Barat' => 'Kabupaten Kutai Barat',
+            'Kutai Kartanegara' => 'Kabupaten Kutai Kartanegara',
+            'Kutai Timur' => 'Kabupaten Kutai Timur',
+            'Mahakam Ulu' => 'Kabupaten Mahakam Ulu',
+            'Paser' => 'Kabupaten Paser',
+            'Penajam Paser Utara' => 'Kabupaten Penajam Paser Utara',
+            'Balikpapan' => 'Kota Balikpapan',
+            'Bontang' => 'Kota Bontang',
+            'Samarinda' => 'Kota Samarinda',
+        ];
+    }
+
+    public function importTkk(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'file_import' => ['required', 'file', 'mimes:xlsx,xls,csv,txt', 'max:10240'],
+            'tanggal_data_terbaru' => ['required', 'date'],
+        ], [
+            'file_import.required' => 'File import wajib dipilih.',
+            'file_import.mimes' => 'Format file harus Excel (.xlsx, .xls) atau CSV.',
+            'file_import.max' => 'Ukuran file maksimal 10 MB.',
+            'tanggal_data_terbaru.required' => 'Tanggal data terbaru wajib diisi.',
+            'tanggal_data_terbaru.date' => 'Tanggal data terbaru tidak valid.',
+        ]);
+
+        try {
+            $file = $validated['file_import'];
+
+            $spreadsheet = IOFactory::load($file->getRealPath());
+            $sheet = $spreadsheet->getActiveSheet();
+            $rows = $sheet->toArray(null, true, true, false);
+
+            if (empty($rows)) {
+                return redirect()
+                    ->back()
+                    ->withErrors(['file_import' => 'File import kosong atau tidak dapat dibaca.']);
+            }
+
+            $headerRow = $rows[0] ?? [];
+            $headerMap = $this->resolveTkkHeaderMap($headerRow);
+
+            $useHeader = count($headerMap) >= 2;
+
+            $positionMap = [
+                0 => 'nama',
+                1 => 'kabupaten',
+                2 => 'klasifikasi',
+                3 => 'jabatan_kerja',
+                4 => 'jenjang',
+                5 => 'asosiasi',
+                6 => 'tanggal_aktif',
+                7 => 'tanggal_kadaluwarsa',
+            ];
+
+            $map = $useHeader ? $headerMap : $positionMap;
+            $dataRows = array_slice($rows, 1);
+
+            $imported = 0;
+            $skipped = 0;
+
+            foreach ($dataRows as $row) {
+                $payload = [];
+
+                foreach ($map as $index => $field) {
+                    $payload[$field] = $row[$index] ?? null;
+                }
+
+                $payload = [
+                    'nama' => $this->cleanTkkText($payload['nama'] ?? null),
+                    'kabupaten' => $this->cleanTkkText($payload['kabupaten'] ?? null),
+                    'klasifikasi' => $this->cleanTkkText($payload['klasifikasi'] ?? null),
+                    'jabatan_kerja' => $this->cleanTkkText($payload['jabatan_kerja'] ?? null),
+                    'jenjang' => $this->cleanTkkNumber($payload['jenjang'] ?? null),
+                    'asosiasi' => $this->cleanTkkText($payload['asosiasi'] ?? null),
+                    'tanggal_aktif' => $this->normalizeTkkDate($payload['tanggal_aktif'] ?? null),
+                    'tanggal_kadaluwarsa' => $this->normalizeTkkDate($payload['tanggal_kadaluwarsa'] ?? null),
+                ];
+
+                if (blank($payload['nama'])) {
+                    $skipped++;
+                    continue;
+                }
+
+                Tkk::query()->create($payload);
+                $imported++;
+            }
+            $latestDataDate = Carbon::parse($validated['tanggal_data_terbaru'])->toDateString();
+
+            Storage::disk('local')->put($this->latestTkkDataDatePath, $latestDataDate);
+        } catch (Throwable $exception) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors(['file_import' => 'Import gagal: ' . $exception->getMessage()]);
+        }
+
+        return redirect()
+            ->route('admin.tenaga-kerja-konstruksi')
+            ->with('success', "Import TKK selesai. Data masuk: {$imported}. Data dilewati: {$skipped}.");
+    }
+
+    private function getLatestTkkDataDate(): ?string
+    {
+        if (!Storage::disk('local')->exists($this->latestTkkDataDatePath)) {
+            return null;
+        }
+
+        $date = trim((string) Storage::disk('local')->get($this->latestTkkDataDatePath));
+
+        return $date !== '' ? $date : null;
+    }
+
+    private function validateTkkPayload(Request $request): array
+    {
+        return $request->validate([
+            'nama' => ['required', 'string', 'max:255'],
+            'kabupaten' => ['nullable', 'string', Rule::in(array_keys($this->kaltimKabupatenOptions()))],
+            'klasifikasi' => ['nullable', 'string', 'max:255'],
+            'jabatan_kerja' => ['nullable', 'string', 'max:255'],
+            'jenjang' => ['nullable', 'integer', 'min:1', 'max:9'],
+            'asosiasi' => ['nullable', 'string', 'max:255'],
+            'tanggal_aktif' => ['nullable', 'date'],
+            'tanggal_kadaluwarsa' => ['nullable', 'date'],
+        ], [
+            'nama.required' => 'Nama TKK wajib diisi.',
+            'kabupaten.in' => 'Kabupaten/Kota harus dipilih dari wilayah Kalimantan Timur.',
+            'jenjang.integer' => 'Jenjang harus berupa angka.',
+            'tanggal_aktif.date' => 'Tanggal aktif tidak valid.',
+            'tanggal_kadaluwarsa.date' => 'Tanggal kadaluwarsa tidak valid.',
+        ]);
+    }
+
+    private function formatTkkRow($row): array
+    {
+        $status = $this->resolveTkkStatus($row->tanggal_aktif, $row->tanggal_kadaluwarsa);
+
+        return [
+            'id' => $row->id,
+            'nama' => $row->nama,
+            'kabupaten' => $row->kabupaten,
+            'klasifikasi' => $row->klasifikasi,
+            'jabatan' => $row->jabatan_kerja,
+            'jenjang' => $row->jenjang,
+            'asosiasi' => $row->asosiasi,
+            'tanggal_aktif' => $row->tanggal_aktif,
+            'tanggal_kadaluwarsa' => $row->tanggal_kadaluwarsa,
+            'status' => $status,
+        ];
+    }
+
+    private function resolveTkkStatus(?string $tanggalAktif, ?string $tanggalKadaluwarsa): string
+    {
+        $today = Carbon::now()->startOfDay();
+
+        if ($tanggalAktif && $tanggalKadaluwarsa) {
+            $aktif = Carbon::parse($tanggalAktif)->startOfDay();
+            $kadaluarsa = Carbon::parse($tanggalKadaluwarsa)->startOfDay();
+
+            if ($aktif->lessThanOrEqualTo($today) && $kadaluarsa->greaterThanOrEqualTo($today)) {
+                return 'Aktif';
+            }
+
+            if ($kadaluarsa->lt($today)) {
+                return 'Kadaluarsa';
+            }
+        }
+
+        return 'Belum Aktif';
+    }
+
+    private function resolveTkkHeaderMap(array $headerRow): array
+    {
+        $aliases = [
+            'nama' => ['nama', 'nama_tkk', 'nama tenaga kerja', 'nama tenaga kerja konstruksi'],
+            'kabupaten' => ['kabupaten', 'kabupaten_kota', 'kab kota', 'kab/kota', 'kota'],
+            'klasifikasi' => ['klasifikasi', 'klasifikasi skk'],
+            'jabatan_kerja' => ['jabatan_kerja', 'jabatan kerja', 'jabatan'],
+            'jenjang' => ['jenjang', 'jenjang skk', 'level'],
+            'asosiasi' => ['asosiasi', 'asosiasi profesi'],
+            'tanggal_aktif' => ['tanggal_aktif', 'tanggal aktif', 'tgl aktif', 'tanggal terbit'],
+            'tanggal_kadaluwarsa' => ['tanggal_kadaluwarsa', 'tanggal kadaluwarsa', 'tgl kadaluwarsa', 'masa berlaku', 'berlaku sampai'],
+        ];
+
+        $map = [];
+
+        foreach ($headerRow as $index => $header) {
+            $normalizedHeader = $this->normalizeTkkHeader($header);
+
+            foreach ($aliases as $field => $fieldAliases) {
+                foreach ($fieldAliases as $alias) {
+                    if ($normalizedHeader === $this->normalizeTkkHeader($alias)) {
+                        $map[$index] = $field;
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        return $map;
+    }
+
+    private function normalizeTkkHeader($value): string
+    {
+        $value = strtolower(trim((string) $value));
+        $value = preg_replace('/[^a-z0-9]+/i', '_', $value);
+        return trim((string) $value, '_');
+    }
+
+    private function cleanTkkText($value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $value = preg_replace('/\s+/u', ' ', trim((string) $value));
+
+        return $value === '' ? null : $value;
+    }
+
+    private function cleanTkkNumber($value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return (int) preg_replace('/\D/', '', (string) $value);
+    }
+
+    private function normalizeTkkDate($value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (is_numeric($value)) {
+            try {
+                return ExcelDate::excelToDateTimeObject($value)->format('Y-m-d');
+            } catch (Throwable) {
+                return null;
+            }
+        }
+
+        try {
+            return Carbon::parse($value)->format('Y-m-d');
+        } catch (Throwable) {
+            return null;
+        }
     }
 }

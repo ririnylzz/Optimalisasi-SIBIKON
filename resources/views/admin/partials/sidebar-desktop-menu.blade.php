@@ -4,7 +4,7 @@
     $menuActive = 'bg-[#28428B] text-[#F7E578] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]';
 
     $sectionTitleClass = 'mb-2 flex items-center text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-100/45';
-    $subItemBase = 'relative block rounded-lg px-3 py-2 text-[13px] transition';
+    $subItemBase = 'relative block rounded-lg px-3 py-2 text-[13px] leading-relaxed';
     $subItemIdle = 'text-blue-100/70 hover:bg-white/6 hover:text-white';
     $subItemActive = 'bg-[#28428B] text-[#F7E578] font-semibold';
 
@@ -32,8 +32,12 @@
                 class="{{ $sectionTitleClass }}"
             ></p>
 
-            <div x-data="{ open: {{ request()->routeIs('admin.tenaga-kerja-konstruksi') || request()->routeIs('admin.bujk') || request()->routeIs('admin.dashboard') ? 'true' : 'false' }} }" class="space-y-1.5">
-                <button type="button" @click="open = !open" class="{{ $menuBase }} {{ request()->routeIs('admin.tenaga-kerja-konstruksi') || request()->routeIs('admin.bujk') || request()->routeIs('admin.dashboard') ? $menuActive : $menuIdle }} w-full justify-between">
+            <div x-data="{ open: {{ request()->routeIs('admin.dashboard-tkk') || request()->routeIs('admin.bujk') || request()->routeIs('admin.dashboard') ? 'true' : 'false' }} }" class="space-y-1.5">
+                <button
+                    type="button"
+                    @click="open = !open"
+                    class="group flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-[13px] font-medium transition {{ request()->routeIs('admin.dashboard-tkk') || request()->routeIs('admin.bujk') || request()->routeIs('admin.dashboard') ? $menuActive : $menuIdle }}"
+                >
                     <div class="flex items-center gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 12l9-9 9 9M4.5 10.5V20a1 1 0 001 1h4.5v-6h4v6H18.5a1 1 0 001-1v-9.5"/>
@@ -66,10 +70,10 @@
                         </a>
 
                         <!-- Dashboard Tenaga Kerja Konstruksi -->
-                        <a href="{{ route('admin.tenaga-kerja-konstruksi') }}" 
-                            class="{{ $subItemBase }} {{ request()->routeIs('admin.tenaga-kerja-konstruksi') ? $subItemActive : $subItemIdle }}">
+                        <a href="{{ route('admin.dashboard-tkk') }}" 
+                            class="{{ $subItemBase }} {{ request()->routeIs('admin.dashboard-tkk') ? $subItemActive : $subItemIdle }}">
                             <span class="absolute left-[-12px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full 
-                            {{ request()->routeIs('admin.tenaga-kerja-konstruksi') ? 'bg-[#F7E578]' : 'bg-white/30' }}"></span>
+                            {{ request()->routeIs('admin.dashboard-tkk') ? 'bg-[#F7E578]' : 'bg-white/30' }}"></span>
                             Dashboard Tenaga Kerja Konstruksi
                         </a>
                     </div>
@@ -228,8 +232,8 @@
 
         <!-- Tenaga Kerja Konstruksi -->
         <a href="{{ route('admin.tenaga-kerja-konstruksi') }}"
-        class="{{ $menuBase }} {{ request()->routeIs('admin.tenaga-kerja-konstruksi') ? $menuActive : $menuIdle }}">
-            
+            class="{{ $menuBase }} {{ request()->routeIs('admin.tenaga-kerja-konstruksi') ? $menuActive : $menuIdle }}">
+
             <svg xmlns="http://www.w3.org/2000/svg"
                 class="h-4 w-4 shrink-0"
                 fill="none"

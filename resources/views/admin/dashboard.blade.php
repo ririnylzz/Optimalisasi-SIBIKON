@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('page-title', 'Dashboard')
-@section('page-subtitle', 'Dashboard Badan Usaha Jasa Konstruksi')
+@section('page-subtitle', 'Dashboard Badan Usaha Jasa Konstruksi Provinsi Kalimantan Timur')
 
 @section('content')
 @php
