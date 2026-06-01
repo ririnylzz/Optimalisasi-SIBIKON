@@ -13,6 +13,8 @@ use App\Http\Controllers\PublicDashboardController;
 use App\Http\Controllers\KegiatanController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\RantaiPasokController;
+use App\Models\Tkk;
+
 
 Route::get('/', [KegiatanController::class, 'beranda'])
     ->name('beranda');
@@ -94,8 +96,49 @@ Route::get('/fungsi/pengaturan/daftar-sosil', function () {
 })->name('daftar-sosil');
 
 Route::get('/fungsi/pemberdayaan/tabel-tkk', function () {
-    return view('welcome', [
-        'page' => 'tabel-tkk',
+    $search = request('search');
+    $perPage = (int) request('per_page', 10);
+
+    if (!in_array($perPage, [10, 25, 50, 100], true)) {
+        $perPage = 10;
+    }
+
+    $rows = Tkk::query()
+        ->select(
+            'id',
+            'nama',
+            'klasifikasi',
+            'jabatan_kerja',
+            'jenjang'
+        )
+        ->when($search, function ($query) use ($search) {
+            $query->where(function ($subQuery) use ($search) {
+                $subQuery
+                    ->where('nama', 'like', "%{$search}%")
+                    ->orWhere('klasifikasi', 'like', "%{$search}%")
+                    ->orWhere('jabatan_kerja', 'like', "%{$search}%")
+                    ->orWhere('jenjang', 'like', "%{$search}%");
+            });
+        })
+        ->orderBy('nama')
+        ->paginate($perPage)
+        ->withQueryString();
+
+    $rows->setCollection(
+        $rows->getCollection()->map(function ($row) {
+            return [
+                'nama' => $row->nama,
+                'pendidikan' => trim(collect([
+                    $row->jenjang ? 'Jenjang ' . $row->jenjang : null,
+                    $row->klasifikasi,
+                ])->filter()->implode(' - ')),
+                'keahlian' => $row->jabatan_kerja,
+            ];
+        })
+    );
+
+    return view('pages.fungsi.pemberdayaan.tabel-tkk', [
+        'rows' => $rows,
     ]);
 })->name('tabel-tkk');
 

@@ -89,7 +89,8 @@ Optimalisasi-SIBIKON
 │  │  ├─ 2026_05_25_001808_add_contact_columns_to_rantai_pasok_table.php
 │  │  ├─ 2026_05_25_071218_create_pelatihan_tkk_peserta_table.php
 │  │  ├─ 2026_05_26_004346_add_nik_and_telepon_to_users_table.php
-│  │  └─ 2026_05_26_010525_add_provinsi_to_pelatihan_tkk_peserta_table.php
+│  │  ├─ 2026_05_26_010525_add_provinsi_to_pelatihan_tkk_peserta_table.php
+│  │  └─ 2026_06_01_045132_add_is_deleted_to_rantai_pasok_table.php
 │  └─ seeders
 │     └─ DatabaseSeeder.php
 ├─ lang
@@ -226,7 +227,9 @@ Optimalisasi-SIBIKON
 │  │  │  ├─ rantai_pasok_dummy.csv
 │  │  │  └─ tkk_data.xlsx
 │  │  ├─ private
-│  │  │  └─ bujk
+│  │  │  ├─ bujk
+│  │  │  │  └─ latest-data-date.txt
+│  │  │  └─ tkk
 │  │  │     └─ latest-data-date.txt
 │  │  └─ public
 │  ├─ framework
@@ -236,7 +239,7 @@ Optimalisasi-SIBIKON
 │  │  │        └─ ac
 │  │  │           └─ 17ac641564bfe2eb176a10406a8490f0e2bc08e2
 │  │  ├─ sessions
-│  │  │  └─ uVt91i42mmsMq7xBSkaA0SCFGGTsAE2tysZshaai
+│  │  │  └─ jtyL7XKFmmylm7NhyUl2YKhRlLQNzQeGb2mfb8bt
 │  │  ├─ testing
 │  │  └─ views
 │  │     ├─ 0021ae69827c21473f5d26bf4bc9e713.php
