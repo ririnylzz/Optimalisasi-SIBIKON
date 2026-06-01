@@ -412,9 +412,14 @@
 
             {{-- Copyright --}}
             <div class="mt-8 border-t border-white/10 pt-8">
-                <p class="text-sm text-white/65">
-                    Copyright © 2026, Developed by Bina Konstruksi DPUPRPERA Prov. Kaltim
-                </p>
+                <a
+                    href="https://linktr.ee/dev_optimalisasi_sibikon"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-sm text-white/65 hover:text-white"
+                >
+                    Copyright © 2026, Developed by Project PKL Sistem Informasi 23 Universitas Mulawarman Tahun 2026. All rights reserved.
+                </a>
             </div>
         </div>
     </footer>
