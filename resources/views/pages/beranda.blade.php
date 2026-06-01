@@ -442,6 +442,7 @@
         [
         'title' => 'Pemanfaat Produk Jasa Konstruksi',
         'image' => 'images/layanan-8.png',
+        'route' => 'pemanfaat-produk',
         ],
         [
         'title' => 'Penyedia Jasa',
@@ -456,6 +457,7 @@
         [
         'title' => 'Pelaku Rantai Pasok',
         'image' => 'images/layanan-11.png',
+        'route' => 'rantai-pasok',
         ],
         ];
         @endphp

@@ -3,20 +3,19 @@
 use App\Http\Controllers\Admin\BujkController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PelatihanTkkController;
+use App\Http\Controllers\Admin\PemanfaatProdukController;
+use App\Http\Controllers\Admin\RantaiPasokController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\GisController;
+use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\Layanan\AsosiasiPerusahaanController;
 use App\Http\Controllers\Layanan\AsosiasiProfesiController;
 use App\Http\Controllers\Layanan\PenyediaJasaController;
 use App\Http\Controllers\PublicDashboardController;
-use App\Http\Controllers\KegiatanController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\RantaiPasokController;
-use App\Models\Tkk;
 use App\Http\Controllers\TertibPenyelenggaraanController;
-use App\Http\Controllers\Admin\PemanfaatProdukController;
-
+use App\Models\Tkk;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [KegiatanController::class, 'beranda'])
     ->name('beranda');
@@ -79,6 +78,12 @@ Route::get('/detail-berita', function () {
     ]);
 })->name('detail-berita');
 
+/*
+|--------------------------------------------------------------------------
+| Public Fungsi Pengaturan
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/fungsi/pengaturan/rakor', [KegiatanController::class, 'rakor'])
     ->name('rakor');
 
@@ -88,14 +93,23 @@ Route::get('/fungsi/pengaturan/sosialisasi', [KegiatanController::class, 'sosial
 Route::get('/fungsi/pengaturan/forum', [KegiatanController::class, 'forum'])
     ->name('forum');
 
-Route::get('/fungsi/pengaturan/rantai-pasok', [RantaiPasokController::class, 'rantaiPasok'])
+Route::get('/layanan/rantai-pasok', [RantaiPasokController::class, 'rantaiPasok'])
     ->name('rantai-pasok');
+
+Route::get('/layanan/pemanfaat-produk', [PemanfaatProdukController::class, 'pemanfaatProdukPublik'])
+    ->name('pemanfaat-produk');
 
 Route::get('/fungsi/pengaturan/daftar-sosil', function () {
     return view('welcome', [
         'page' => 'daftar-sosil',
     ]);
 })->name('daftar-sosil');
+
+/*
+|--------------------------------------------------------------------------
+| Public Fungsi Pemberdayaan
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/fungsi/pemberdayaan/tabel-tkk', function () {
     $search = request('search');
@@ -150,6 +164,12 @@ Route::get('/fungsi/pemberdayaan/pelatihan-ahli', function () {
     ]);
 })->name('pelatihan-ahli');
 
+/*
+|--------------------------------------------------------------------------
+| Public Fungsi Pengawasan
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/fungsi/pengawasan/tertib-usaha', function () {
     return view('welcome', [
         'page' => 'tertib-usaha',
@@ -171,6 +191,12 @@ Route::get('/fungsi/pengawasan/tertib-pemanfaatan', function () {
     ]);
 })->name('tertib-pemanfaatan');
 
+/*
+|--------------------------------------------------------------------------
+| Public Layanan
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/layanan/asosiasi-perusahaan', [AsosiasiPerusahaanController::class, 'index'])
     ->name('asosiasi-perusahaan');
 
@@ -183,6 +209,12 @@ Route::get('/layanan/penyedia-jasa/data', [PenyediaJasaController::class, 'data'
 Route::get('/layanan/penyedia-jasa', [PenyediaJasaController::class, 'index'])
     ->name('penyedia-jasa');
 
+/*
+|--------------------------------------------------------------------------
+| Public Dashboard
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/dashboard/tenaga-kerja-konstruksi', [PublicDashboardController::class, 'tenagaKerja'])
     ->name('dashboard.tenaga-kerja');
 
@@ -194,6 +226,12 @@ Route::get('/dashboard/bujk', [PublicDashboardController::class, 'bujk'])
 
 Route::get('/dashboard/sbu', [PublicDashboardController::class, 'sbu'])
     ->name('dashboard.sbu.publik');
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
 
 Route::prefix('admin')
     ->name('admin.')
@@ -250,11 +288,11 @@ Route::prefix('admin')
             'title' => 'Pemerhati Konstruksi',
         ])->name('pemerhati-konstruksi');
 
-        Route::view('/pemanfaat-produk', 'admin.placeholder', [
-            'title' => 'Pemanfaat Produk',
-        ])->name('pemanfaat-produk');
-
-
+        /*
+        |--------------------------------------------------------------------------
+        | Admin Rantai Pasok
+        |--------------------------------------------------------------------------
+        */
 
         Route::get('/rantai-pasok', [RantaiPasokController::class, 'index'])
             ->name('rantai-pasok');
@@ -279,6 +317,12 @@ Route::prefix('admin')
             ->whereNumber('rantaiPasok')
             ->name('rantai-pasok.destroy');
 
+        /*
+        |--------------------------------------------------------------------------
+        | Admin Pemanfaat Produk
+        |--------------------------------------------------------------------------
+        */
+
         Route::get('/pemanfaat-produk', [PemanfaatProdukController::class, 'index'])
             ->name('pemanfaat-produk');
 
@@ -302,6 +346,12 @@ Route::prefix('admin')
             ->whereNumber('pemanfaatProduk')
             ->name('pemanfaat-produk.destroy');
 
+        /*
+        |--------------------------------------------------------------------------
+        | Admin BUJK
+        |--------------------------------------------------------------------------
+        */
+
         Route::get('/bujk', [BujkController::class, 'index'])
             ->name('bujk');
 
@@ -317,11 +367,6 @@ Route::prefix('admin')
         Route::delete('/bujk/destroy-all', [BujkController::class, 'destroyAll'])
             ->name('bujk.destroy-all');
 
-        Route::get('/bujk/regions/provinces', [BujkController::class, 'provinceOptions'])
-            ->name('bujk.regions.provinces');
-
-        Route::get('/bujk/regions/regencies', [BujkController::class, 'regencyOptions'])
-            ->name('bujk.regions.regencies');
         Route::get('/bujk/regions/provinces', [BujkController::class, 'provinceOptions'])
             ->name('bujk.regions.provinces');
 

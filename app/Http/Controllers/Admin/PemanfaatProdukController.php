@@ -29,6 +29,9 @@ class PemanfaatProdukController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('nama_bangunan', 'like', "%{$search}%")
                     ->orWhere('pengelola_pemilik_bangunan', 'like', "%{$search}%")
+                    ->orWhere('alamat', 'like', "%{$search}%")
+                    ->orWhere('kabupaten', 'like', "%{$search}%")
+                    ->orWhere('provinsi', 'like', "%{$search}%")
                     ->orWhere('lokasi', 'like', "%{$search}%")
                     ->orWhere('nama_pengelola_pemilik', 'like', "%{$search}%")
                     ->orWhere('tahun_anggaran', 'like', "%{$search}%")
@@ -79,6 +82,41 @@ class PemanfaatProdukController extends Controller
             'perPage' => $perPage,
             'tahunOptions' => $tahunOptions,
             'editingPemanfaatProduk' => $editingPemanfaatProduk,
+        ]);
+    }
+
+    public function pemanfaatProdukPublik(Request $request): View
+    {
+        $search = trim((string) $request->query('search', ''));
+        $perPage = (int) $request->query('per_page', 10);
+
+        if (!in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 10;
+        }
+
+        $pemanfaatProduks = PemanfaatProduk::query()
+            ->active()
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery
+                        ->where('nama_bangunan', 'like', "%{$search}%")
+                        ->orWhere('pengelola_pemilik_bangunan', 'like', "%{$search}%")
+                        ->orWhere('alamat', 'like', "%{$search}%")
+                        ->orWhere('kabupaten', 'like', "%{$search}%")
+                        ->orWhere('provinsi', 'like', "%{$search}%")
+                        ->orWhere('lokasi', 'like', "%{$search}%")
+                        ->orWhere('nama_pengelola_pemilik', 'like', "%{$search}%")
+                        ->orWhere('tahun_anggaran', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate($perPage)
+            ->withQueryString();
+
+        return view('pages.layanan.pemanfaat-produk', [
+            'pemanfaatProduks' => $pemanfaatProduks,
+            'search' => $search,
+            'perPage' => $perPage,
         ]);
     }
 
@@ -176,7 +214,9 @@ class PemanfaatProdukController extends Controller
 
             $record = PemanfaatProduk::query()
                 ->where('nama_bangunan', $data['nama_bangunan'])
-                ->where('lokasi', $data['lokasi'])
+                ->where('alamat', $data['alamat'])
+                ->where('kabupaten', $data['kabupaten'])
+                ->where('provinsi', $data['provinsi'])
                 ->first();
 
             if ($record) {
@@ -202,17 +242,21 @@ class PemanfaatProdukController extends Controller
 
     private function validatedData(Request $request): array
     {
-        return $request->validate([
+        $validated = $request->validate([
             'nama_bangunan' => ['required', 'string', 'max:255'],
             'pengelola_pemilik_bangunan' => ['required', 'string', 'max:255'],
-            'lokasi' => ['required', 'string'],
+            'alamat' => ['required', 'string'],
+            'kabupaten' => ['required', 'string', 'max:255'],
+            'provinsi' => ['required', 'string', 'max:255'],
             'nama_pengelola_pemilik' => ['required', 'string', 'max:255'],
             'tahun_anggaran' => ['required', 'integer', 'digits:4', 'min:1900', 'max:' . ((int) date('Y') + 5)],
             'kontak' => ['required', 'regex:/^[0-9]+$/', 'max:20'],
         ], [
             'nama_bangunan.required' => 'Nama bangunan wajib diisi.',
             'pengelola_pemilik_bangunan.required' => 'Pengelola/Pemilik bangunan wajib diisi.',
-            'lokasi.required' => 'Lokasi wajib diisi.',
+            'alamat.required' => 'Alamat wajib diisi.',
+            'kabupaten.required' => 'Kabupaten/Kota wajib diisi.',
+            'provinsi.required' => 'Provinsi wajib diisi.',
             'nama_pengelola_pemilik.required' => 'Nama pengelola/pemilik wajib diisi.',
             'tahun_anggaran.required' => 'Tahun anggaran wajib diisi.',
             'tahun_anggaran.integer' => 'Tahun anggaran harus berupa angka.',
@@ -220,6 +264,14 @@ class PemanfaatProdukController extends Controller
             'kontak.required' => 'Kontak wajib diisi.',
             'kontak.regex' => 'Kontak hanya boleh diisi angka.',
         ]);
+
+        $validated['lokasi'] = collect([
+            $validated['alamat'] ?? null,
+            $validated['kabupaten'] ?? null,
+            $validated['provinsi'] ?? null,
+        ])->filter()->implode(', ');
+
+        return $validated;
     }
 
     private function readCsvRows(string $path): array
@@ -304,6 +356,26 @@ class PemanfaatProdukController extends Controller
 
     private function normalizeImportRow(array $raw): array
     {
+        $alamat = $this->firstValue($raw, [
+            'alamat',
+            'alamat_bangunan',
+            'lokasi',
+            'lokasi_bangunan',
+        ]);
+
+        $kabupaten = $this->firstValue($raw, [
+            'kabupaten',
+            'kota',
+            'kabupaten_kota',
+            'kab_kota',
+            'kab',
+        ]);
+
+        $provinsi = $this->firstValue($raw, [
+            'provinsi',
+            'province',
+        ]);
+
         return [
             'nama_bangunan' => $this->firstValue($raw, [
                 'nama_bangunan',
@@ -316,11 +388,14 @@ class PemanfaatProdukController extends Controller
                 'pemilik_bangunan',
                 'pengelola_pemilik',
             ]),
-            'lokasi' => $this->firstValue($raw, [
-                'lokasi',
-                'alamat',
-                'alamat_bangunan',
-            ]),
+            'lokasi' => collect([
+                $alamat,
+                $kabupaten,
+                $provinsi,
+            ])->filter()->implode(', '),
+            'alamat' => $alamat,
+            'kabupaten' => $kabupaten,
+            'provinsi' => $provinsi,
             'nama_pengelola_pemilik' => $this->firstValue($raw, [
                 'nama_pengelola_pemilik',
                 'nama_pengelola',

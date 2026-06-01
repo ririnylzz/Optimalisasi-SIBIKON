@@ -30,7 +30,7 @@
     </div>
 
     <div class="overflow-x-auto">
-        <table class="min-w-[1100px] w-full text-left text-sm">
+        <table class="min-w-[1400px] w-full text-left text-sm">
             <thead>
                 <tr class="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                     <th class="w-12 px-4 py-3">
@@ -42,7 +42,9 @@
                     <th class="w-16 px-4 py-3">No</th>
                     <th class="px-4 py-3">Nama Bangunan</th>
                     <th class="px-4 py-3">Pengelola/Pemilik Bangunan</th>
-                    <th class="px-4 py-3">Lokasi</th>
+                    <th class="px-4 py-3">Alamat</th>
+                    <th class="px-4 py-3">Kabupaten/Kota</th>
+                    <th class="px-4 py-3">Provinsi</th>
                     <th class="px-4 py-3">Nama Pengelola/Pemilik</th>
                     <th class="px-4 py-3">Tahun Anggaran</th>
                     <th class="px-4 py-3">Kontak</th>
@@ -79,7 +81,19 @@
 
                         <td class="px-4 py-3 align-top">
                             <div class="max-w-[260px] text-slate-600">
-                                {{ $pemanfaatProduk->lokasi ?: '-' }}
+                                {{ $pemanfaatProduk->alamat ?: ($pemanfaatProduk->lokasi ?: '-') }}
+                            </div>
+                        </td>
+
+                        <td class="px-4 py-3 align-top">
+                            <div class="max-w-[180px] text-slate-600">
+                                {{ $pemanfaatProduk->kabupaten ?: '-' }}
+                            </div>
+                        </td>
+
+                        <td class="px-4 py-3 align-top">
+                            <div class="max-w-[180px] text-slate-600">
+                                {{ $pemanfaatProduk->provinsi ?: '-' }}
                             </div>
                         </td>
 
@@ -126,7 +140,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="px-4 py-10 text-center text-sm text-slate-500">
+                        <td colspan="11" class="px-4 py-10 text-center text-sm text-slate-500">
                             Belum ada data pemanfaat produk.
                         </td>
                     </tr>
