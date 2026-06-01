@@ -6,20 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::table('rantai_pasok', function (Blueprint $table) {
-            $table->boolean('is_deleted')->default(0);
-        });
+        if (!Schema::hasColumn('rantai_pasok', 'is_deleted')) {
+            Schema::table('rantai_pasok', function (Blueprint $table) {
+                $table->boolean('is_deleted')->default(false);
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('rantai_pasok', function (Blueprint $table) {
-            $table->dropColumn('is_deleted');
-        });
+        if (Schema::hasColumn('rantai_pasok', 'is_deleted')) {
+            Schema::table('rantai_pasok', function (Blueprint $table) {
+                $table->dropColumn('is_deleted');
+            });
+        }
     }
 };
+
