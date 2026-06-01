@@ -75,7 +75,7 @@
             class="flex shrink-0 items-center bg-[#f1d00a] px-6 py-3">
 
             <span class="text-base font-bold text-[#143B5D]">
-                📢 Informasi Kegiatan
+                Informasi Kegiatan
             </span>
         </div>
 

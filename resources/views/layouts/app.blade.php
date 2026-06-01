@@ -258,7 +258,7 @@
         </div>
     </header>
 
-    <div class="w-full overflow-x-hidden pt-[150px] md:pt-[160px]">
+    <div class="w-full overflow-x-hidden pt-[90px] md:pt-[160px]">
         @yield('content')
     </div>
 
