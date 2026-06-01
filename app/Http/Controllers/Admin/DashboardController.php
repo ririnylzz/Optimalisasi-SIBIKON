@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\Rule;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 use Throwable;
@@ -581,9 +582,9 @@ class DashboardController extends Controller
 
         $latestDataDate = null;
 
-        if (Storage::disk('local')->exists('bujk/latest-data-date.txt')) {
+        if (Storage::disk('local')->exists('tkk/latest-data-date.txt')) {
             $latestDataDate = trim(
-                Storage::disk('local')->get('bujk/latest-data-date.txt')
+                Storage::disk('local')->get('tkk/latest-data-date.txt')
             );
         }
 
@@ -618,16 +619,20 @@ class DashboardController extends Controller
         $rows = Tkk::query()
             ->orderByDesc('updated_at')
             ->orderByDesc('id')
-            ->limit(10)
-            ->get();
+            ->paginate(10);
 
-        $tkkRows = $rows->map(fn ($row) => $this->formatTkkRow($row))->values();
+        $rows->setCollection(
+            $rows->getCollection()
+                ->map(fn ($row) => $this->formatTkkRow($row))
+                ->values()
+        );
 
         $totalTkk = Tkk::query()->count();
         $latestDataDate = $this->getLatestTkkDataDate();
 
         return view('admin.tkk-data', [
-            'tkkRows' => $tkkRows,
+            'rows' => $rows,
+            'tkkRows' => $rows->items(),
             'totalTkk' => $totalTkk,
             'editingTkk' => $editingTkk,
             'kabupatenOptions' => $this->kaltimKabupatenOptions(),
@@ -811,7 +816,7 @@ class DashboardController extends Controller
             ];
 
             $map = $useHeader ? $headerMap : $positionMap;
-            $dataRows = array_slice($rows, 1);
+            $dataRows = $useHeader ? array_slice($rows, 1) : $rows;
 
             $imported = 0;
             $skipped = 0;

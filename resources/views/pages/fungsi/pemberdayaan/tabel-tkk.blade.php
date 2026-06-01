@@ -42,30 +42,42 @@
             <div class="rounded-[24px] border border-[#dfe5ef] bg-white p-6 shadow-[0_12px_35px_rgba(15,23,42,0.08)]">
 
                 {{-- Table Controls --}}
-                <div class="mb-6 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-                    <div class="flex items-center gap-3 text-sm text-slate-500">
-                        <span>Show</span>
+                <form method="GET" action="{{ route('tabel-tkk') }}" class="mb-6 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+                <div class="flex items-center gap-3 text-sm text-slate-500">
+                    <span>Show</span>
 
-                        <select
-                            class="rounded-lg border border-[#dfe5ef] bg-white px-3 py-2 text-lg text-slate-600 outline-none focus:border-[#293F81]">
-                            <option>10</option>
-                            <option>25</option>
-                            <option>50</option>
-                            <option>100</option>
-                        </select>
+                    <select
+                        name="per_page"
+                        onchange="this.form.submit()"
+                        class="rounded-lg border border-[#dfe5ef] bg-white px-3 py-2 text-lg text-slate-600 outline-none focus:border-[#293F81]">
+                        @foreach ([10, 25, 50, 100] as $option)
+                            <option value="{{ $option }}" @selected((int) request('per_page', 10) === $option)>
+                                {{ $option }}
+                            </option>
+                        @endforeach
+                    </select>
 
-                        <span>entries</span>
-                    </div>
-
-                    <div class="flex items-center gap-3 text-sm text-slate-500">
-                        <label for="search-tkk">Search:</label>
-
-                        <input
-                            id="search-tkk"
-                            type="text"
-                            class="w-full rounded-lg border border-[#dfe5ef] px-3 py-2 text-lg outline-none focus:border-[#293F81] md:w-80">
-                    </div>
+                    <span>entries</span>
                 </div>
+
+                <div class="flex items-center gap-3 text-sm text-slate-500">
+                    <label for="search-tkk">Search:</label>
+
+                    <input
+                        id="search-tkk"
+                        name="search"
+                        type="text"
+                        value="{{ request('search') }}"
+                        placeholder="Cari nama, pendidikan, atau keahlian..."
+                        class="w-full rounded-lg border border-[#dfe5ef] px-3 py-2 text-lg outline-none focus:border-[#293F81] md:w-80">
+
+                    <button
+                        type="submit"
+                        class="rounded-lg bg-[#293F81] px-4 py-2 text-sm font-bold text-white hover:bg-[#1f3167]">
+                        Cari
+                    </button>
+                </div>
+            </form>
 
                 {{-- Table --}}
                 <div class="mt-2 overflow-hidden rounded-xl border border-[#eef2f6]">
@@ -93,11 +105,31 @@
                             </thead>
 
                             <tbody class="divide-y divide-[#eef2f6] text-sm text-slate-600">
-                                <tr>
-                                    <td colspan="4" class="px-5 py-20 text-center text-slate-500">
-                                        Data belum tersedia.
-                                    </td>
-                                </tr>
+                                @forelse ($rows as $index => $row)
+                                    <tr class="transition hover:bg-slate-50">
+                                        <td class="px-5 py-4">
+                                            {{ $rows->firstItem() + $index }}
+                                        </td>
+
+                                        <td class="px-5 py-4 font-semibold text-[#071226]">
+                                            {{ $row['nama'] ?: '-' }}
+                                        </td>
+
+                                        <td class="px-5 py-4">
+                                            {{ $row['pendidikan'] ?: '-' }}
+                                        </td>
+
+                                        <td class="px-5 py-4">
+                                            {{ $row['keahlian'] ?: '-' }}
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="px-5 py-20 text-center text-slate-500">
+                                            Data belum tersedia.
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
 
                         </table>
@@ -107,24 +139,13 @@
                 {{-- Footer Table --}}
                 <div class="mt-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                     <p class="text-sm text-slate-500">
-                        Showing 0 to 0 of 0 entries
+                        Showing {{ $rows->firstItem() ?? 0 }} to {{ $rows->lastItem() ?? 0 }} of {{ $rows->total() }} entries
                     </p>
 
                     <div class="flex items-center overflow-hidden rounded-xl border border-[#dfe5ef]">
-                        <button
-                            class="bg-slate-100 px-5 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-200">
-                            Previous
-                        </button>
-
-                        <button
-                            class="bg-yellow-400 px-5 py-3 text-sm font-bold text-slate-900">
-                            1
-                        </button>
-
-                        <button
-                            class="bg-white px-5 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-100">
-                            Next
-                        </button>
+                        <div class="mt-5">
+    {{ $rows->links() }}
+</div>
                     </div>
                 </div>
             </div>

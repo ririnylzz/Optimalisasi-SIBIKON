@@ -100,6 +100,14 @@ class PublicDashboardController extends Controller
             })
             ->values();
 
+        $latestDataDate = null;
+
+        if (Storage::disk('local')->exists('tkk/latest-data-date.txt')) {
+            $latestDataDate = trim(
+                Storage::disk('local')->get('tkk/latest-data-date.txt')
+            );
+        }
+
         return view('pages.dashboard-tkk-publik', [
             'totalTkk' => $totalTkk,
             'totalWilayah' => $totalWilayah,
@@ -108,6 +116,7 @@ class PublicDashboardController extends Controller
             'topKlasifikasi' => $topKlasifikasi,
             'perbandinganKabupaten' => $perbandinganKabupaten,
             'proyeksiKadaluarsa' => $proyeksiKadaluarsa,
+            'latestDataDate' => $latestDataDate,
         ]);
     }
 
@@ -248,6 +257,14 @@ class PublicDashboardController extends Controller
             })
             ->values();
 
+        $latestDataDate = null;
+
+        if (Storage::disk('local')->exists('tkk/latest-data-date.txt')) {
+            $latestDataDate = trim(
+                Storage::disk('local')->get('tkk/latest-data-date.txt')
+            );
+        }
+
         return view('pages.dashboard-tkk-aktif-publik', [
             'totalTkkAktif' => $totalTkkAktif,
             'totalWilayah' => $totalWilayah,
@@ -269,6 +286,7 @@ class PublicDashboardController extends Controller
 
             'totalAkanKadaluarsa' => $statusSertifikat
                 ->firstWhere('label', 'Kadaluarsa Tahun Ini')['value'] ?? 0,
+            'latestDataDate' => $latestDataDate,
         ]);
     }
 

@@ -4,6 +4,20 @@
 @section('page-subtitle', 'Dashboard TKK Aktif')
 
 @section('content')
+@php
+$latestDataDate = $latestDataDate ?? null;
+$latestDataDateLabel = null;
+
+if (!blank($latestDataDate)) {
+try {
+$latestDataDateLabel = \Illuminate\Support\Carbon::parse($latestDataDate)
+->locale('id')
+->translatedFormat('d F Y');
+} catch (\Throwable $exception) {
+$latestDataDateLabel = $latestDataDate;
+}
+}
+@endphp
 <div class="mx-auto max-w-6xl space-y-4">
 
     {{-- Header --}}
@@ -19,9 +33,13 @@
                     Dashboard TKK Aktif
                 </h1>
 
-                <p class="mt-2 max-w-2xl text-sm text-blue-100/80">
-                    Visualisasi data tenaga kerja konstruksi dengan status sertifikat aktif di Kalimantan Timur.
-                </p>
+                @if($latestDataDateLabel)
+                <div class="mt-4">
+                    <span class="inline-flex items-center rounded-full border border-blue-200/30 bg-white/10 px-4 py-2 text-xs font-semibold text-blue-50 backdrop-blur">
+                        Data terbaru per {{ $latestDataDateLabel }}
+                    </span>
+                </div>
+                @endif
             </div>
 
             <div class="flex gap-3">
