@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Bujk extends Model
 {
@@ -103,6 +104,11 @@ class Bujk extends Model
         }
 
         return parent::setAttribute($key, $value);
+    }
+
+    public function sbu(): HasMany
+    {
+        return $this->hasMany(BujkSbu::class, 'bujk_id');
     }
 
     public function scopeActive(Builder $query): Builder

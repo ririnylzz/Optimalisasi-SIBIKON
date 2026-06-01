@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\RedirectResponse;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -70,11 +71,9 @@ class DashboardController extends Controller
 
         $totalBujk = $uniqueBujkRows->count();
 
-        /*
-        * Total SBU dihitung dari jumlah baris aktif yang punya identitas SBU.
-        * Kalau semua kosong, fallback ke jumlah baris aktif.
-        */
-        $totalSbu = $activeRows
+        $sbuRows = $this->getDashboardSbuRows($activeRows);
+
+        $totalSbu = $sbuRows
             ->filter(function ($row) {
                 return !empty($row->kode_subklasifikasi)
                     || !empty($row->subklasifikasi)
@@ -85,7 +84,7 @@ class DashboardController extends Controller
             ->count();
 
         if ($totalSbu === 0) {
-            $totalSbu = $activeRows->count();
+            $totalSbu = $sbuRows->count();
         }
 
         $countByField = function ($rows, string $field, int $limit = 5) {
@@ -170,18 +169,18 @@ class DashboardController extends Controller
 
         $association = $countByField($uniqueBujkRows, 'asosiasi', 5);
 
-        $jenisSbu = $countSplitField($activeRows, 'jenis_usaha', 10);
+        $jenisSbu = $countSplitField($sbuRows, 'jenis_usaha', 10);
 
-        $pelaksanaSbu = $countByField($activeRows, 'pelaksana_sertifikasi', 5);
+        $pelaksanaSbu = $countByField($sbuRows, 'pelaksana_sertifikasi', 5);
 
-        $kbliSbu = $countByFields($activeRows, [
+        $kbliSbu = $countByFields($sbuRows, [
             'kbli_bener',
             'kbli_inputan',
         ], 5);
 
-        $kualifikasiSbu = $countByField($activeRows, 'id_kualifikasi', 10);
+        $kualifikasiSbu = $countByField($sbuRows, 'id_kualifikasi', 10);
 
-        $subKlasifikasiSbu = $activeRows
+        $subKlasifikasiSbu = $sbuRows
             ->map(function ($row) {
                 $kode = trim((string) ($row->kode_subklasifikasi ?? ''));
                 $subklasifikasi = trim((string) ($row->subklasifikasi ?? ''));
@@ -208,12 +207,8 @@ class DashboardController extends Controller
             ->take(5)
             ->values();
 
-        $sifatSbu = $countByField($activeRows, 'sifat', 10);
+        $sifatSbu = $countByField($sbuRows, 'sifat', 10);
 
-        /*
-        * Fallback agar chart tidak error kalau ada kolom yang masih kosong.
-        * Ini bukan data dummy, hanya label kosong 0 supaya Chart.js tetap aman.
-        */
         if ($jenisBujk->isEmpty()) {
             $jenisBujk = collect([
                 ['label' => 'Belum Ada Data', 'value' => 0],
@@ -295,6 +290,48 @@ class DashboardController extends Controller
             'kpi',
             'latestDataDate'
         ));
+    }
+    
+    private function getDashboardSbuRows($fallbackRows)
+    {
+        if (!Schema::hasTable('bujk_sbu')) {
+            return $fallbackRows;
+        }
+
+        $query = DB::table('bujk_sbu')
+            ->select(
+                'id',
+                'id_izin',
+                'nib',
+                'asosiasi',
+                'nama_bu',
+                'bentuk_usaha',
+                'propinsi',
+                'kabupaten',
+                'jenis_usaha',
+                'sifat',
+                'kbli_bener',
+                'kbli_inputan',
+                'klasifikasi',
+                'kode_subklasifikasi',
+                'subklasifikasi',
+                'id_kualifikasi',
+                'pelaksana_sertifikasi',
+                'tanggal_ditetapkan',
+                'tanggal_masa_berlaku',
+                'valid',
+                'status',
+                'is_deleted',
+                'created_at'
+            );
+
+        if (Schema::hasColumn('bujk_sbu', 'is_deleted')) {
+            $query->where('is_deleted', false);
+        }
+
+        $rows = $query->get();
+
+        return $rows->isNotEmpty() ? $rows : $fallbackRows;
     }
 
     public function tkk(Request $request)

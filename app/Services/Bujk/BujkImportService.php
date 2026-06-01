@@ -3,10 +3,12 @@
 namespace App\Services\Bujk;
 
 use App\Models\Bujk;
+use App\Models\BujkSbu;
 use App\Support\BujkDataNormalizer;
 use App\Support\SimpleSpreadsheetReader;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -29,8 +31,10 @@ class BujkImportService
         }
 
         $preparedRows = [];
+        $preparedSbuRows = [];
         $errors = [];
         $mergedRows = 0;
+        $mergedSbuRows = 0;
 
         foreach ($rawRows as $row) {
             $rowNumber = $row['__row_number'] ?? null;
@@ -46,24 +50,25 @@ class BujkImportService
                 continue;
             }
 
-            /*
-             * Kunci duplikat import hanya berdasarkan NIB yang sudah dinormalisasi.
-             *
-             * Contoh dianggap sama:
-             * 0220003542079
-             * 220003542079
-             *
-             * Karena di file Excel kadang leading zero hilang akibat format angka.
-             */
-            $signature = $this->makeSignature($record);
+            $bujkSignature = $this->makeSignature($record);
 
-            if (isset($preparedRows[$signature])) {
-                $preparedRows[$signature] = $this->mergeRows($preparedRows[$signature], $record);
+            if (isset($preparedRows[$bujkSignature])) {
+                $preparedRows[$bujkSignature] = $this->mergeRows($preparedRows[$bujkSignature], $record);
                 $mergedRows++;
-                continue;
+            } else {
+                $preparedRows[$bujkSignature] = $record;
             }
 
-            $preparedRows[$signature] = $record;
+            if ($this->hasSbuIdentity($record)) {
+                $sbuSignature = $this->makeSbuSignature($record);
+
+                if (isset($preparedSbuRows[$sbuSignature])) {
+                    $preparedSbuRows[$sbuSignature] = $this->mergeRows($preparedSbuRows[$sbuSignature], $record);
+                    $mergedSbuRows++;
+                } else {
+                    $preparedSbuRows[$sbuSignature] = $record;
+                }
+            }
         }
 
         if (empty($preparedRows)) {
@@ -77,13 +82,23 @@ class BujkImportService
         $untouched = 0;
         $deduplicated = 0;
 
-        DB::transaction(function () use (&$created, &$updated, &$untouched, &$deduplicated, $preparedRows): void {
-            /*
-             * File upload dianggap sumber data terbaru.
-             * Jadi semua data aktif lama dinonaktifkan dulu.
-             * Setelah itu hanya data unik berdasarkan NIB normalisasi
-             * yang diaktifkan kembali.
-             */
+        $sbuCreated = 0;
+        $sbuUpdated = 0;
+        $sbuUntouched = 0;
+        $sbuDeactivated = 0;
+
+        DB::transaction(function () use (
+            &$created,
+            &$updated,
+            &$untouched,
+            &$deduplicated,
+            &$sbuCreated,
+            &$sbuUpdated,
+            &$sbuUntouched,
+            &$sbuDeactivated,
+            $preparedRows,
+            $preparedSbuRows
+        ): void {
             Bujk::query()
                 ->where('is_deleted', false)
                 ->update([
@@ -91,7 +106,18 @@ class BujkImportService
                     'updated_at' => now(),
                 ]);
 
-            foreach ($preparedRows as $record) {
+            if (Schema::hasTable('bujk_sbu')) {
+                $sbuDeactivated = BujkSbu::query()
+                    ->where('is_deleted', false)
+                    ->update([
+                        'is_deleted' => true,
+                        'updated_at' => now(),
+                    ]);
+            }
+
+            $bujkIdBySignature = [];
+
+            foreach ($preparedRows as $signature => $record) {
                 $existing = $this->findExistingRecord($record);
 
                 if ($existing) {
@@ -106,9 +132,6 @@ class BujkImportService
                         $untouched++;
                     }
 
-                    /*
-                     * Nonaktifkan record lain yang punya NIB sama secara normalisasi.
-                     */
                     $duplicateCount = Bujk::query()
                         ->whereIn('nib', $this->nibLookupVariants($record['nib'] ?? null))
                         ->where('id', '<>', $existing->id)
@@ -118,15 +141,54 @@ class BujkImportService
                         ]);
 
                     $deduplicated += $duplicateCount;
+                    $bujkIdBySignature[$signature] = $existing->id;
 
                     continue;
                 }
 
-                Bujk::query()->create($record + [
+                $createdBujk = Bujk::query()->create($record + [
                     'is_deleted' => false,
                 ]);
 
                 $created++;
+                $bujkIdBySignature[$signature] = $createdBujk->id;
+            }
+
+            if (Schema::hasTable('bujk_sbu')) {
+                foreach ($preparedSbuRows as $sbuSignature => $record) {
+                    $bujkSignature = $this->makeSignature($record);
+
+                    $payload = $this->makeSbuPayload(
+                        $record,
+                        $sbuSignature,
+                        $bujkIdBySignature[$bujkSignature] ?? null
+                    );
+
+                    $existingSbu = BujkSbu::query()
+                        ->where('sbu_signature', $sbuSignature)
+                        ->first();
+
+                    if ($existingSbu) {
+                        $existingSbu->fill($payload);
+                        $existingSbu->is_deleted = false;
+                        $existingSbu->updated_at = now();
+
+                        if ($existingSbu->isDirty()) {
+                            $existingSbu->save();
+                            $sbuUpdated++;
+                        } else {
+                            $sbuUntouched++;
+                        }
+
+                        continue;
+                    }
+
+                    BujkSbu::query()->create($payload + [
+                        'is_deleted' => false,
+                    ]);
+
+                    $sbuCreated++;
+                }
             }
         });
 
@@ -134,11 +196,17 @@ class BujkImportService
             'filename' => $file->getClientOriginalName(),
             'total_rows' => count($rawRows),
             'prepared_rows' => count($preparedRows),
+            'prepared_sbu_rows' => count($preparedSbuRows),
             'created' => $created,
             'updated' => $updated,
             'untouched' => $untouched,
             'merged_rows' => $mergedRows,
             'deduplicated' => $deduplicated,
+            'sbu_created' => $sbuCreated,
+            'sbu_updated' => $sbuUpdated,
+            'sbu_untouched' => $sbuUntouched,
+            'sbu_merged_rows' => $mergedSbuRows,
+            'sbu_deactivated' => $sbuDeactivated,
             'skipped' => count($errors),
             'errors' => array_slice($errors, 0, 10),
         ];
@@ -275,10 +343,6 @@ class BujkImportService
             }
 
             if ($field === 'nib' && !blank($value)) {
-                /*
-                 * Simpan NIB sebagai angka string bersih.
-                 * Leading zero tetap disimpan kalau memang ada di file.
-                 */
                 $digits = preg_replace('/\D+/u', '', (string) $value);
                 $value = $digits !== '' ? $digits : preg_replace('/\s+/u', '', (string) $value);
             }
@@ -291,9 +355,6 @@ class BujkImportService
 
     protected function findExistingRecord(array $record): ?Bujk
     {
-        /*
-         * Cari exact dulu.
-         */
         $exact = Bujk::query()
             ->where('nib', $record['nib'])
             ->orderBy('id')
@@ -303,10 +364,6 @@ class BujkImportService
             return $exact;
         }
 
-        /*
-         * Kalau tidak ada exact, cari varian NIB:
-         * 0220003542079 dan 220003542079 dianggap sama.
-         */
         return Bujk::query()
             ->whereIn('nib', $this->nibLookupVariants($record['nib'] ?? null))
             ->orderBy('id')
@@ -315,11 +372,80 @@ class BujkImportService
 
     protected function makeSignature(array $record): string
     {
-        /*
-         * Signature import hanya berdasarkan NIB normalisasi.
-         * Leading zero diabaikan khusus untuk pendeteksian duplikat.
-         */
         return 'nib:' . $this->normalizeNibForDuplicate($record['nib'] ?? null);
+    }
+
+    protected function makeSbuSignature(array $record): string
+    {
+        $parts = [
+            'nib' => $this->normalizeNibForDuplicate($record['nib'] ?? null),
+            'kode_subklasifikasi' => $this->normalizeTextForSignature($record['kode_subklasifikasi'] ?? null),
+            'subklasifikasi' => $this->normalizeTextForSignature($record['subklasifikasi'] ?? null),
+            'id_kualifikasi' => $this->normalizeTextForSignature($record['id_kualifikasi'] ?? null),
+            'klasifikasi' => $this->normalizeTextForSignature($record['klasifikasi'] ?? null),
+        ];
+
+        return sha1(json_encode($parts, JSON_UNESCAPED_UNICODE));
+    }
+
+    protected function hasSbuIdentity(array $record): bool
+    {
+        return !blank($record['kode_subklasifikasi'] ?? null)
+            || !blank($record['subklasifikasi'] ?? null)
+            || !blank($record['id_kualifikasi'] ?? null)
+            || !blank($record['tanggal_ditetapkan'] ?? null)
+            || !blank($record['tanggal_masa_berlaku'] ?? null)
+            || !blank($record['pelaksana_sertifikasi'] ?? null);
+    }
+
+    protected function makeSbuPayload(array $record, string $sbuSignature, ?int $bujkId): array
+    {
+        return [
+            'bujk_id' => $bujkId,
+            'id_izin' => $record['id_izin'] ?? null,
+            'nib' => $record['nib'] ?? null,
+            'normalized_nib' => $this->normalizeNibForDuplicate($record['nib'] ?? null),
+            'sbu_signature' => $sbuSignature,
+            'npwp' => $record['npwp'] ?? null,
+            'asosiasi' => $record['asosiasi'] ?? null,
+            'nama_bu' => $record['nama_bu'] ?? null,
+            'bentuk_usaha' => $record['bentuk_usaha'] ?? null,
+            'alamat' => $record['alamat'] ?? null,
+            'telepon' => $record['telepon'] ?? null,
+            'email' => $record['email'] ?? null,
+            'website' => $record['website'] ?? null,
+            'faksimili' => $record['faksimili'] ?? null,
+            'propinsi' => $record['propinsi'] ?? null,
+            'kabupaten' => $record['kabupaten'] ?? null,
+            'jenis_usaha' => $record['jenis_usaha'] ?? null,
+            'sifat' => $record['sifat'] ?? null,
+            'kbli_bener' => $record['kbli_bener'] ?? null,
+            'kbli_inputan' => $record['kbli_inputan'] ?? null,
+            'ket_kbli' => $record['ket_kbli'] ?? null,
+            'bentuk_badan_usaha' => $record['bentuk_badan_usaha'] ?? null,
+            'klasifikasi' => $record['klasifikasi'] ?? null,
+            'kode_subklasifikasi' => $record['kode_subklasifikasi'] ?? null,
+            'subklasifikasi' => $record['subklasifikasi'] ?? null,
+            'id_kualifikasi' => $record['id_kualifikasi'] ?? null,
+            'pelaksana_sertifikasi' => $record['pelaksana_sertifikasi'] ?? null,
+            'tanggal_ditetapkan' => $record['tanggal_ditetapkan'] ?? null,
+            'tanggal_masa_berlaku' => $record['tanggal_masa_berlaku'] ?? null,
+            'valid' => $record['valid'] ?? null,
+            'tgl_update' => $record['tgl_update'] ?? null,
+            'status' => $record['status'] ?? null,
+        ];
+    }
+
+    protected function normalizeTextForSignature(mixed $value): string
+    {
+        if (blank($value)) {
+            return '';
+        }
+
+        $value = mb_strtolower(trim((string) $value));
+        $value = preg_replace('/\s+/u', ' ', $value) ?? $value;
+
+        return $value;
     }
 
     protected function normalizeNibForDuplicate(mixed $nib): string
@@ -334,12 +460,6 @@ class BujkImportService
             return mb_strtolower(trim((string) $nib));
         }
 
-        /*
-         * Ini kunci supaya:
-         * 0220003542079
-         * 220003542079
-         * dianggap NIB yang sama.
-         */
         $normalized = ltrim($digits, '0');
 
         return $normalized === '' ? '0' : $normalized;
@@ -362,12 +482,6 @@ class BujkImportService
 
         if ($normalized !== '') {
             $variants[] = $normalized;
-
-            /*
-             * NIB di file banyak yang 13 digit.
-             * Jadi tambahkan versi padding 13 digit untuk menangkap data
-             * yang sebelumnya tersimpan dengan leading zero.
-             */
             $variants[] = str_pad($normalized, 13, '0', STR_PAD_LEFT);
         }
 
@@ -382,21 +496,10 @@ class BujkImportService
             $merged[$field] = $this->preferValue($base[$field] ?? null, $incoming[$field] ?? null);
         }
 
-        /*
-         * Kalau NIB sama tapi salah satu versi kehilangan leading zero,
-         * simpan NIB yang lebih panjang/lengkap.
-         */
         $merged['nib'] = $this->preferLongerValue($base['nib'] ?? null, $incoming['nib'] ?? null);
-
-        /*
-         * Identitas utama dipilih yang paling lengkap.
-         */
         $merged['nama_bu'] = $this->preferLongerValue($base['nama_bu'] ?? null, $incoming['nama_bu'] ?? null);
         $merged['alamat'] = $this->preferLongerValue($base['alamat'] ?? null, $incoming['alamat'] ?? null);
 
-        /*
-         * Informasi yang bisa muncul berbeda pada NIB yang sama digabung.
-         */
         $merged['jenis_usaha'] = $this->mergeUniqueText($base['jenis_usaha'] ?? null, $incoming['jenis_usaha'] ?? null, ', ', 255);
         $merged['sifat'] = $this->mergeUniqueText($base['sifat'] ?? null, $incoming['sifat'] ?? null, ', ', 255);
         $merged['klasifikasi'] = $this->mergeUniqueText($base['klasifikasi'] ?? null, $incoming['klasifikasi'] ?? null, ' | ', 255);
