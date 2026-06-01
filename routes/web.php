@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\RantaiPasokController;
 use App\Models\Tkk;
 use App\Http\Controllers\TertibPenyelenggaraanController;
+use App\Http\Controllers\Admin\PemanfaatProdukController;
 
 
 Route::get('/', [KegiatanController::class, 'beranda'])
@@ -253,11 +254,7 @@ Route::prefix('admin')
             'title' => 'Pemanfaat Produk',
         ])->name('pemanfaat-produk');
 
-        /*
-|--------------------------------------------------------------------------
-| Admin Rantai Pasok
-|--------------------------------------------------------------------------
-*/
+
 
         Route::get('/rantai-pasok', [RantaiPasokController::class, 'index'])
             ->name('rantai-pasok');
@@ -281,6 +278,29 @@ Route::prefix('admin')
         Route::delete('/rantai-pasok/{rantaiPasok}', [RantaiPasokController::class, 'destroy'])
             ->whereNumber('rantaiPasok')
             ->name('rantai-pasok.destroy');
+
+        Route::get('/pemanfaat-produk', [PemanfaatProdukController::class, 'index'])
+            ->name('pemanfaat-produk');
+
+        Route::post('/pemanfaat-produk', [PemanfaatProdukController::class, 'store'])
+            ->name('pemanfaat-produk.store');
+
+        Route::post('/pemanfaat-produk/import', [PemanfaatProdukController::class, 'import'])
+            ->name('pemanfaat-produk.import');
+
+        Route::delete('/pemanfaat-produk/bulk-destroy', [PemanfaatProdukController::class, 'bulkDestroy'])
+            ->name('pemanfaat-produk.bulk-destroy');
+
+        Route::delete('/pemanfaat-produk/destroy-all', [PemanfaatProdukController::class, 'destroyAll'])
+            ->name('pemanfaat-produk.destroy-all');
+
+        Route::put('/pemanfaat-produk/{pemanfaatProduk}', [PemanfaatProdukController::class, 'update'])
+            ->whereNumber('pemanfaatProduk')
+            ->name('pemanfaat-produk.update');
+
+        Route::delete('/pemanfaat-produk/{pemanfaatProduk}', [PemanfaatProdukController::class, 'destroy'])
+            ->whereNumber('pemanfaatProduk')
+            ->name('pemanfaat-produk.destroy');
 
         Route::get('/bujk', [BujkController::class, 'index'])
             ->name('bujk');
@@ -374,7 +394,7 @@ Route::prefix('admin')
 
         Route::put('/tenaga-kerja-konstruksi/{tkk}', [DashboardController::class, 'updateTkk'])
             ->name('tenaga-kerja-konstruksi.update');
-            
+
         Route::get('/pelatihan-sertifikasi', [PelatihanTkkController::class, 'index'])
             ->name('pelatihan-sertifikasi.index');
 
