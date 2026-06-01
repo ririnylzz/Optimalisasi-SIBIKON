@@ -14,6 +14,18 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class RantaiPasokController extends Controller
 {
+    public function rantaiPasok()
+    {
+        $rantaiPasoks = RantaiPasok::query()
+            ->where('is_deleted', 0)
+            ->paginate(10);
+
+        return view(
+            'pages.fungsi.pengaturan.rantai-pasok',
+            compact('rantaiPasoks')
+        );
+    }
+
     public function index(Request $request): View|JsonResponse
     {
         $search = trim((string) $request->query('search', ''));
@@ -181,7 +193,7 @@ class RantaiPasokController extends Controller
         }
 
         $header = collect($rows[0])
-            ->map(fn ($value) => $this->normalizeHeader($value))
+            ->map(fn($value) => $this->normalizeHeader($value))
             ->all();
 
         $created = 0;
@@ -209,7 +221,7 @@ class RantaiPasokController extends Controller
 
                 $existing = RantaiPasok::query()
                     ->where('nama', $record['nama'])
-                    ->when(!blank($record['kabupaten']), fn ($query) => $query->where('kabupaten', $record['kabupaten']))
+                    ->when(!blank($record['kabupaten']), fn($query) => $query->where('kabupaten', $record['kabupaten']))
                     ->first();
 
                 if ($existing) {

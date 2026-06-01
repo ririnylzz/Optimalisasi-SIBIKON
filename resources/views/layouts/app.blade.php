@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIBIKON</title>
 
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-sibikon.png') }}">
+    <link rel="shortcut icon" href="{{ asset('images/logo-sibikon.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo-sibikon.png') }}">
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
@@ -47,7 +51,7 @@
                             SIBIKON
                         </h1>
                         <p class="text-sm text-white/70">
-                            Sistem Bina Konstruksi Provinsi Kalimantan Timur
+                            Sistem Informasi Bina Konstruksi Provinsi Kalimantan Timur
                         </p>
                     </div>
                 </a>

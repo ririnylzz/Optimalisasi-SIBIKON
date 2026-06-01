@@ -1,10 +1,46 @@
 @extends('layouts.admin')
 
 @section('page-title', 'Dashboard')
-@section('page-subtitle', 'Dashboard Badan Usaha Jasa Konstruksi')
+@section('page-subtitle', 'Dashboard Badan Usaha Jasa Konstruksi Provinsi Kalimantan Timur')
 
 @section('content')
+@php
+$latestDataDate = $latestDataDate ?? null;
+$latestDataDateLabel = null;
+
+if (!blank($latestDataDate)) {
+try {
+$latestDataDateLabel = \Illuminate\Support\Carbon::parse($latestDataDate)
+->locale('id')
+->translatedFormat('d F Y');
+} catch (\Throwable $exception) {
+$latestDataDateLabel = $latestDataDate;
+}
+}
+@endphp
 <div class="space-y-6">
+    {{-- Header --}}
+    <div class="mt-1 rounded-[22px] bg-gradient-to-r from-[#142B67] via-[#1E3A7A] to-[#2F49A8] px-6 py-5 text-white shadow-lg">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-blue-100/70">
+                    Sistem Informasi Bina Konstruksi Provinsi Kalimantan Timur
+                </p>
+
+                <h1 class="mt-2 text-2xl font-black">
+                    Dashboard Badan Usaha Jasa Konstruksi
+                </h1>
+
+                @if($latestDataDateLabel)
+                <div class="mt-4">
+                    <span class="inline-flex items-center rounded-full border border-blue-200/30 bg-white/10 px-4 py-2 text-xs font-semibold text-blue-50 backdrop-blur">
+                        Data terbaru per {{ $latestDataDateLabel }}
+                    </span>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
 
     <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
         @foreach ($kpi as $index => $item)
@@ -230,9 +266,9 @@
 
                                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
 
-                                const percent = total
-                                    ? ((context.raw / total) * 100).toFixed(1)
-                                    : 0;
+                                const percent = total ?
+                                    ((context.raw / total) * 100).toFixed(1) :
+                                    0;
 
                                 return `${context.label}: ${formatNumber(context.raw)} (${percent}%)`;
                             }
@@ -245,54 +281,54 @@
 
     barChart(
         'associationChart',
-        @json(collect($association)->pluck('label')),
-        @json(collect($association)->pluck('value')),
+        @json(collect($association) -> pluck('label')),
+        @json(collect($association) -> pluck('value')),
         true
     );
 
     pieChart(
         'jenisBujkChart',
-        @json(collect($jenisBujk)->pluck('label')),
-        @json(collect($jenisBujk)->pluck('value'))
+        @json(collect($jenisBujk) -> pluck('label')),
+        @json(collect($jenisBujk) -> pluck('value'))
     );
 
     pieChart(
         'jenisSbuChart',
-        @json(collect($jenisSbu)->pluck('label')),
-        @json(collect($jenisSbu)->pluck('value'))
+        @json(collect($jenisSbu) -> pluck('label')),
+        @json(collect($jenisSbu) -> pluck('value'))
     );
 
     barChart(
         'pelaksanaChart',
-        @json(collect($pelaksanaSbu)->pluck('label')),
-        @json(collect($pelaksanaSbu)->pluck('value')),
+        @json(collect($pelaksanaSbu) -> pluck('label')),
+        @json(collect($pelaksanaSbu) -> pluck('value')),
         false
     );
 
     barChart(
         'kbliChart',
-        @json(collect($kbliSbu)->pluck('label')),
-        @json(collect($kbliSbu)->pluck('value')),
+        @json(collect($kbliSbu) -> pluck('label')),
+        @json(collect($kbliSbu) -> pluck('value')),
         false
     );
 
     pieChart(
         'qualificationChart',
-        @json(collect($kualifikasiSbu)->pluck('label')),
-        @json(collect($kualifikasiSbu)->pluck('value'))
+        @json(collect($kualifikasiSbu) -> pluck('label')),
+        @json(collect($kualifikasiSbu) -> pluck('value'))
     );
 
     barChart(
         'subKlasifikasiChart',
-        @json(collect($subKlasifikasiSbu)->pluck('label')),
-        @json(collect($subKlasifikasiSbu)->pluck('value')),
+        @json(collect($subKlasifikasiSbu) -> pluck('label')),
+        @json(collect($subKlasifikasiSbu) -> pluck('value')),
         false
     );
 
     barChart(
         'sifatChart',
-        @json(collect($sifatSbu)->pluck('label')),
-        @json(collect($sifatSbu)->pluck('value')),
+        @json(collect($sifatSbu) -> pluck('label')),
+        @json(collect($sifatSbu) -> pluck('value')),
         false
     );
 </script>

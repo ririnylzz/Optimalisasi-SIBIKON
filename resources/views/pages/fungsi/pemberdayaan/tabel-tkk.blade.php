@@ -39,15 +39,15 @@
             </aside>
 
             {{-- Table Card --}}
-            <div class="rounded-[28px] border border-[#dfe5ef] bg-white p-8 shadow-[0_12px_35px_rgba(15,23,42,0.08)]">
+            <div class="rounded-[24px] border border-[#dfe5ef] bg-white p-6 shadow-[0_12px_35px_rgba(15,23,42,0.08)]">
 
                 {{-- Table Controls --}}
-                <div class="mb-8 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-                    <div class="flex items-center gap-3 text-lg text-slate-600">
+                <div class="mb-6 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+                    <div class="flex items-center gap-3 text-sm text-slate-500">
                         <span>Show</span>
 
                         <select
-                            class="rounded-xl border border-[#dfe5ef] bg-white px-5 py-3 text-lg text-slate-600 outline-none focus:border-[#293F81]">
+                            class="rounded-lg border border-[#dfe5ef] bg-white px-3 py-2 text-lg text-slate-600 outline-none focus:border-[#293F81]">
                             <option>10</option>
                             <option>25</option>
                             <option>50</option>
@@ -57,72 +57,76 @@
                         <span>entries</span>
                     </div>
 
-                    <div class="flex items-center gap-4 text-lg text-slate-600">
+                    <div class="flex items-center gap-3 text-sm text-slate-500">
                         <label for="search-tkk">Search:</label>
 
                         <input
                             id="search-tkk"
                             type="text"
-                            class="w-full rounded-xl border border-[#dfe5ef] px-5 py-3 text-lg outline-none focus:border-[#293F81] md:w-80">
+                            class="w-full rounded-lg border border-[#dfe5ef] px-3 py-2 text-lg outline-none focus:border-[#293F81] md:w-80">
                     </div>
                 </div>
 
                 {{-- Table --}}
-                <div class="overflow-x-auto">
-                    <table class="w-full min-w-[900px] border-collapse text-left">
-                        <thead>
-                            <tr class="border-y border-[#dfe5ef] bg-[#f8fafc] text-sm uppercase tracking-wide text-[#334155]">
-                                <th class="w-24 px-6 py-6 font-extrabold">No.</th>
-                                <th class="px-6 py-6 font-extrabold">Nama Tenaga Kerja</th>
-                                <th class="w-80 px-6 py-6 font-extrabold">Pendidikan</th>
-                                <th class="w-72 px-6 py-6 font-extrabold">Keahlian</th>
-                            </tr>
-                        </thead>
+                <div class="mt-2 overflow-hidden rounded-xl border border-[#eef2f6]">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
 
-                        <tbody class="divide-y divide-[#e6ebf2] text-base text-slate-600">
-                            {{-- Kosong seperti tampilan pada gambar --}}
-                            <tr>
-                                <td colspan="4" class="px-6 py-10 text-center text-slate-500">
-                                    Data belum tersedia.
-                                </td>
-                            </tr>
+                            <thead>
+                                <tr class="bg-[#f8fafc] text-xs uppercase tracking-wide text-[#071226]">
+                                    <th class="w-16 px-5 py-4 font-extrabold">
+                                        No.
+                                    </th>
 
-                            {{-- Contoh jika nanti ingin isi data:
-                            <tr>
-                                <td class="px-6 py-5 font-semibold">1.</td>
-                                <td class="px-6 py-5 font-bold text-blue-600">Nama Tenaga Kerja</td>
-                                <td class="px-6 py-5">S1 Teknik Sipil</td>
-                                <td class="px-6 py-5">Ahli Muda Teknik Bangunan Gedung</td>
-                            </tr>
-                            --}}
-                        </tbody>
-                    </table>
+                                    <th class="px-5 py-4 font-extrabold">
+                                        Nama Tenaga Kerja
+                                    </th>
+
+                                    <th class="w-56 px-5 py-4 font-extrabold">
+                                        Pendidikan
+                                    </th>
+
+                                    <th class="w-56 px-5 py-4 font-extrabold">
+                                        Keahlian
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="divide-y divide-[#eef2f6] text-sm text-slate-600">
+                                <tr>
+                                    <td colspan="4" class="px-5 py-20 text-center text-slate-500">
+                                        Data belum tersedia.
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
                 </div>
 
                 {{-- Footer Table --}}
-                <div class="mt-8 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-                    <p class="text-lg text-slate-500">
+                <div class="mt-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <p class="text-sm text-slate-500">
                         Showing 0 to 0 of 0 entries
                     </p>
 
-                    <div class="flex items-center justify-end">
+                    <div class="flex items-center overflow-hidden rounded-xl border border-[#dfe5ef]">
                         <button
-                            class="rounded-l-xl border border-[#dfe5ef] bg-slate-100 px-6 py-4 text-lg font-medium text-slate-500">
+                            class="bg-slate-100 px-5 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-200">
                             Previous
                         </button>
 
                         <button
-                            class="border-y border-yellow-400 bg-yellow-400 px-6 py-4 text-lg font-extrabold text-slate-900">
+                            class="bg-yellow-400 px-5 py-3 text-sm font-bold text-slate-900">
                             1
                         </button>
 
                         <button
-                            class="rounded-r-xl border border-[#dfe5ef] bg-white px-6 py-4 text-lg font-medium text-slate-500">
+                            class="bg-white px-5 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-100">
                             Next
                         </button>
                     </div>
                 </div>
-
             </div>
 
         </div>

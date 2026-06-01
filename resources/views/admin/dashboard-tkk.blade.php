@@ -1,10 +1,47 @@
 @extends('layouts.admin')
 
 @section('page-title', 'Dashboard')
-@section('page-subtitle', 'Dashboard Tenaga Kerja Konstruksi')
+@section('page-subtitle', 'Dashboard Tenaga Kerja Konstruksi Provinsi Kalimantan Timur')
 
 @section('content')
+@php
+$latestDataDate = $latestDataDate ?? null;
+$latestDataDateLabel = null;
+
+if (!blank($latestDataDate)) {
+try {
+$latestDataDateLabel = \Illuminate\Support\Carbon::parse($latestDataDate)
+->locale('id')
+->translatedFormat('d F Y');
+} catch (\Throwable $exception) {
+$latestDataDateLabel = $latestDataDate;
+}
+}
+@endphp
 <div class="space-y-6">
+    {{-- Header --}}
+    <div class="mt-1 rounded-[22px] bg-gradient-to-r from-[#142B67] via-[#1E3A7A] to-[#2F49A8] px-6 py-5 text-white shadow-lg">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-blue-100/70">
+                    Sistem Informasi Bina Konstruksi Provinsi Kalimantan Timur
+                </p>
+
+                <h1 class="mt-2 text-2xl font-black">
+                    Dashboard Tenaga Kerja Konstruksi
+                </h1>
+
+                @if($latestDataDateLabel)
+                <div class="mt-4">
+                    <span class="inline-flex items-center rounded-full border border-blue-200/30 bg-white/10 px-4 py-2 text-xs font-semibold text-blue-50 backdrop-blur">
+                        Data terbaru per {{ $latestDataDateLabel }}
+                    </span>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
     {{-- Filter --}}
     <div class="sibikon-card overflow-hidden rounded-[24px] border border-slate-200 bg-white">
         <div class="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-blue-50/60 px-6 py-4">
@@ -16,17 +53,17 @@
 
         <form method="GET"
             action="{{ route('admin.tenaga-kerja-konstruksi') }}"
-            class="flex flex-wrap items-end gap-5 p-6"
+            class="flex flex-wrap items-end gap-3 p-5"
         >
             {{-- Kabupaten --}}
-            <div class="min-w-[220px] flex-1">
+            <div class="min-w-[160px] flex-1">
                 <label class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
                     Filter Kabupaten
                 </label>
 
                 <select
                     name="kabupaten"
-                    class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
+                    class="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-[13px] font-semibold text-slate-700 transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
                 >
                     <option value="semua">Semua Kabupaten</option>
 
@@ -42,14 +79,14 @@
             </div>
 
             {{-- Mode --}}
-            <div class="min-w-[260px] flex-1">
+            <div class="min-w-[190px] flex-1">
                 <label class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
                     Mode Tampilan Data
                 </label>
 
                 <select
                     name="mode"
-                    class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
+                    class="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-[13px] font-semibold text-slate-700 transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
                 >
                     <option value="semua_skk" {{ $selectedMode === 'semua_skk' ? 'selected' : '' }}>
                         TKK Ahli (Semua SKK)
@@ -65,8 +102,54 @@
                 </select>
             </div>
 
+            {{-- Tahun Kadaluarsa --}}
+            <div class="min-w-[140px]">
+                <label class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
+                    Tahun SKK
+                </label>
+
+                <select
+                    name="tahun"
+                    class="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-[13px] font-semibold text-slate-700 transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
+                >
+                    <option value="semua">Semua Tahun</option>
+
+                    @foreach ($tahunOptions as $tahun)
+                        <option
+                            value="{{ $tahun }}"
+                            {{ $selectedTahun == $tahun ? 'selected' : '' }}
+                        >
+                            {{ $tahun }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Asosiasi --}}
+            <div class="min-w-[180px] flex-1">
+                <label class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
+                    Filter Asosiasi
+                </label>
+
+                <select
+                    name="asosiasi"
+                    class="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-[13px] font-semibold text-slate-700 transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
+                >
+                    <option value="semua">Semua Asosiasi</option>
+
+                    @foreach ($asosiasiOptions as $asosiasi)
+                        <option
+                            value="{{ $asosiasi }}"
+                            {{ $selectedAsosiasi === $asosiasi ? 'selected' : '' }}
+                        >
+                            {{ $asosiasi }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
             {{-- Jenjang --}}
-            <div class="min-w-[240px]">
+            <div class="min-w-[200px]">
                 <label class="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
                     Pilih Jenjang
                 </label>
@@ -92,28 +175,28 @@
             <div>
                 <button
                     type="submit"
-                    class="rounded-2xl bg-gradient-to-br from-[#142B67] via-[#1E3A7A] to-[#2F49A8] px-6 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(20,43,103,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(20,43,103,0.24)]"
+                    class="rounded-2xl bg-gradient-to-br from-[#142B67] via-[#1E3A7A] to-[#2F49A8] px-5 py-2.5 text-[13px] font-bold text-white shadow-[0_12px_30px_rgba(20,43,103,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(20,43,103,0.24)]"
                 >
-                    Terapkan Filter
+                    Terapkan
                 </button>
             </div>
         </form>
     </div>
 
     {{-- Charts Row 1 --}}
-    <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+    <div class="grid grid-cols-1 gap-3 xl:grid-cols-2">
         <x-dashboard-chart-card title="Status Sertifikasi" canvas="statusSertifikasiChart" height="h-[290px]" />
         <x-dashboard-chart-card title="Distribusi Jenjang" canvas="distribusiJenjangChart" height="h-[290px]" />
     </div>
 
     {{-- Charts Row 2 --}}
-    <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+    <div class="grid grid-cols-1 gap-3 xl:grid-cols-2">
         <x-dashboard-chart-card title="Top 5 Asosiasi Jenjang 7-9" canvas="topAsosiasiChart" height="h-[340px]" />
         <x-dashboard-chart-card title="Top 5 Klasifikasi" canvas="topKlasifikasiChart" height="h-[340px]" />
     </div>
 
     {{-- Charts Row 3 --}}
-    <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+    <div class="grid grid-cols-1 gap-3 xl:grid-cols-2">
         <x-dashboard-chart-card title="Perbandingan TKK Kab/Kota" canvas="perbandinganKabupatenChart" height="h-[360px]" />
 
         <div class="sibikon-card overflow-hidden rounded-[20px] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(20,43,103,0.10)]">
@@ -131,166 +214,6 @@
                 <div class="relative z-10 h-[360px]">
                     <canvas id="proyeksiKadaluarsaChart"></canvas>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Table --}}
-    <div class="sibikon-card overflow-hidden rounded-[24px] border border-slate-200 bg-white">
-        <div class="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-blue-50/60 px-6 py-4">
-            <h3 class="text-lg font-extrabold text-slate-900">Data Tenaga Kerja Konstruksi</h3>
-        </div>
-
-        <form
-            method="GET"
-            action="{{ route('admin.tenaga-kerja-konstruksi') }}"
-            class="flex flex-col gap-3 border-b border-slate-100 bg-white p-4 md:flex-row"
-        >
-            {{-- Biar filter atas tidak hilang --}}
-            <input type="hidden" name="kabupaten" value="{{ $selectedKabupaten }}">
-            <input type="hidden" name="mode" value="{{ $selectedMode }}">
-
-            @foreach ($selectedJenjang as $jenjang)
-                <input type="hidden" name="jenjang[]" value="{{ $jenjang }}">
-            @endforeach
-
-            {{-- Search Input --}}
-            <div class="flex-1">
-                <input
-                    type="text"
-                    id="searchInput"
-                    placeholder="Cari data tenaga kerja..."
-                    class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-[#3A4FAC] focus:bg-white focus:ring-4 focus:ring-[#3A4FAC]/10"
-                >
-            </div>
-
-            {{-- Search Category --}}
-            <div class="md:w-[240px]">
-                <select
-                    id="searchCategory"
-                    class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-[#3A4FAC] focus:ring-4 focus:ring-[#3A4FAC]/10"
-                >
-                    <option value="nama" {{ request('search_by') == 'nama' ? 'selected' : '' }}>
-                        Cari Berdasarkan Nama
-                    </option>
-
-                    <option value="kabupaten" {{ request('search_by') == 'kabupaten' ? 'selected' : '' }}>
-                        Cari Berdasarkan Kabupaten
-                    </option>
-
-                    <option value="jabatan" {{ request('search_by') == 'jabatan' ? 'selected' : '' }}>
-                        Cari Berdasarkan Jabatan
-                    </option>
-                </select>
-            </div>
-        </form>
-
-        <div class="overflow-x-auto min-h-[440px]">
-            <table class="min-w-full divide-y divide-slate-100">
-                <thead class="bg-slate-50">
-                    <tr>
-                        <th class="px-4 py-2 text-left text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">
-                            Nama
-                        </th>
-
-                        <th class="px-4 py-2 text-left text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">
-                            Kabupaten
-                        </th>
-
-                        <th class="px-4 py-2 text-left text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">
-                            Jabatan Kerja
-                        </th>
-
-                        <th class="px-4 py-2 text-center text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">
-                            Jenjang
-                        </th>
-
-                        <th class="px-4 py-2 text-center text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">
-                            Status
-                        </th>
-                    </tr>
-                </thead>
-
-                <tbody id="tkkTableBody" class="divide-y divide-slate-100 bg-white">
-                    @foreach ($tkkRows as $row)
-                        @php
-                            $statusRaw = $row['status'] ?? '-';
-                            $statusText = ucfirst(strtolower($statusRaw));
-                        @endphp
-
-                        <tr
-                            class="transition hover:bg-blue-50/30"
-                            data-nama="{{ strtolower($row['nama'] ?? '') }}"
-                            data-kabupaten="{{ strtolower($row['kabupaten'] ?? '') }}"
-                            data-jabatan="{{ strtolower($row['jabatan'] ?? '') }}"
-                        >
-                            <td class="whitespace-nowrap px-4 py-2 text-[13px] font-semibold text-slate-700">
-                                {{ $row['nama'] }}
-                            </td>
-
-                            <td class="whitespace-nowrap px-4 py-2 text-[13px] text-slate-600">
-                                {{ $row['kabupaten'] }}
-                            </td>
-
-                            <td class="min-w-[260px] px-4 py-2 text-[13px] text-slate-600">
-                                {{ $row['jabatan'] }}
-                            </td>
-
-                            <td class="whitespace-nowrap px-4 py-2 text-center text-[13px] font-extrabold text-[#142B67]">
-                                {{ $row['jenjang'] }}
-                            </td>
-
-                            <td class="whitespace-nowrap px-4 py-2 text-center">
-                                <span class="
-                                    inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-[0.06em]
-                                    {{ strtolower($statusRaw) === 'aktif'
-                                        ? 'bg-emerald-100 text-emerald-700'
-                                        : 'bg-red-100 text-red-700' }}
-                                ">
-                                    {{ $statusText }}
-                                </span>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-
-        <div class="flex flex-col gap-3 border-t border-slate-100 bg-white px-6 py-4 text-sm sm:flex-row sm:items-center sm:justify-between">
-           <p id="tableInfo" class="font-semibold text-slate-600">
-                Hal:
-                <span class="font-extrabold text-slate-900">
-                    1 - {{ min(10, $totalTkk ?? 0) }}
-                </span>
-                dari
-                <span class="font-extrabold text-slate-900">
-                    {{ $totalTkk ?? 0 }}
-                </span>
-            </p>
-
-            <div class="flex items-center gap-2">
-
-                <button
-                    id="prevBtn"
-                    type="button"
-                    onclick="fetchSearchData(currentPage - 1)"
-                    class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                    Prev
-                </button>
-
-                <div id="paginationNumbers" class="flex items-center gap-1">
-                </div>
-
-                <button
-                    id="nextBtn"
-                    type="button"
-                    onclick="fetchSearchData(currentPage + 1)"
-                    class="rounded-xl border border-[#142B67] bg-[#142B67] px-3 py-2 text-sm font-bold text-white transition hover:bg-[#1d3b8f] disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                    Next
-                </button>
-
             </div>
         </div>
     </div>
@@ -426,6 +349,106 @@
                             }
                         },
                         grid: { color: gridColor }
+                    }
+                }
+            }
+        });
+    }
+
+    function createTopKlasifikasiChart(data) {
+
+        const el = document.getElementById('topKlasifikasiChart');
+
+        if (!el) return;
+
+        new Chart(el, {
+
+            type: 'bar',
+
+            data: {
+                labels: data.map(item => item.label),
+
+                datasets: [{
+                    data: data.map(item => item.value),
+                    backgroundColor: bluePalette,
+                    borderRadius: 8,
+                    maxBarThickness: 36
+                }]
+            },
+
+            options: {
+
+                indexAxis: 'y',
+
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+                        display: false
+                    },
+
+                    tooltip: {
+
+                        callbacks: {
+
+                            title: function(context) {
+                                return context[0].label;
+                            },
+
+                            label: function(context) {
+
+                                const item = data[context.dataIndex];
+
+                                return `Total TKK: ${formatNumber(item.value)}`;
+                            },
+
+                            afterLabel: function(context) {
+
+                                const item = data[context.dataIndex];
+
+                                if (!item.jabatan || item.jabatan.length === 0) {
+                                    return 'Tidak ada jabatan';
+                                }
+
+                                return [
+                                    'Jabatan Kerja:',
+                                    ...item.jabatan.map(j => `• ${j}`)
+                                ];
+                            }
+                        }
+                    }
+                },
+
+                scales: {
+
+                    x: {
+                        beginAtZero: true,
+
+                        ticks: {
+                            color: textColor,
+                            callback: value => formatNumber(value)
+                        },
+
+                        grid: {
+                            color: gridColor
+                        }
+                    },
+
+                    y: {
+
+                        ticks: {
+                            color: textColor,
+                            callback: function(value) {
+                                const label = this.getLabelForValue(value);
+                                return truncateLabel(label, 24);
+                            }
+                        },
+
+                        grid: {
+                            color: gridColor
+                        }
                     }
                 }
             }
@@ -625,12 +648,16 @@
         bluePalette
     );
 
-    barChart(
-        'topKlasifikasiChart',
-        @json(collect($topKlasifikasi)->pluck('label')),
-        @json(collect($topKlasifikasi)->pluck('value')),
-        true,
-        bluePalette
+    // barChart(
+    //     'topKlasifikasiChart',
+    //     @json(collect($topKlasifikasi)->pluck('label')),
+    //     @json(collect($topKlasifikasi)->pluck('value')),
+    //     true,
+    //     bluePalette
+    // );
+
+    createTopKlasifikasiChart(
+        @json($topKlasifikasi)
     );
 
     const perbandinganKabupatenLabels = @json(collect($perbandinganKabupaten)->pluck('label'));

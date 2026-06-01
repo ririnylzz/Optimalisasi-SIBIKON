@@ -84,7 +84,8 @@ Route::get('/fungsi/pengaturan/sosialisasi', [KegiatanController::class, 'sosial
 Route::get('/fungsi/pengaturan/forum', [KegiatanController::class, 'forum'])
     ->name('forum');
 
-
+Route::get('/fungsi/pengaturan/rantai-pasok', [RantaiPasokController::class, 'rantaiPasok'])
+    ->name('rantai-pasok');
 
 Route::get('/fungsi/pengaturan/daftar-sosil', function () {
     return view('welcome', [
@@ -300,12 +301,33 @@ Route::prefix('admin')
             'title' => 'Peraturan',
         ])->name('peraturan');
 
-        Route::get('/tenaga-kerja-konstruksi', [DashboardController::class, 'tkk'])
+        Route::get('/dashboard-tkk', [DashboardController::class, 'tkk'])
+            ->name('dashboard-tkk');
+
+        Route::get('/tenaga-kerja-konstruksi', [DashboardController::class, 'tkkData'])
             ->name('tenaga-kerja-konstruksi');
 
         Route::get('/tenaga-kerja-konstruksi/search', [DashboardController::class, 'searchTkk'])
             ->name('tenaga-kerja-konstruksi.search');
 
+        Route::post('/tenaga-kerja-konstruksi', [DashboardController::class, 'storeTkk'])
+            ->name('tenaga-kerja-konstruksi.store');
+
+        Route::post('/tenaga-kerja-konstruksi/import', [DashboardController::class, 'importTkk'])
+            ->name('tenaga-kerja-konstruksi.import');
+
+        Route::delete('/tenaga-kerja-konstruksi/bulk-destroy', [DashboardController::class, 'bulkDestroyTkk'])
+            ->name('tenaga-kerja-konstruksi.bulk-destroy');
+
+        Route::delete('/tenaga-kerja-konstruksi/destroy-all', [DashboardController::class, 'destroyAllTkk'])
+            ->name('tenaga-kerja-konstruksi.destroy-all');
+
+        Route::delete('/tenaga-kerja-konstruksi/{tkk}', [DashboardController::class, 'destroyTkk'])
+            ->name('tenaga-kerja-konstruksi.destroy');
+
+        Route::put('/tenaga-kerja-konstruksi/{tkk}', [DashboardController::class, 'updateTkk'])
+            ->name('tenaga-kerja-konstruksi.update');
+            
         Route::get('/pelatihan-sertifikasi', [PelatihanTkkController::class, 'index'])
             ->name('pelatihan-sertifikasi.index');
 

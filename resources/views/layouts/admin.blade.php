@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Admin Dashboard' }}</title>
 
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-sibikon.png') }}">
+
     <script>
         (function () {
             document.documentElement.dataset.theme = 'light';
@@ -72,7 +74,11 @@
                 </div>
 
                 <div class="relative z-10 flex h-[74px] items-center justify-between border-b border-white/10 px-4">
-                    <div class="flex min-w-0 items-center gap-3 overflow-hidden">
+                   <div
+                        x-show="sidebarPinned || sidebarHovered"
+                        x-transition
+                        class="flex min-w-0 items-center gap-3 overflow-hidden"
+                    >
                         <div class="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white/10 ring-1 ring-white/10">
                             <img
                                 src="{{ asset('images/logo-sibikon.png') }}"
