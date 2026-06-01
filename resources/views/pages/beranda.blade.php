@@ -111,13 +111,12 @@
 </section>
 
 {{-- LAYANAN SECTION --}}
-<section class="px-4 py-20 md:px-6 lg:px-8">
-    <div class="mx-auto max-w-7xl">
-
+<section class="py-20">
+    <div class="mx-auto max-w-5xl px-8 md:px-12">
         {{-- Judul --}}
         <div class="mb-16 text-center">
-            <h2 class="text-5xl font-extrabold text-[#143B5D] md:text-6xl">
-                Layanan
+            <h2 class="text-5xl font-extrabold text-[#143B5D] md:text-[44px]">
+                Masyarakat Jasa Konstruksi
             </h2>
 
             <span class="mx-auto mt-6 block h-1.5 w-48 rounded-full bg-[#f1d00a]"></span>
@@ -177,24 +176,24 @@
         @endphp
 
         {{-- Grid Layanan --}}
-        <div id="layanan-grid" class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div id="layanan-grid"
+            class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             @foreach ($layanan as $index => $item)
-            <div class="layanan-card {{ $index >= 3 ? 'layanan-extra hidden' : '' }}">
+            <div class="layanan-card">
 
                 <a href="{{ isset($item['route']) ? route($item['route']) : '#' }}" class="block">
-                    <div class="flex h-[260px] flex-col items-center justify-between rounded-[26px] bg-white px-6 py-7 text-center shadow-[0_10px_24px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(15,23,42,0.12)]">
-
+                    <div class="flex aspect-square flex-col items-center justify-center rounded-[24px] bg-white p-6 text-center shadow-[0_10px_24px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(15,23,42,0.12)]">
                         {{-- Area Gambar --}}
-                        <div class="flex h-[145px] w-full items-center justify-center">
+                        <div class="flex items-center justify-center">
                             <img
                                 src="{{ asset($item['image']) }}"
                                 alt="{{ $item['title'] }}"
-                                class="h-[145px] w-[145px] object-cover">
+                                class="h-[140px] w-[140px] object-cover">
                         </div>
 
                         {{-- Area Judul --}}
-                        <div class="flex h-[70px] w-full items-center justify-center">
-                            <h3 class="text-lg font-extrabold leading-snug text-[#163B5C] md:text-xl">
+                        <div class="mt-5 flex items-center justify-center">
+                            <h3 class="text-base font-extrabold leading-snug text-[#163B5C]">
                                 {{ $item['title'] }}
                             </h3>
                         </div>
@@ -204,16 +203,6 @@
 
             </div>
             @endforeach
-        </div>
-
-        {{-- Tombol --}}
-        <div class="mt-16 flex justify-center">
-            <button
-                id="toggle-layanan"
-                type="button"
-                class="inline-flex items-center justify-center rounded-full bg-[#143B5D] px-8 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-[#0F2E49]">
-                Lihat Selengkapnya
-            </button>
         </div>
     </div>
 </section>
