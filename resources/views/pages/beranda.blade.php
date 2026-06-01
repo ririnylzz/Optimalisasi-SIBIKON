@@ -395,6 +395,103 @@
     </div>
 </section>
 
+{{-- LAYANAN SECTION --}}
+<section class="py-20">
+    <div class="mx-auto max-w-5xl px-8 md:px-12">
+        {{-- Judul --}}
+        <div class="mb-16 text-center">
+            <h2 class="text-5xl font-extrabold text-[#143B5D] md:text-[44px]">
+                Masyarakat Jasa Konstruksi
+            </h2>
+
+            <span class="mx-auto mt-6 block h-1.5 w-48 rounded-full bg-[#f1d00a]"></span>
+        </div>
+
+        @php
+        $layanan = [
+        [
+        'title' => 'Pengguna Jasa',
+        'image' => 'images/layanan-1.png',
+        ],
+        [
+        'title' => 'Perguruan Tinggi / Pakar',
+        'image' => 'images/layanan-2.png',
+        ],
+        [
+        'title' => 'Lembaga Pendidikan dan Pelatihan Kerja Konstruksi',
+        'image' => 'images/layanan-3.png',
+        ],
+        [
+        'title' => 'Pemerhati Konstruksi',
+        'image' => 'images/layanan-4.png',
+        ],
+        [
+        'title' => 'Asosiasi Perusahaan',
+        'image' => 'images/layanan-5.png',
+        'route' => 'asosiasi-perusahaan',
+        ],
+        [
+        'title' => 'Asosiasi Profesi',
+        'image' => 'images/layanan-6.png',
+        'route' => 'asosiasi-profesi',
+        ],
+        [
+        'title' => 'Lembaga Sertifikasi Jasa Konstruksi',
+        'image' => 'images/layanan-7.png',
+        ],
+        [
+        'title' => 'Pemanfaat Produk Jasa Konstruksi',
+        'image' => 'images/layanan-8.png',
+        ],
+        [
+        'title' => 'Penyedia Jasa',
+        'image' => 'images/layanan-9.png',
+        'route' => 'penyedia-jasa',
+        ],
+        [
+        'title' => 'Tenaga Kerja Konstruksi',
+        'image' => 'images/layanan-10.png',
+        'route' => 'tabel-tkk',
+        ],
+        [
+        'title' => 'Pelaku Rantai Pasok',
+        'image' => 'images/layanan-11.png',
+        ],
+        ];
+        @endphp
+
+        {{-- Grid Layanan --}}
+        <div id="layanan-grid"
+            class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            @foreach ($layanan as $index => $item)
+            <div class="layanan-card">
+
+                <a href="{{ isset($item['route']) ? route($item['route']) : '#' }}" class="block">
+                    <div class="flex aspect-square flex-col items-center justify-center rounded-[24px] bg-white p-6 text-center shadow-[0_10px_24px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(15,23,42,0.12)]">
+                        {{-- Area Gambar --}}
+                        <div class="flex items-center justify-center">
+                            <img
+                                src="{{ asset($item['image']) }}"
+                                alt="{{ $item['title'] }}"
+                                class="h-[140px] w-[140px] object-cover">
+                        </div>
+
+                        {{-- Area Judul --}}
+                        <div class="mt-5 flex items-center justify-center">
+                            <h3 class="text-base font-extrabold leading-snug text-[#163B5C]">
+                                {{ $item['title'] }}
+                            </h3>
+                        </div>
+
+                    </div>
+                </a>
+
+            </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+
 @include('pages.gis-map')
 @endsection
 
