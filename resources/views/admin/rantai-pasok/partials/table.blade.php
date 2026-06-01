@@ -84,17 +84,8 @@
                     </td>
 
                     <td class="px-4 py-3 align-top">
-                        <div class="max-w-[240px] space-y-1 leading-5 text-slate-600">
+                        <div class="max-w-[240px] leading-5 text-slate-600">
                             <p>{{ $rantaiPasok->kontak ?: '-' }}</p>
-                            <p>{{ $rantaiPasok->email ?: '-' }}</p>
-
-                            @if($rantaiPasok->website_url)
-                            <a href="{{ $rantaiPasok->website_url }}" target="_blank" rel="noopener" class="text-indigo-600 hover:underline">
-                                {{ $rantaiPasok->website }}
-                            </a>
-                            @else
-                            <p>-</p>
-                            @endif
                         </div>
                     </td>
 

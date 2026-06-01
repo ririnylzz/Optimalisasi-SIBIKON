@@ -46,9 +46,7 @@ class RantaiPasokController extends Controller
                     ->orWhere('alamat', 'like', "%{$search}%")
                     ->orWhere('kabupaten', 'like', "%{$search}%")
                     ->orWhere('provinsi', 'like', "%{$search}%")
-                    ->orWhere('kontak', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('website', 'like', "%{$search}%");
+                    ->orWhere('kontak', 'like', "%{$search}%");
             });
         }
 
@@ -258,8 +256,6 @@ class RantaiPasokController extends Controller
             'kabupaten' => ['nullable', 'string', 'max:255'],
             'provinsi' => ['nullable', 'string', 'max:255'],
             'kontak' => ['nullable', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255'],
-            'website' => ['nullable', 'string', 'max:255'],
         ]);
     }
 
@@ -309,8 +305,7 @@ class RantaiPasokController extends Controller
             'kabupaten' => $this->firstValue($raw, ['kabupaten', 'kabupaten_kota', 'kab_kota', 'kota']),
             'provinsi' => $this->firstValue($raw, ['provinsi', 'propinsi']),
             'kontak' => $this->firstValue($raw, ['kontak', 'no_telp', 'telp', 'telepon', 'nomor_telepon', 'hp']),
-            'email' => $this->firstValue($raw, ['email', 'email_usaha']),
-            'website' => $this->firstValue($raw, ['website', 'web', 'situs']),
+            
         ];
     }
 
