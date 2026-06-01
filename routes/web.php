@@ -14,6 +14,7 @@ use App\Http\Controllers\KegiatanController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\RantaiPasokController;
 use App\Models\Tkk;
+use App\Http\Controllers\TertibPenyelenggaraanController;
 
 
 Route::get('/', [KegiatanController::class, 'beranda'])
@@ -159,6 +160,9 @@ Route::get('/fungsi/pengawasan/tertib-penyelenggaraan', function () {
         'page' => 'tertib-penyelenggaraan',
     ]);
 })->name('tertib-penyelenggaraan');
+
+Route::post('/fungsi/pengawasan/tertib-penyelenggaraan', [TertibPenyelenggaraanController::class, 'store'])
+    ->name('tertib-penyelenggaraan.store');
 
 Route::get('/fungsi/pengawasan/tertib-pemanfaatan', function () {
     return view('welcome', [

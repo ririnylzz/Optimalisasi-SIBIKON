@@ -53,9 +53,26 @@
                     <p class="mt-2 text-sm text-slate-500">
                         Form pengawasan digital untuk pemeriksaan tertib penyelenggaraan jasa konstruksi.
                     </p>
+
+                    @if(session('success'))
+                    <div class="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+                        {{ session('success') }}
+                    </div>
+                    @endif
+
+                    @if($errors->any())
+                    <div class="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        <p class="font-bold">Ada data yang belum sesuai:</p>
+                        <ul class="mt-2 list-disc pl-5">
+                            @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
                 </div>
 
-                <form action="#" method="POST" enctype="multipart/form-data" class="space-y-6">
+                <form action="{{ route('tertib-penyelenggaraan.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
 
                     {{-- Informasi Umum --}}
@@ -324,7 +341,7 @@
 
                     {{-- Button --}}
                     <div class="flex justify-start">
-                        <button type="button"
+                        <button type="submit"
                             class="inline-flex items-center justify-center rounded-xl bg-red-500 px-6 py-3 text-sm font-extrabold uppercase tracking-wide text-white shadow-lg shadow-red-500/20 transition hover:bg-red-600">
                             Simpan Data Pengawasan
                         </button>
