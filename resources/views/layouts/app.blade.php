@@ -297,7 +297,7 @@
                                 SIBIKON
                             </h3>
                             <p class="mt-1 text-base text-white/70">
-                                Sistem Bina Konstruksi
+                                Sistem Informasi Bina Konstruksi
                             </p>
                         </div>
                     </div>
