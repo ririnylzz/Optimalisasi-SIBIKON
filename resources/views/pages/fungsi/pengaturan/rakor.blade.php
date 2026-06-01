@@ -16,7 +16,7 @@
             <span class="mx-auto mt-5 block h-1.5 w-40 rounded-full bg-yellow-400"></span>
         </div>
 
-        <div class="grid grid-cols-1 gap-8 lg:grid-cols-[240px_1fr]">
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-[240px_minmax(0,1fr)]">
 
             {{-- Sidebar --}}
             <aside class="rounded-[24px] bg-[#293F81] px-8 py-8 text-white shadow-lg lg:min-h-[430px]">
@@ -46,7 +46,7 @@
             </aside>
 
             {{-- Table Card --}}
-            <div class="rounded-[24px] border border-[#dfe5ef] bg-white p-6 shadow-[0_12px_35px_rgba(15,23,42,0.08)]">
+            <div class="rounded-[24px] border border-[#dfe5ef] bg-white px-10 py-8 shadow-[0_12px_35px_rgba(15,23,42,0.08)]">
 
                 <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div class="flex items-center gap-3 text-sm text-slate-500">
@@ -66,83 +66,85 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full min-w-[900px] border-collapse text-left">
-                        <thead>
-                            <tr class="border-y border-[#dfe5ef] bg-[#f8fafc] text-xs uppercase tracking-wide text-[#071226]">
-                                <th class="w-16 px-5 py-5 font-extrabold">No.</th>
-                                <th class="px-5 py-5 font-extrabold">Judul Kegiatan</th>
-                                <th class="w-44 px-5 py-5 font-extrabold">Waktu Kegiatan</th>
-                                <th class="px-5 py-5 font-extrabold">Tempat Kegiatan</th>
-                                <th class="w-36 px-5 py-5 font-extrabold">Kab/Kota</th>
-                                <th class="w-36 px-5 py-5 font-extrabold">Peserta</th>
-                                <th class="w-32 px-5 py-5 font-extrabold">Daftar</th>
-                            </tr>
-                        </thead>
+                <div class="px-4 md:px-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-[900px] border-collapse text-left">
+                            <thead>
+                                <tr class="border-y border-[#dfe5ef] bg-[#f8fafc] text-xs uppercase tracking-wide text-[#071226]">
+                                    <th class="w-16 px-5 py-5 font-extrabold">No.</th>
+                                    <th class="px-5 py-5 font-extrabold">Judul Kegiatan</th>
+                                    <th class="w-44 px-5 py-5 font-extrabold">Waktu Kegiatan</th>
+                                    <th class="px-5 py-5 font-extrabold">Tempat Kegiatan</th>
+                                    <th class="w-36 px-5 py-5 font-extrabold">Kab/Kota</th>
+                                    <th class="w-36 px-5 py-5 font-extrabold">Peserta</th>
+                                    <th class="w-32 px-5 py-5 font-extrabold">Daftar</th>
+                                </tr>
+                            </thead>
 
-                        <tbody class="divide-y divide-[#e6ebf2] text-sm text-slate-600">
-                            @forelse ($kegiatan as $index => $item)
-                            <tr class="align-top">
-                                <td class="px-5 py-6 font-semibold">
-                                    {{ $index + 1 }}.
-                                </td>
+                            <tbody class="divide-y divide-[#e6ebf2] text-sm text-slate-600">
+                                @forelse ($kegiatan as $index => $item)
+                                <tr class="align-top">
+                                    <td class="px-5 py-6 font-semibold">
+                                        {{ $index + 1 }}.
+                                    </td>
 
-                                <td class="px-5 py-6">
-                                    <a href="#"
-                                        class="font-bold leading-7 text-blue-600 hover:underline">
-                                        {{ $item['judul'] }}
-                                    </a>
-                                </td>
+                                    <td class="px-5 py-6">
+                                        <a href="#"
+                                            class="font-bold leading-7 text-blue-600 hover:underline">
+                                            {{ $item['judul'] }}
+                                        </a>
+                                    </td>
 
-                                <td class="px-5 py-6 leading-7">
-                                    {{ $item['tanggal'] }}
-                                </td>
+                                    <td class="px-5 py-6 leading-7">
+                                        {{ $item['tanggal'] }}
+                                    </td>
 
-                                <td class="px-5 py-6 leading-7">
-                                    {{ $item['tempat'] }}
-                                </td>
+                                    <td class="px-5 py-6 leading-7">
+                                        {{ $item['tempat'] }}
+                                    </td>
 
-                                <td class="px-5 py-6 font-bold uppercase">
-                                    {{ $item['kabupaten'] }}
-                                </td>
+                                    <td class="px-5 py-6 font-bold uppercase">
+                                        {{ $item['kabupaten'] }}
+                                    </td>
 
-                                <td class="px-5 py-6">
-                                    <span class="inline-flex rounded-md bg-blue-600 px-3 py-2 text-xs font-extrabold text-white">
-                                        {{ $item['peserta'] }}
-                                    </span>
-                                </td>
+                                    <td class="px-5 py-6">
+                                        <span class="inline-flex rounded-md bg-blue-600 px-3 py-2 text-xs font-extrabold text-white">
+                                            {{ $item['peserta'] }}
+                                        </span>
+                                    </td>
 
-                                <td class="px-5 py-6">
-                                    <a href="{{ $item['link'] }}"
-                                        class="inline-flex rounded-md bg-yellow-400 px-4 py-2 text-xs font-extrabold text-slate-900 transition hover:bg-yellow-300">
-                                        Daftar
-                                    </a>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="7" class="px-5 py-10 text-center text-slate-500">
-                                    Belum ada data kegiatan.
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <p class="text-sm text-slate-500">Showing 1 to 2 of 2 entries</p>
-
-                    <div class="flex items-center justify-end gap-1">
-                        <button class="rounded-lg bg-slate-100 px-4 py-3 text-sm text-slate-500">Previous</button>
-                        <button class="rounded-lg bg-yellow-400 px-4 py-3 text-sm font-extrabold text-slate-900">1</button>
-                        <button class="rounded-lg bg-slate-100 px-4 py-3 text-sm text-slate-500">Next</button>
+                                    <td class="px-5 py-6">
+                                        <a href="{{ $item['link'] }}"
+                                            class="inline-flex rounded-md bg-yellow-400 px-4 py-2 text-xs font-extrabold text-slate-900 transition hover:bg-yellow-300">
+                                            Daftar
+                                        </a>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="7" class="px-5 py-10 text-center text-slate-500">
+                                        Belum ada data kegiatan.
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
-            </div>
-        </div>
+                    <div class="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                        <p class="text-sm text-slate-500">Showing 1 to 2 of 2 entries</p>
 
-    </div>
+                        <div class="flex items-center justify-end gap-1">
+                            <button class="rounded-lg bg-slate-100 px-4 py-3 text-sm text-slate-500">Previous</button>
+                            <button class="rounded-lg bg-yellow-400 px-4 py-3 text-sm font-extrabold text-slate-900">1</button>
+                            <button class="rounded-lg bg-slate-100 px-4 py-3 text-sm text-slate-500">Next</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
 </section>
 @endsection

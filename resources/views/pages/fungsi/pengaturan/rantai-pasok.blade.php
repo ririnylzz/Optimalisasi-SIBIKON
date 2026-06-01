@@ -49,16 +49,19 @@
                 <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div class="flex items-center gap-3 text-sm text-slate-500">
                         <span>Show</span>
+
                         <select class="rounded-lg border border-[#dfe5ef] bg-white px-3 py-2 text-sm text-slate-600">
                             <option>10</option>
                             <option>25</option>
                             <option>50</option>
                         </select>
+
                         <span>entries</span>
                     </div>
 
                     <div class="flex items-center gap-3 text-sm text-slate-500">
                         <label>Search:</label>
+
                         <input type="text"
                             class="w-full rounded-lg border border-[#dfe5ef] px-4 py-2 text-sm outline-none focus:border-[#293F81] md:w-72">
                     </div>
@@ -75,46 +78,40 @@
                         </thead>
 
                         <tbody class="divide-y divide-[#e6ebf2] text-sm text-slate-600">
+                            @forelse($rantaiPasoks as $item)
                             <tr>
-                                <td class="px-5 py-6 font-semibold">1.</td>
-                                <td class="px-5 py-6 font-bold text-blue-600">
-                                    PT Konstruksi Kaltim Sejahtera
+                                <td class="px-5 py-6 font-semibold">
+                                    {{ $loop->iteration + ($rantaiPasoks->firstItem() - 1) }}.
                                 </td>
-                                <td class="px-5 py-6">
-                                    Penyedia Material Bangunan
-                                </td>
-                            </tr>
 
-                            <tr>
-                                <td class="px-5 py-6 font-semibold">2.</td>
                                 <td class="px-5 py-6 font-bold text-blue-600">
-                                    CV Mandiri Beton Nusantara
+                                    {{ $item->nama }}
                                 </td>
-                                <td class="px-5 py-6">
-                                    Beton Ready Mix
-                                </td>
-                            </tr>
 
-                            <tr>
-                                <td class="px-5 py-6 font-semibold">3.</td>
-                                <td class="px-5 py-6 font-bold text-blue-600">
-                                    PT Baja Konstruksi Indonesia
-                                </td>
                                 <td class="px-5 py-6">
-                                    Penyedia Baja Konstruksi
+                                    {{ $item->bidang_usaha }}
                                 </td>
                             </tr>
+                            @empty
+                            <tr>
+                                <td colspan="3" class="px-5 py-10 text-center text-slate-500">
+                                    Data rantai pasok belum tersedia.
+                                </td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
 
                 <div class="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <p class="text-sm text-slate-500">Showing 1 to 3 of 3 entries</p>
+                    <p class="text-sm text-slate-500">
+                        Showing {{ $rantaiPasoks->firstItem() ?? 0 }}
+                        to {{ $rantaiPasoks->lastItem() ?? 0 }}
+                        of {{ $rantaiPasoks->total() }} entries
+                    </p>
 
-                    <div class="flex items-center justify-end gap-1">
-                        <button class="rounded-lg bg-slate-100 px-4 py-3 text-sm text-slate-500">Previous</button>
-                        <button class="rounded-lg bg-yellow-400 px-4 py-3 text-sm font-extrabold text-slate-900">1</button>
-                        <button class="rounded-lg bg-slate-100 px-4 py-3 text-sm text-slate-500">Next</button>
+                    <div>
+                        {{ $rantaiPasoks->links() }}
                     </div>
                 </div>
 

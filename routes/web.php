@@ -84,7 +84,8 @@ Route::get('/fungsi/pengaturan/sosialisasi', [KegiatanController::class, 'sosial
 Route::get('/fungsi/pengaturan/forum', [KegiatanController::class, 'forum'])
     ->name('forum');
 
-
+Route::get('/fungsi/pengaturan/rantai-pasok', [RantaiPasokController::class, 'rantaiPasok'])
+    ->name('rantai-pasok');
 
 Route::get('/fungsi/pengaturan/daftar-sosil', function () {
     return view('welcome', [

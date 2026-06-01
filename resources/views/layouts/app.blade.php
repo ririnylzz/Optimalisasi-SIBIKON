@@ -51,7 +51,7 @@
                             SIBIKON
                         </h1>
                         <p class="text-sm text-white/70">
-                            Sistem Bina Konstruksi Provinsi Kalimantan Timur
+                            Sistem Informasi Bina Konstruksi Provinsi Kalimantan Timur
                         </p>
                     </div>
                 </a>
