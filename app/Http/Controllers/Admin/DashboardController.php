@@ -289,6 +289,7 @@ class DashboardController extends Controller
         $selectedKabupaten = $request->query('kabupaten', 'semua');
         $selectedMode = $request->query('mode', 'semua_skk');
         $selectedTahun = $request->query('tahun', 'semua');
+        $selectedAsosiasi = $request->query('asosiasi', 'semua');
         $selectedJenjang = $request->query('jenjang', [7, 8, 9]);
 
         if (!is_array($selectedJenjang)) {
@@ -348,6 +349,7 @@ class DashboardController extends Controller
             $selectedKabupaten,
             $selectedJenjang,
             $selectedTahun,
+            $selectedAsosiasi,
             $search,
             $searchBy
         ) {
@@ -378,13 +380,17 @@ class DashboardController extends Controller
                 || $selectedKabupaten === ''
                 || $row->kabupaten === $selectedKabupaten;
 
+            $matchAsosiasi = $selectedAsosiasi === 'semua'
+                || $selectedAsosiasi === ''
+                || $row->asosiasi === $selectedAsosiasi;
+                
             $matchJenjang = in_array((string) $row->jenjang, $selectedJenjang, true);
 
             $matchTahun = $selectedTahun === 'semua'
                 || $selectedTahun === ''
                 || Carbon::parse($row->tanggal_kadaluwarsa)->year === (int) $selectedTahun;
 
-            return $matchKabupaten && $matchJenjang && $matchSearch && $matchTahun;
+            return $matchKabupaten && $matchAsosiasi && $matchJenjang && $matchSearch && $matchTahun;
         });
 
         if ($selectedMode === 'aktif') {
@@ -464,9 +470,18 @@ class DashboardController extends Controller
                 return $row->klasifikasi ?: 'Tidak Diketahui';
             })
             ->map(function ($items, $label) {
+
+                $jabatanList = $items
+                    ->pluck('jabatan_kerja')
+                    ->filter()
+                    ->unique()
+                    ->take(5)
+                    ->values();
+
                 return [
                     'label' => $label,
                     'value' => $items->count(),
+                    'jabatan' => $jabatanList,
                 ];
             })
             ->sortByDesc('value')
@@ -509,6 +524,13 @@ class DashboardController extends Controller
             ->sort()
             ->values();
 
+        $asosiasiOptions = $allRows
+            ->pluck('asosiasi')
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values();
+
         $kabupatenOptions = $allRows
             ->pluck('kabupaten')
             ->filter()
@@ -547,6 +569,8 @@ class DashboardController extends Controller
             'distribusiJenjang',
             'topAsosiasi',
             'topKlasifikasi',
+            'asosiasiOptions',
+            'selectedAsosiasi',
             'perbandinganKabupaten',
             'proyeksiKadaluarsa',
             'kabupatenOptions',
