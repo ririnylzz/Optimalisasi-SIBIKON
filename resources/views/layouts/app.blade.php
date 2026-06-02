@@ -71,13 +71,13 @@
                         <button type="button"
                             class="nav-dropdown-button {{ request()->routeIs('tentang-kami', 'struktur', 'sop-renja') ? 'text-yellow-400' : 'text-white' }} flex items-center gap-1 transition hover:text-yellow-400">
                             Profil
-                            <svg class="nav-dropdown-icon h-4 w-4 transition group-hover:rotate-180" fill="none"
+                            <svg class="h-4 w-4 transition group-hover:rotate-180" fill="none"
                                 stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
 
-                        <div class="nav-dropdown-menu absolute left-0 top-full z-50 hidden w-72 pt-4 group-hover:block">
+                        <div class="absolute left-0 top-full z-50 hidden w-72 pt-4 group-hover:block">
                             <div class="border-t-4 border-yellow-400 bg-white shadow-xl">
                                 <a href="{{ route('tentang-kami') }}"
                                     class="block border-b border-slate-200 px-6 py-4 font-bold text-slate-800 hover:bg-slate-100">
@@ -105,24 +105,26 @@
                     {{-- Fungsi --}}
                     <div class="relative group nav-dropdown">
                         <button type="button"
-                            class="nav-dropdown-button {{ request()->routeIs(
-                            'rakor',
-                            'sosialisasi',
-                            'forum',
-                            'rantai-pasok',
-                            'tabel-tkk',
-                            'pelatihan-ahli',
-                            'pelatihan-sertifikasi-ahli',
-                            'tertib-usaha'
-                        ) ? 'text-yellow-400' : 'text-white' }} flex items-center gap-1 transition hover:text-yellow-400">
+                            class="{{ request()->routeIs(
+                                'rakor',
+                                'sosialisasi',
+                                'forum',
+                                'rantai-pasok',
+                                'tabel-tkk',
+                                'pelatihan-ahli',
+                                'pelatihan-sertifikasi-ahli',
+                                'tertib-usaha',
+                                'tertib-penyelenggaraan',
+                                'tertib-pemanfaatan'
+                            ) ? 'text-yellow-400' : 'text-white' }} flex items-center gap-1 transition hover:text-yellow-400">
                             Fungsi
-                            <svg class="nav-dropdown-icon h-4 w-4 transition group-hover:rotate-180" fill="none"
+                            <svg class="h-4 w-4 transition group-hover:rotate-180" fill="none"
                                 stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
 
-                        <div class="nav-dropdown-menu absolute left-0 top-full z-50 hidden w-72 pt-4 group-hover:block">
+                        <div class="absolute left-0 top-full z-50 hidden w-72 pt-4 group-hover:block">
                             <div class="border-t-4 border-yellow-400 bg-white shadow-xl">
                                 <a href="{{ route('rakor') }}"
                                     class="block border-b border-slate-200 px-6 py-4 font-bold text-slate-800 hover:bg-slate-100">

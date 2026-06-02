@@ -1,26 +1,26 @@
 @extends('layouts.app')
 
 @section('content')
-<section class="bg-white py-16 px-6">
-    <div class="max-w-6xl mx-auto">
+<section class="bg-white px-6 py-16">
+    <div class="mx-auto max-w-6xl">
 
         {{-- Header --}}
-        <div class="text-center mb-12">
+        <div class="mb-12 text-center">
             <span class="inline-flex items-center rounded-full bg-[#ECCC4B] px-5 py-2 text-sm font-medium text-slate-900">
                 Hubungi kami
             </span>
 
-            <h1 class="text-3xl md:text-4xl font-extrabold text-[#21325e] mb-3">
+            <h1 class="mb-3 mt-6 text-3xl font-extrabold text-[#21325e] md:text-4xl">
                 Kontak & Lokasi
             </h1>
 
-            <p class="text-[#7282cc] text-sm">
+            <p class="text-sm text-[#7282cc]">
                 Silakan hubungi kami untuk informasi lebih lanjut mengenai layanan SIBIKON
             </p>
         </div>
 
         {{-- Kontak dan Peta --}}
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch mb-16">
+        <div class="mb-16 grid grid-cols-1 items-stretch gap-12 lg:grid-cols-2">
 
             {{-- Peta --}}
             <div class="h-96 overflow-hidden rounded-2xl bg-[#c5cae9]/50 shadow-sm">
@@ -35,17 +35,17 @@
             </div>
 
             {{-- Informasi Kontak --}}
-            <div class="h-96 flex flex-col justify-center">
-                <h2 class="text-3xl font-extrabold text-[#21325e] mb-10">
+            <div class="flex h-96 flex-col justify-center">
+                <h2 class="mb-10 text-3xl font-extrabold text-[#21325e]">
                     Informasi Kontak
                 </h2>
 
                 <div class="space-y-8">
 
                     {{-- Alamat --}}
-                    <div class="flex gap-5 items-start">
-                        <div class="w-16 h-16 rounded-xl bg-[#21325e] text-white flex items-center justify-center shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none"
+                    <div class="flex items-start gap-5">
+                        <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-[#21325e] text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none"
                                 viewBox="0 0 24 24" stroke="#f1d00a" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M12 11.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
@@ -53,40 +53,43 @@
                                     d="M19.5 9c0 7.5-7.5 12-7.5 12S4.5 16.5 4.5 9a7.5 7.5 0 1115 0z" />
                             </svg>
                         </div>
+
                         <div>
-                            <h3 class="font-bold text-[#21325e] text-2xl mb-1">Alamat</h3>
-                            <p class="text-lg text-[#21325e]/70 leading-relaxed">
+                            <h3 class="mb-1 text-2xl font-bold text-[#21325e]">Alamat</h3>
+                            <p class="text-lg leading-relaxed text-[#21325e]/70">
                                 Jalan. Tengkawang No.1, Samarinda
                             </p>
                         </div>
                     </div>
 
                     {{-- Telepon --}}
-                    <div class="flex gap-5 items-start">
-                        <div class="w-16 h-16 rounded-xl bg-[#21325e] text-white flex items-center justify-center shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none"
+                    <div class="flex items-start gap-5">
+                        <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-[#21325e] text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none"
                                 viewBox="0 0 24 24" stroke="#f1d00a" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M3 5a2 2 0 012-2h3.28a2 2 0 011.94 1.515l.57 2.28a2 2 0 01-.45 1.91l-1.27 1.27a16 16 0 006.36 6.36l1.27-1.27a2 2 0 011.91-.45l2.28.57A2 2 0 0121 15.72V19a2 2 0 01-2 2h-1C9.163 21 3 14.837 3 7V5z" />
                             </svg>
                         </div>
+
                         <div>
-                            <h3 class="font-bold text-[#21325e] text-2xl mb-1">Telepon</h3>
+                            <h3 class="mb-1 text-2xl font-bold text-[#21325e]">Telepon</h3>
                             <p class="text-lg text-[#21325e]/70">(+0541) ......</p>
                         </div>
                     </div>
 
                     {{-- Email --}}
-                    <div class="flex gap-5 items-start">
-                        <div class="w-16 h-16 rounded-xl bg-[#21325e] text-white flex items-center justify-center shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none"
+                    <div class="flex items-start gap-5">
+                        <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-[#21325e] text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none"
                                 viewBox="0 0 24 24" stroke="#f1d00a" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
                         </div>
+
                         <div>
-                            <h3 class="font-bold text-[#21325e] text-2xl mb-1">Email</h3>
+                            <h3 class="mb-1 text-2xl font-bold text-[#21325e]">Email</h3>
                             <p class="text-lg text-[#21325e]/70">bikon.kaltim@gmail.com</p>
                         </div>
                     </div>
@@ -172,79 +175,3 @@
     </div>
 </section>
 @endsection
-
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggles = document.querySelectorAll('#fungsi-bikon .accordion-toggle');
-
-        toggles.forEach((btn) => {
-            btn.addEventListener('click', function() {
-                const target = document.getElementById(this.dataset.target);
-                const arrow = this.querySelector('.arrow');
-                const isHidden = target.classList.contains('hidden');
-
-                document.querySelectorAll('#fungsi-bikon .accordion-content').forEach((item) => {
-                    item.classList.add('hidden');
-                });
-
-                document.querySelectorAll('#fungsi-bikon .arrow').forEach((item) => {
-                    item.classList.remove('rotate-180');
-                });
-
-                if (isHidden) {
-                    target.classList.remove('hidden');
-                    arrow.classList.add('rotate-180');
-                }
-            });
-        });
-    });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const buttons = document.querySelectorAll('.nav-dropdown-btn');
-
-        buttons.forEach((button) => {
-            button.addEventListener('click', function(e) {
-                e.stopPropagation();
-
-                const dropdownId = this.dataset.dropdown;
-                const dropdown = document.getElementById(dropdownId);
-                const arrow = this.querySelector('.dropdown-arrow');
-
-                document.querySelectorAll('.nav-dropdown').forEach((item) => {
-                    if (item !== dropdown) {
-                        item.classList.add('hidden');
-                    }
-                });
-
-                document.querySelectorAll('.dropdown-arrow').forEach((item) => {
-                    if (item !== arrow) {
-                        item.classList.remove('rotate-180');
-                    }
-                });
-
-                dropdown.classList.toggle('hidden');
-                arrow.classList.toggle('rotate-180');
-            });
-        });
-
-        document.querySelectorAll('.nav-dropdown').forEach((dropdown) => {
-            dropdown.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-        });
-
-        document.addEventListener('click', function() {
-            document.querySelectorAll('.nav-dropdown').forEach((item) => {
-                item.classList.add('hidden');
-            });
-
-            document.querySelectorAll('.dropdown-arrow').forEach((item) => {
-                item.classList.remove('rotate-180');
-            });
-        });
-    });
-</script>
-@endpush
