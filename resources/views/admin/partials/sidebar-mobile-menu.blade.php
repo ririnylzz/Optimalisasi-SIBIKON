@@ -34,7 +34,7 @@
         <a href="{{ route('admin.perguruan-tinggi') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.perguruan-tinggi') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Perguruan Tinggi / Pakar</a>
         <a href="{{ route('admin.lppkk') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.lppkk') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">LPPKK</a>
         <a href="{{ route('admin.pemerhati-konstruksi') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.pemerhati-konstruksi') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Pemerhati Konstruksi</a>
-        <a href="{{ route('admin.pemanfaat-produk') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.pemanfaat-produk') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Pemanfaat Produk</a>
+        <a href="{{ route('admin.pemanfaat-produk') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.pemanfaat-produk*') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Pemanfaat Produk</a>
         <a href="{{ route('admin.rantai-pasok') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.rantai-pasok') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Rantai Pasok</a>
         <a href="{{ route('admin.bujk') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.bujk') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">BUJK</a>
 
@@ -48,8 +48,8 @@
         <a href="{{ route('admin.acara-kegiatan') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.acara-kegiatan') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Acara/Kegiatan</a>
         <a href="{{ route('admin.peraturan') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.peraturan') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Peraturan</a>
         <a href="{{ route('admin.tenaga-kerja-konstruksi') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.tenaga-kerja-konstruksi') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Tenaga Kerja Konstruksi</a>
-        <div x-data="{ openPelatihan: {{ request()->routeIs('admin.pelatihan-sertifikasi.*') ? 'true' : 'false' }} }" class="space-y-1">
 
+        <div x-data="{ openPelatihan: {{ request()->routeIs('admin.pelatihan-sertifikasi.*') ? 'true' : 'false' }} }" class="space-y-1">
             <button
                 type="button"
                 @click="openPelatihan = !openPelatihan"
@@ -100,8 +100,8 @@
                     Pelatihan dan Sertifikasi Instruktur/Asesor
                 </a>
             </div>
-
         </div>
+
         <a href="{{ route('admin.tertib-usaha') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.tertib-usaha') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Tertib Usaha</a>
         <a href="{{ route('admin.tertib-penyelenggaraan') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.tertib-penyelenggaraan') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Tertib Penyelenggaraan</a>
         <a href="{{ route('admin.tertib-pemanfaatan') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.tertib-pemanfaatan') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Tertib Pemanfaatan</a>

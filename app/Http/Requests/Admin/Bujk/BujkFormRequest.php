@@ -4,9 +4,12 @@ namespace App\Http\Requests\Admin\Bujk;
 
 use App\Support\BujkDataNormalizer;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class BujkFormRequest extends FormRequest
 {
+    protected int $selectedJenisUsahaCount = 0;
+
     public function authorize(): bool
     {
         return true;
@@ -14,7 +17,22 @@ class BujkFormRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $rawJenisUsaha = $this->input('jenis_bujk', $this->input('jenis_usaha'));
+
+        $this->selectedJenisUsahaCount = is_array($rawJenisUsaha)
+            ? collect($rawJenisUsaha)->filter(fn ($value) => !blank($value))->count()
+            : (blank($rawJenisUsaha) ? 0 : 1);
+
         $this->merge(app(BujkDataNormalizer::class)->normalizeFormInput($this->all()));
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            if ($this->selectedJenisUsahaCount > 1) {
+                $validator->errors()->add('jenis_usaha', 'Jenis usaha hanya boleh dipilih salah satu: Konstruksi atau Konsultan Konstruksi.');
+            }
+        });
     }
 
     public function rules(): array
@@ -47,7 +65,7 @@ class BujkFormRequest extends FormRequest
             'tanggal_ditetapkan' => ['nullable'],
             'tanggal_masa_berlaku' => ['nullable'],
             'valid' => ['nullable', 'string', 'max:50'],
-            'tgl_update' => ['nullable'],
+            'tgl_update' => ['required', 'date'],
             'nama_pjbu' => ['nullable', 'string', 'max:255'],
             'nik_pjbu' => ['nullable', 'string', 'max:50'],
             'npwp_pjbu' => ['nullable', 'string', 'max:50'],
@@ -70,6 +88,7 @@ class BujkFormRequest extends FormRequest
             'string' => ':attribute harus berupa teks.',
             'max' => ':attribute maksimal :max karakter.',
             'email' => 'Format :attribute tidak valid.',
+            'date' => ':attribute harus berupa tanggal yang valid.',
         ];
     }
 
