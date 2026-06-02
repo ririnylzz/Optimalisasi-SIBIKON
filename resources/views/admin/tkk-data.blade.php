@@ -8,6 +8,7 @@
     $editingTkk = $editingTkk ?? null;
     $kabupatenOptions = $kabupatenOptions ?? [];
     $latestDataDate = $latestDataDate ?? null;
+    $latestUpdatedBy = $latestUpdatedBy ?? null;
 
     $isEditing = $editingTkk !== null;
     $requestedPanel = request('panel');
@@ -89,7 +90,11 @@
                 @if($latestDataDateLabel)
                     <div class="mt-3 flex flex-wrap items-center gap-2">
                         <span class="inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700">
-                            Data terbaru per {{ $latestDataDateLabel }}
+                            Data terakhir diperbarui {{ $latestDataDateLabel }}
+
+                            @if(!empty($latestUpdatedBy))
+                                oleh {{ $latestUpdatedBy }}
+                            @endif
                         </span>
                     </div>
                 @endif
@@ -184,8 +189,13 @@
                     <th class="px-4 py-2 text-left text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">Jabatan Kerja</th>
                     <th class="px-4 py-2 text-center text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">Jenjang</th>
                     <th class="px-4 py-2 text-center text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">Status</th>
+
+                    <th class="px-4 py-2 text-left text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">
+                        Diupdate Oleh
+                    </th>
+
                     <th class="px-4 py-2 text-center text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">Aksi</th>
-                </tr>
+                    </tr>
             </thead>
 
             <tbody id="tkkTableBody" class="divide-y divide-slate-100 bg-white">
@@ -228,6 +238,12 @@
                                 {{ $statusText }}
                             </span>
                         </td>
+
+                        <td class="whitespace-nowrap px-4 py-2 text-[13px] text-slate-600">
+                            {{ $row['created_by'] ?? '-' }}
+                        </td>
+
+                        <td class="px-4 py-2">
 
                         <td class="px-4 py-2">
                             <div class="flex items-center justify-center gap-2">
@@ -514,6 +530,19 @@
                             <label for="tanggal_kadaluwarsa" class="mb-2 block text-sm font-medium text-slate-700">Tanggal Kadaluwarsa</label>
                             <input id="tanggal_kadaluwarsa" type="date" name="tanggal_kadaluwarsa" value="{{ old('tanggal_kadaluwarsa', $editingTkk?->tanggal_kadaluwarsa) }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
                             @error('tanggal_kadaluwarsa') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div>
+                            <label class="mb-2 block text-sm font-semibold text-slate-700">
+                                Tanggal Update Data
+                            </label>
+
+                            <input
+                                type="date"
+                                name="tanggal_update"
+                                value="{{ old('tanggal_update', optional($editingTkk ?? null)->tanggal_update) }}"
+                                class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 focus:border-[#5B4CF0] focus:outline-none focus:ring-4 focus:ring-[#5B4CF0]/10"
+                            >
                         </div>
                     </div>
 
