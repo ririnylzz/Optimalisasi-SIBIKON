@@ -9,6 +9,8 @@
     <link rel="icon" type="image/png" href="{{ asset('images/logo-sibikon.png') }}">
     <link rel="shortcut icon" href="{{ asset('images/logo-sibikon.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/logo-sibikon.png') }}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
@@ -297,7 +299,7 @@
                                 SIBIKON
                             </h3>
                             <p class="mt-1 text-base text-white/70">
-                                Sistem Bina Konstruksi
+                                Sistem Informasi Bina Konstruksi
                             </p>
                         </div>
                     </div>

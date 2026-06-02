@@ -167,19 +167,23 @@
 
                     <div class="flex flex-wrap gap-3">
                         <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-[#c5cae9]/30 text-[#21325e] transition hover:bg-[#f1d00a]">
-                            in
+                            <i class="fab fa-linkedin-in"></i>
                         </a>
+
                         <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-[#c5cae9]/30 text-[#21325e] transition hover:bg-[#f1d00a]">
-                            wa
+                            <i class="fab fa-whatsapp"></i>
                         </a>
+
                         <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-[#c5cae9]/30 text-[#21325e] transition hover:bg-[#f1d00a]">
-                            x
+                            <i class="fab fa-x-twitter"></i>
                         </a>
+
                         <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-[#c5cae9]/30 text-[#21325e] transition hover:bg-[#f1d00a]">
-                            f
+                            <i class="fab fa-facebook-f"></i>
                         </a>
+
                         <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-[#c5cae9]/30 text-[#21325e] transition hover:bg-[#f1d00a]">
-                            @
+                            <i class="fas fa-envelope"></i>
                         </a>
                     </div>
                 </div>

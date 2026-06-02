@@ -126,6 +126,8 @@ class KegiatanController extends Controller
             'Desember' => 'December',
         ];
 
+        $today = now()->startOfDay();
+
         $semuaKegiatan = collect([
             ...$this->kegiatanData()['rakor'],
             ...$this->kegiatanData()['sosialisasi'],
@@ -133,6 +135,18 @@ class KegiatanController extends Controller
         ]);
 
         return $semuaKegiatan
+            ->filter(function ($item) use ($bulan, $today) {
+
+                $tanggal = strtr($item['tanggal'], $bulan);
+
+                $tanggalKegiatan = \Carbon\Carbon::createFromFormat(
+                    'd F Y',
+                    $tanggal
+                )->startOfDay();
+
+                return $tanggalKegiatan->greaterThanOrEqualTo($today);
+            })
+
             ->sortBy(function ($item) use ($bulan) {
 
                 $tanggal = strtr($item['tanggal'], $bulan);
@@ -142,6 +156,7 @@ class KegiatanController extends Controller
                     $tanggal
                 );
             })
+
             ->take(5)
             ->values();
     }
