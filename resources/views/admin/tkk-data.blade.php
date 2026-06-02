@@ -8,8 +8,6 @@
     $editingTkk = $editingTkk ?? null;
     $kabupatenOptions = $kabupatenOptions ?? [];
     $latestDataDate = $latestDataDate ?? null;
-
-    // Otomatis ambil nama admin yang sedang login kalau controller belum mengirim latestUpdatedBy.
     $latestUpdatedBy = $latestUpdatedBy ?? auth()->user()?->name ?? null;
 
     $isEditing = $editingTkk !== null;
@@ -181,7 +179,7 @@
         </div>
     </div>
 
-    <div class="min-h-[440px] overflow-x-auto">
+    <div class="overflow-x-auto min-h-[440px]">
         <table class="min-w-full divide-y divide-slate-100">
             <thead class="bg-slate-50">
                 <tr>
@@ -247,7 +245,6 @@
                                 <form action="{{ route('admin.tenaga-kerja-konstruksi.destroy', $row['id']) }}" method="POST" class="single-delete-form">
                                     @csrf
                                     @method('DELETE')
-
                                     <button
                                         type="button"
                                         data-delete-single
@@ -380,7 +377,6 @@
                             <p class="mt-2 text-xs text-rose-500">{{ $message }}</p>
                         @enderror
                     </div>
-
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-600">
                         <p class="font-semibold text-slate-800">Urutan kolom jika memakai template sederhana:</p>
                         <p>1. Nama</p>
@@ -459,19 +455,9 @@
 
                     <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
                         <div>
-                            <label for="nama" class="mb-2 block text-sm font-medium text-slate-700">
-                                Nama <span class="text-rose-500">*</span>
-                            </label>
-                            <input
-                                id="nama"
-                                type="text"
-                                name="nama"
-                                value="{{ old('nama', $editingTkk?->nama) }}"
-                                required
-                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-                            @error('nama')
-                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                            @enderror
+                            <label for="nama" class="mb-2 block text-sm font-medium text-slate-700">Nama <span class="text-rose-500">*</span></label>
+                            <input id="nama" type="text" name="nama" value="{{ old('nama', $editingTkk?->nama) }}" required class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
+                            @error('nama') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
@@ -492,110 +478,53 @@
                                     </option>
                                 @endforeach
                             </select>
-                            @error('kabupaten')
-                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                            @enderror
+                            @error('kabupaten') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
                         <div>
                             <label for="klasifikasi" class="mb-2 block text-sm font-medium text-slate-700">Klasifikasi</label>
-                            <input
-                                id="klasifikasi"
-                                type="text"
-                                name="klasifikasi"
-                                value="{{ old('klasifikasi', $editingTkk?->klasifikasi) }}"
-                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-                            @error('klasifikasi')
-                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                            @enderror
+                            <input id="klasifikasi" type="text" name="klasifikasi" value="{{ old('klasifikasi', $editingTkk?->klasifikasi) }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
+                            @error('klasifikasi') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label for="jabatan_kerja" class="mb-2 block text-sm font-medium text-slate-700">Jabatan Kerja</label>
-                            <input
-                                id="jabatan_kerja"
-                                type="text"
-                                name="jabatan_kerja"
-                                value="{{ old('jabatan_kerja', $editingTkk?->jabatan_kerja) }}"
-                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-                            @error('jabatan_kerja')
-                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                            @enderror
+                            <input id="jabatan_kerja" type="text" name="jabatan_kerja" value="{{ old('jabatan_kerja', $editingTkk?->jabatan_kerja) }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
+                            @error('jabatan_kerja') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
                         <div>
                             <label for="jenjang" class="mb-2 block text-sm font-medium text-slate-700">Jenjang</label>
-                            <input
-                                id="jenjang"
-                                type="number"
-                                name="jenjang"
-                                min="1"
-                                max="9"
-                                value="{{ old('jenjang', $editingTkk?->jenjang) }}"
-                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-                            @error('jenjang')
-                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                            @enderror
+                            <input id="jenjang" type="number" name="jenjang" min="1" max="9" value="{{ old('jenjang', $editingTkk?->jenjang) }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
+                            @error('jenjang') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label for="asosiasi" class="mb-2 block text-sm font-medium text-slate-700">Asosiasi</label>
-                            <input
-                                id="asosiasi"
-                                type="text"
-                                name="asosiasi"
-                                value="{{ old('asosiasi', $editingTkk?->asosiasi) }}"
-                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-                            @error('asosiasi')
-                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                            @enderror
+                            <input id="asosiasi" type="text" name="asosiasi" value="{{ old('asosiasi', $editingTkk?->asosiasi) }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
+                            @error('asosiasi') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
-                            <label for="tanggal_update" class="mb-2 block text-sm font-medium text-slate-700">
-                                Tanggal Update Data
-                            </label>
-                            <input
-                                id="tanggal_update"
-                                type="date"
-                                name="tanggal_update"
-                                value="{{ old('tanggal_update', optional($editingTkk ?? null)->tanggal_update) }}"
-                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-                            @error('tanggal_update')
-                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                            @enderror
+                            <label for="tanggal_update" class="mb-2 block text-sm font-medium text-slate-700">Tanggal Update Data</label>
+                            <input id="tanggal_update" type="date" name="tanggal_update" value="{{ old('tanggal_update', optional($editingTkk ?? null)->tanggal_update) }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
+                            @error('tanggal_update') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
                         </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
                         <div>
                             <label for="tanggal_aktif" class="mb-2 block text-sm font-medium text-slate-700">Tanggal Aktif</label>
-                            <input
-                                id="tanggal_aktif"
-                                type="date"
-                                name="tanggal_aktif"
-                                value="{{ old('tanggal_aktif', $editingTkk?->tanggal_aktif) }}"
-                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-                            @error('tanggal_aktif')
-                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                            @enderror
+                            <input id="tanggal_aktif" type="date" name="tanggal_aktif" value="{{ old('tanggal_aktif', $editingTkk?->tanggal_aktif) }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
+                            @error('tanggal_aktif') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label for="tanggal_kadaluwarsa" class="mb-2 block text-sm font-medium text-slate-700">Tanggal Kadaluwarsa</label>
-                            <input
-                                id="tanggal_kadaluwarsa"
-                                type="date"
-                                name="tanggal_kadaluwarsa"
-                                value="{{ old('tanggal_kadaluwarsa', $editingTkk?->tanggal_kadaluwarsa) }}"
-                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-                            @error('tanggal_kadaluwarsa')
-                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
-                            @enderror
+                            <input id="tanggal_kadaluwarsa" type="date" name="tanggal_kadaluwarsa" value="{{ old('tanggal_kadaluwarsa', $editingTkk?->tanggal_kadaluwarsa) }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
+                            @error('tanggal_kadaluwarsa') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
@@ -659,8 +588,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!scriptData) return;
 
-    body.classList.remove('overflow-hidden');
-
     const modalElements = {
         upload: document.getElementById('upload-modal'),
         manual: document.getElementById('manual-modal'),
@@ -687,8 +614,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const csrfToken = scriptData.dataset.csrf;
     const initialPanel = scriptData.dataset.initialPanel || 'closed';
     const totalAllRows = Number(scriptData.dataset.totalRows || 0);
-
     let selectAllAcrossPages = false;
+
     let currentPage = 1;
     let deleteState = { mode: null, form: null, ids: [] };
     let searchDebounce = null;
@@ -712,40 +639,38 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        HTMLFormElement.prototype.submit.call(form);
+        form.submit();
     };
 
-    const hasOpenModal = () => Object.values(modalElements).some((modal) => {
-        return modal && modal.dataset.state === 'open' && !modal.classList.contains('hidden');
-    });
+    const hasOpenModal = () => Object.values(modalElements).some((modal) => modal && modal.dataset.state === 'open');
 
     const lockBody = () => {
         body.classList.toggle('overflow-hidden', hasOpenModal());
-
-        if (!hasOpenModal()) {
-            body.classList.remove('overflow-hidden');
-        }
     };
 
     const showModal = (modal) => {
         if (!modal) return;
 
-        modal.classList.remove('hidden', 'pointer-events-none', 'opacity-0');
-        modal.classList.add('pointer-events-auto', 'opacity-100');
+        modal.classList.remove('hidden');
         modal.dataset.state = 'open';
 
-        const backdrop = modal.querySelector('[data-modal-backdrop]');
-        const panel = modal.querySelector('[data-modal-panel]');
+        requestAnimationFrame(() => {
+            modal.classList.remove('pointer-events-none', 'opacity-0');
+            modal.classList.add('pointer-events-auto', 'opacity-100');
 
-        if (backdrop) {
-            backdrop.classList.remove('opacity-0');
-            backdrop.classList.add('opacity-100');
-        }
+            const backdrop = modal.querySelector('[data-modal-backdrop]');
+            const panel = modal.querySelector('[data-modal-panel]');
 
-        if (panel) {
-            panel.classList.remove('translate-y-4', 'scale-[0.98]', 'opacity-0');
-            panel.classList.add('translate-y-0', 'scale-100', 'opacity-100');
-        }
+            if (backdrop) {
+                backdrop.classList.remove('opacity-0');
+                backdrop.classList.add('opacity-100');
+            }
+
+            if (panel) {
+                panel.classList.remove('translate-y-4', 'scale-[0.98]', 'opacity-0');
+                panel.classList.add('translate-y-0', 'scale-100', 'opacity-100');
+            }
+        });
 
         lockBody();
     };
@@ -776,12 +701,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             lockBody();
-        }, 180);
-
-        if (modal === modalElements.delete && confirmDeleteButton) {
-            confirmDeleteButton.disabled = false;
-            confirmDeleteButton.textContent = 'Ya, Hapus';
-        }
+        }, 210);
     };
 
     document.querySelectorAll('[data-modal-open]').forEach((button) => {
@@ -798,21 +718,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         modal.dataset.state = 'closed';
 
-        const backdrop = modal.querySelector('[data-modal-backdrop]');
-
-        if (backdrop) {
-            backdrop.addEventListener('click', () => hideModal(modal));
-        }
-
-        modal.querySelectorAll('[data-modal-close]').forEach((button) => {
-            button.addEventListener('click', () => hideModal(modal));
+        modal.querySelectorAll('[data-modal-close], [data-modal-backdrop]').forEach((element) => {
+            element.addEventListener('click', () => hideModal(modal));
         });
-    });
-
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            Object.values(modalElements).forEach((modal) => hideModal(modal));
-        }
     });
 
     document.querySelectorAll('[data-toast]').forEach((toast, index) => {
@@ -895,7 +803,6 @@ document.addEventListener('DOMContentLoaded', function () {
             refreshSelectionState();
         }
     });
-
     const renderRows = (rows) => {
         if (!tbody) return;
 
@@ -914,8 +821,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     </td>
                 </tr>
             `;
-
-            refreshSelectionState();
             return;
         }
 
@@ -955,7 +860,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     <td class="whitespace-nowrap px-4 py-2 text-center">
                         <span class="inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-[0.06em] ${statusClass}">
-                            ${escapeHtml(row.status || '-')}
+                            ${escapeHtml(row.status)}
                         </span>
                     </td>
 
@@ -984,14 +889,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 </tr>
             `;
         });
-
-        if (selectAllAcrossPages) {
-            getRowCheckboxes().forEach((checkbox) => {
-                checkbox.checked = true;
-            });
-        }
-
-        refreshSelectionState();
+            if (selectAllAcrossPages) {
+        getRowCheckboxes().forEach((checkbox) => {
+            checkbox.checked = true;
+        });
+    }
     };
 
     window.fetchSearchData = async function (page = 1) {
@@ -1046,7 +948,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         pages.forEach((pageNumber) => {
             if (prevPage && pageNumber - prevPage > 1) {
-                paginationNumbers.innerHTML += `<span class="px-2 font-bold text-slate-400">...</span>`;
+                paginationNumbers.innerHTML += `<span class="px-2 text-slate-400 font-bold">...</span>`;
             }
 
             paginationNumbers.innerHTML += `
@@ -1100,7 +1002,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        if (event.target.closest('#bulk-delete-trigger') && !bulkDeleteTrigger.disabled) {
+        if (event.target.closest('#bulk-delete-trigger')) {
             if (selectAllAcrossPages) {
                 deleteState = {
                     mode: 'all',
@@ -1173,10 +1075,185 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (deleteState.mode === 'all') {
                 submitHiddenForm(deleteAllForm);
-                return;
+            }
+        });
+    }
+
+    const tkkManualForm = document.querySelector('#manual-modal form');
+
+    if (tkkManualForm) {
+        tkkManualForm.setAttribute('novalidate', 'novalidate');
+
+        const requiredTkkFields = [
+            { name: 'nama', message: 'Nama TKK wajib diisi.' },
+            { name: 'kabupaten', message: 'Kabupaten / Kota wajib dipilih.' },
+            { name: 'klasifikasi', message: 'Klasifikasi wajib diisi.' },
+            { name: 'jabatan_kerja', message: 'Jabatan kerja wajib diisi.' },
+            { name: 'jenjang', message: 'Jenjang wajib diisi.' },
+            { name: 'asosiasi', message: 'Asosiasi wajib diisi.' },
+            { name: 'tanggal_update', message: 'Tanggal update data wajib diisi.' },
+            { name: 'tanggal_aktif', message: 'Tanggal aktif wajib diisi.' },
+            { name: 'tanggal_kadaluwarsa', message: 'Tanggal kadaluwarsa wajib diisi.' },
+        ];
+
+        const getTkkField = (name) => tkkManualForm.querySelector(`[name="${name}"]`);
+
+        const getTkkErrorElement = (field) => {
+            if (!field) return null;
+
+            let errorElement = field.parentElement.querySelector(`[data-tkk-error-for="${field.name}"]`);
+
+            if (!errorElement) {
+                errorElement = document.createElement('p');
+                errorElement.setAttribute('data-tkk-error-for', field.name);
+                errorElement.className = 'mt-1 hidden text-xs font-semibold text-rose-500';
+                field.insertAdjacentElement('afterend', errorElement);
             }
 
-            hideModal(modalElements.delete);
+            return errorElement;
+        };
+
+        const setTkkFieldError = (field, message) => {
+            if (!field) return;
+
+            const errorElement = getTkkErrorElement(field);
+
+            field.classList.remove('border-slate-300', 'focus:border-indigo-500', 'focus:ring-indigo-500/10');
+            field.classList.add('border-rose-400', 'focus:border-rose-500', 'focus:ring-rose-500/10');
+
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.remove('hidden');
+            }
+        };
+
+        const clearTkkFieldError = (field) => {
+            if (!field) return;
+
+            const errorElement = getTkkErrorElement(field);
+
+            field.classList.remove('border-rose-400', 'focus:border-rose-500', 'focus:ring-rose-500/10');
+            field.classList.add('border-slate-300', 'focus:border-indigo-500', 'focus:ring-indigo-500/10');
+
+            if (errorElement) {
+                errorElement.textContent = '';
+                errorElement.classList.add('hidden');
+            }
+        };
+
+        const validateTkkField = (fieldConfig, showError = true) => {
+            const field = getTkkField(fieldConfig.name);
+
+            if (!field) return true;
+
+            const value = String(field.value || '').trim();
+
+            if (value === '') {
+                if (showError) {
+                    setTkkFieldError(field, fieldConfig.message);
+                }
+
+                return false;
+            }
+
+            if (fieldConfig.name === 'jenjang') {
+                const numericValue = Number(value);
+
+                if (!Number.isInteger(numericValue) || numericValue < 1 || numericValue > 9) {
+                    if (showError) {
+                        setTkkFieldError(field, 'Jenjang harus berupa angka 1 sampai 9.');
+                    }
+
+                    return false;
+                }
+            }
+
+            if (fieldConfig.name === 'tanggal_kadaluwarsa') {
+                const tanggalAktif = getTkkField('tanggal_aktif');
+
+                if (tanggalAktif && tanggalAktif.value && field.value) {
+                    const aktif = new Date(tanggalAktif.value);
+                    const kadaluwarsa = new Date(field.value);
+
+                    if (kadaluwarsa < aktif) {
+                        if (showError) {
+                            setTkkFieldError(field, 'Tanggal kadaluwarsa tidak boleh lebih kecil dari tanggal aktif.');
+                        }
+
+                        return false;
+                    }
+                }
+            }
+
+            clearTkkFieldError(field);
+            return true;
+        };
+
+        const validateAllTkkFields = () => {
+            let isValid = true;
+            let firstInvalidField = null;
+
+            requiredTkkFields.forEach((fieldConfig) => {
+                const field = getTkkField(fieldConfig.name);
+                const fieldValid = validateTkkField(fieldConfig, true);
+
+                if (!fieldValid) {
+                    isValid = false;
+
+                    if (!firstInvalidField && field) {
+                        firstInvalidField = field;
+                    }
+                }
+            });
+
+            if (firstInvalidField) {
+                firstInvalidField.focus();
+                firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            return isValid;
+        };
+
+        requiredTkkFields.forEach((fieldConfig) => {
+            const field = getTkkField(fieldConfig.name);
+
+            if (!field) return;
+
+            field.setAttribute('required', 'required');
+
+            const label = field.id ? tkkManualForm.querySelector(`label[for="${field.id}"]`) : null;
+
+            if (label && !label.querySelector('[data-required-star]')) {
+                const star = document.createElement('span');
+                star.setAttribute('data-required-star', 'true');
+                star.className = 'text-rose-500';
+                star.textContent = ' *';
+                label.appendChild(star);
+            }
+
+            const eventName = field.tagName === 'SELECT' ? 'change' : 'input';
+
+            field.addEventListener(eventName, function () {
+                validateTkkField(fieldConfig, true);
+
+                if (fieldConfig.name === 'tanggal_aktif') {
+                    const kadaluwarsaConfig = requiredTkkFields.find((item) => item.name === 'tanggal_kadaluwarsa');
+
+                    if (kadaluwarsaConfig) {
+                        validateTkkField(kadaluwarsaConfig, true);
+                    }
+                }
+            });
+
+            field.addEventListener('blur', function () {
+                validateTkkField(fieldConfig, true);
+            });
+        });
+
+        tkkManualForm.addEventListener('submit', function (event) {
+            if (!validateAllTkkFields()) {
+                event.preventDefault();
+            }
         });
     }
 
