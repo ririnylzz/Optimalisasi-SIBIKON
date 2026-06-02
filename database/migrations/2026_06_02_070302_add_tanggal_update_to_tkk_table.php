@@ -6,29 +6,33 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
+        if (!Schema::hasTable('tkk')) {
+            return;
+        }
+
+        if (Schema::hasColumn('tkk', 'tanggal_update')) {
+            return;
+        }
+
         Schema::table('tkk', function (Blueprint $table) {
-
-            $table->date('tanggal_update')
-                ->nullable()
-                ->after('tanggal_input');
-
+            $table->date('tanggal_update')->nullable();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
+        if (!Schema::hasTable('tkk')) {
+            return;
+        }
+
+        if (!Schema::hasColumn('tkk', 'tanggal_update')) {
+            return;
+        }
+
         Schema::table('tkk', function (Blueprint $table) {
-
             $table->dropColumn('tanggal_update');
-
         });
     }
 };

@@ -22,6 +22,7 @@ use Throwable;
 class BujkController extends Controller
 {
     protected string $latestDataDatePath = 'bujk/latest-data-date.txt';
+    protected string $latestUpdatedByPath = 'bujk/latest-updated-by.txt';
 
     public function index(Request $request)
     {
@@ -75,6 +76,7 @@ class BujkController extends Controller
             : null;
 
         $latestDataDate = $this->getLatestDataDate();
+        $latestUpdatedBy = $this->getLatestUpdatedBy();
 
         $viewData = [
             'bujks' => $bujks,
@@ -86,6 +88,7 @@ class BujkController extends Controller
             'regencyFilterOptions' => $regencyFilterOptions,
             'perPage' => $perPage,
             'latestDataDate' => $latestDataDate,
+            'latestUpdatedBy' => $latestUpdatedBy,
         ];
 
         if ($request->ajax()) {
@@ -114,6 +117,7 @@ class BujkController extends Controller
 
         Bujk::query()->create($payload + ['is_deleted' => false]);
         $this->syncLatestDataDateFromPayload($payload);
+        $this->syncLatestUpdatedBy();
 
         return redirect()
             ->route('admin.bujk')
@@ -140,6 +144,7 @@ class BujkController extends Controller
             'updated_at' => now(),
         ]);
         $this->syncLatestDataDateFromPayload($payload);
+        $this->syncLatestUpdatedBy();
 
         return redirect()
             ->route('admin.bujk')
@@ -224,6 +229,7 @@ class BujkController extends Controller
 
             $latestDataDate = Carbon::parse($validated['tanggal_data_terbaru'])->toDateString();
             Storage::disk('local')->put($this->latestDataDatePath, $latestDataDate);
+            $this->syncLatestUpdatedBy();
         } catch (ValidationException $exception) {
             throw $exception;
         } catch (Throwable $exception) {
@@ -412,6 +418,28 @@ class BujkController extends Controller
         $date = trim((string) Storage::disk('local')->get($this->latestDataDatePath));
 
         return $date !== '' ? $date : null;
+    }
+
+    protected function getLatestUpdatedBy(): ?string
+    {
+        if (!Storage::disk('local')->exists($this->latestUpdatedByPath)) {
+            return auth()->user()?->name;
+        }
+
+        $name = trim((string) Storage::disk('local')->get($this->latestUpdatedByPath));
+
+        return $name !== '' ? $name : auth()->user()?->name;
+    }
+
+    protected function syncLatestUpdatedBy(): void
+    {
+        $name = auth()->user()?->name;
+
+        if (blank($name)) {
+            return;
+        }
+
+        Storage::disk('local')->put($this->latestUpdatedByPath, $name);
     }
 
     protected function squish(?string $value): string

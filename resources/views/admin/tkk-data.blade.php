@@ -8,7 +8,9 @@
     $editingTkk = $editingTkk ?? null;
     $kabupatenOptions = $kabupatenOptions ?? [];
     $latestDataDate = $latestDataDate ?? null;
-    $latestUpdatedBy = $latestUpdatedBy ?? null;
+
+    // Otomatis ambil nama admin yang sedang login kalau controller belum mengirim latestUpdatedBy.
+    $latestUpdatedBy = $latestUpdatedBy ?? auth()->user()?->name ?? null;
 
     $isEditing = $editingTkk !== null;
     $requestedPanel = request('panel');
@@ -92,7 +94,7 @@
                         <span class="inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700">
                             Data terakhir diperbarui {{ $latestDataDateLabel }}
 
-                            @if(!empty($latestUpdatedBy))
+                            @if(!blank($latestUpdatedBy))
                                 oleh {{ $latestUpdatedBy }}
                             @endif
                         </span>
@@ -179,7 +181,7 @@
         </div>
     </div>
 
-    <div class="overflow-x-auto min-h-[440px]">
+    <div class="min-h-[440px] overflow-x-auto">
         <table class="min-w-full divide-y divide-slate-100">
             <thead class="bg-slate-50">
                 <tr>
@@ -189,13 +191,8 @@
                     <th class="px-4 py-2 text-left text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">Jabatan Kerja</th>
                     <th class="px-4 py-2 text-center text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">Jenjang</th>
                     <th class="px-4 py-2 text-center text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">Status</th>
-
-                    <th class="px-4 py-2 text-left text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">
-                        Diupdate Oleh
-                    </th>
-
                     <th class="px-4 py-2 text-center text-[11px] font-extrabold uppercase tracking-[0.08em] text-slate-500">Aksi</th>
-                    </tr>
+                </tr>
             </thead>
 
             <tbody id="tkkTableBody" class="divide-y divide-slate-100 bg-white">
@@ -239,12 +236,6 @@
                             </span>
                         </td>
 
-                        <td class="whitespace-nowrap px-4 py-2 text-[13px] text-slate-600">
-                            {{ $row['created_by'] ?? '-' }}
-                        </td>
-
-                        <td class="px-4 py-2">
-
                         <td class="px-4 py-2">
                             <div class="flex items-center justify-center gap-2">
                                 <a
@@ -256,6 +247,7 @@
                                 <form action="{{ route('admin.tenaga-kerja-konstruksi.destroy', $row['id']) }}" method="POST" class="single-delete-form">
                                     @csrf
                                     @method('DELETE')
+
                                     <button
                                         type="button"
                                         data-delete-single
@@ -388,6 +380,7 @@
                             <p class="mt-2 text-xs text-rose-500">{{ $message }}</p>
                         @enderror
                     </div>
+
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-600">
                         <p class="font-semibold text-slate-800">Urutan kolom jika memakai template sederhana:</p>
                         <p>1. Nama</p>
@@ -415,11 +408,11 @@
     </div>
 </div>
 
-<div id="manual-modal" data-modal-wrapper="manual" class="pointer-events-none fixed inset-0 z-[70] hidden p-4 opacity-0 transition duration-200">
+<div id="manual-modal" data-modal-wrapper="manual" class="pointer-events-none fixed inset-0 z-[70] hidden overflow-y-auto p-4 opacity-0 transition duration-200">
     <div data-modal-backdrop class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition duration-200"></div>
 
-    <div class="relative z-10 flex min-h-full items-center justify-center">
-        <div data-modal-panel class="w-full max-w-5xl translate-y-4 scale-[0.98] rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out">
+    <div class="relative z-10 flex min-h-full items-start justify-center py-6">
+        <div data-modal-panel class="flex max-h-[calc(100vh-3rem)] w-full max-w-5xl translate-y-4 scale-[0.98] flex-col overflow-hidden rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out">
             <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
                 <div>
                     <h3 class="text-xl font-bold text-slate-900">
@@ -443,7 +436,7 @@
                 </div>
             </div>
 
-            <div class="px-5 py-4">
+            <div class="overflow-y-auto px-5 py-4">
                 @if($errors->any() && !$hasUploadError)
                     <div class="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
                         <p class="font-semibold">Masih ada input yang perlu diperbaiki:</p>
@@ -466,9 +459,19 @@
 
                     <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
                         <div>
-                            <label for="nama" class="mb-2 block text-sm font-medium text-slate-700">Nama <span class="text-rose-500">*</span></label>
-                            <input id="nama" type="text" name="nama" value="{{ old('nama', $editingTkk?->nama) }}" required class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-                            @error('nama') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
+                            <label for="nama" class="mb-2 block text-sm font-medium text-slate-700">
+                                Nama <span class="text-rose-500">*</span>
+                            </label>
+                            <input
+                                id="nama"
+                                type="text"
+                                name="nama"
+                                value="{{ old('nama', $editingTkk?->nama) }}"
+                                required
+                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
+                            @error('nama')
+                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div>
@@ -489,60 +492,110 @@
                                     </option>
                                 @endforeach
                             </select>
-                            @error('kabupaten') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
+                            @error('kabupaten')
+                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
                         <div>
                             <label for="klasifikasi" class="mb-2 block text-sm font-medium text-slate-700">Klasifikasi</label>
-                            <input id="klasifikasi" type="text" name="klasifikasi" value="{{ old('klasifikasi', $editingTkk?->klasifikasi) }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-                            @error('klasifikasi') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
+                            <input
+                                id="klasifikasi"
+                                type="text"
+                                name="klasifikasi"
+                                value="{{ old('klasifikasi', $editingTkk?->klasifikasi) }}"
+                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
+                            @error('klasifikasi')
+                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div>
                             <label for="jabatan_kerja" class="mb-2 block text-sm font-medium text-slate-700">Jabatan Kerja</label>
-                            <input id="jabatan_kerja" type="text" name="jabatan_kerja" value="{{ old('jabatan_kerja', $editingTkk?->jabatan_kerja) }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-                            @error('jabatan_kerja') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
+                            <input
+                                id="jabatan_kerja"
+                                type="text"
+                                name="jabatan_kerja"
+                                value="{{ old('jabatan_kerja', $editingTkk?->jabatan_kerja) }}"
+                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
+                            @error('jabatan_kerja')
+                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 gap-3 lg:grid-cols-4">
+                    <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
                         <div>
                             <label for="jenjang" class="mb-2 block text-sm font-medium text-slate-700">Jenjang</label>
-                            <input id="jenjang" type="number" name="jenjang" min="1" max="9" value="{{ old('jenjang', $editingTkk?->jenjang) }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-                            @error('jenjang') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
+                            <input
+                                id="jenjang"
+                                type="number"
+                                name="jenjang"
+                                min="1"
+                                max="9"
+                                value="{{ old('jenjang', $editingTkk?->jenjang) }}"
+                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
+                            @error('jenjang')
+                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div>
                             <label for="asosiasi" class="mb-2 block text-sm font-medium text-slate-700">Asosiasi</label>
-                            <input id="asosiasi" type="text" name="asosiasi" value="{{ old('asosiasi', $editingTkk?->asosiasi) }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-                            @error('asosiasi') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
+                            <input
+                                id="asosiasi"
+                                type="text"
+                                name="asosiasi"
+                                value="{{ old('asosiasi', $editingTkk?->asosiasi) }}"
+                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
+                            @error('asosiasi')
+                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div>
+                            <label for="tanggal_update" class="mb-2 block text-sm font-medium text-slate-700">
+                                Tanggal Update Data
+                            </label>
+                            <input
+                                id="tanggal_update"
+                                type="date"
+                                name="tanggal_update"
+                                value="{{ old('tanggal_update', optional($editingTkk ?? null)->tanggal_update) }}"
+                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
+                            @error('tanggal_update')
+                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
+                        <div>
                             <label for="tanggal_aktif" class="mb-2 block text-sm font-medium text-slate-700">Tanggal Aktif</label>
-                            <input id="tanggal_aktif" type="date" name="tanggal_aktif" value="{{ old('tanggal_aktif', $editingTkk?->tanggal_aktif) }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-                            @error('tanggal_aktif') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
+                            <input
+                                id="tanggal_aktif"
+                                type="date"
+                                name="tanggal_aktif"
+                                value="{{ old('tanggal_aktif', $editingTkk?->tanggal_aktif) }}"
+                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
+                            @error('tanggal_aktif')
+                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div>
                             <label for="tanggal_kadaluwarsa" class="mb-2 block text-sm font-medium text-slate-700">Tanggal Kadaluwarsa</label>
-                            <input id="tanggal_kadaluwarsa" type="date" name="tanggal_kadaluwarsa" value="{{ old('tanggal_kadaluwarsa', $editingTkk?->tanggal_kadaluwarsa) }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
-                            @error('tanggal_kadaluwarsa') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
-                        </div>
-
-                        <div>
-                            <label class="mb-2 block text-sm font-semibold text-slate-700">
-                                Tanggal Update Data
-                            </label>
-
                             <input
+                                id="tanggal_kadaluwarsa"
                                 type="date"
-                                name="tanggal_update"
-                                value="{{ old('tanggal_update', optional($editingTkk ?? null)->tanggal_update) }}"
-                                class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 focus:border-[#5B4CF0] focus:outline-none focus:ring-4 focus:ring-[#5B4CF0]/10"
-                            >
+                                name="tanggal_kadaluwarsa"
+                                value="{{ old('tanggal_kadaluwarsa', $editingTkk?->tanggal_kadaluwarsa) }}"
+                                class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
+                            @error('tanggal_kadaluwarsa')
+                                <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
@@ -606,6 +659,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!scriptData) return;
 
+    body.classList.remove('overflow-hidden');
+
     const modalElements = {
         upload: document.getElementById('upload-modal'),
         manual: document.getElementById('manual-modal'),
@@ -632,8 +687,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const csrfToken = scriptData.dataset.csrf;
     const initialPanel = scriptData.dataset.initialPanel || 'closed';
     const totalAllRows = Number(scriptData.dataset.totalRows || 0);
-    let selectAllAcrossPages = false;
 
+    let selectAllAcrossPages = false;
     let currentPage = 1;
     let deleteState = { mode: null, form: null, ids: [] };
     let searchDebounce = null;
@@ -657,38 +712,40 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        form.submit();
+        HTMLFormElement.prototype.submit.call(form);
     };
 
-    const hasOpenModal = () => Object.values(modalElements).some((modal) => modal && modal.dataset.state === 'open');
+    const hasOpenModal = () => Object.values(modalElements).some((modal) => {
+        return modal && modal.dataset.state === 'open' && !modal.classList.contains('hidden');
+    });
 
     const lockBody = () => {
         body.classList.toggle('overflow-hidden', hasOpenModal());
+
+        if (!hasOpenModal()) {
+            body.classList.remove('overflow-hidden');
+        }
     };
 
     const showModal = (modal) => {
         if (!modal) return;
 
-        modal.classList.remove('hidden');
+        modal.classList.remove('hidden', 'pointer-events-none', 'opacity-0');
+        modal.classList.add('pointer-events-auto', 'opacity-100');
         modal.dataset.state = 'open';
 
-        requestAnimationFrame(() => {
-            modal.classList.remove('pointer-events-none', 'opacity-0');
-            modal.classList.add('pointer-events-auto', 'opacity-100');
+        const backdrop = modal.querySelector('[data-modal-backdrop]');
+        const panel = modal.querySelector('[data-modal-panel]');
 
-            const backdrop = modal.querySelector('[data-modal-backdrop]');
-            const panel = modal.querySelector('[data-modal-panel]');
+        if (backdrop) {
+            backdrop.classList.remove('opacity-0');
+            backdrop.classList.add('opacity-100');
+        }
 
-            if (backdrop) {
-                backdrop.classList.remove('opacity-0');
-                backdrop.classList.add('opacity-100');
-            }
-
-            if (panel) {
-                panel.classList.remove('translate-y-4', 'scale-[0.98]', 'opacity-0');
-                panel.classList.add('translate-y-0', 'scale-100', 'opacity-100');
-            }
-        });
+        if (panel) {
+            panel.classList.remove('translate-y-4', 'scale-[0.98]', 'opacity-0');
+            panel.classList.add('translate-y-0', 'scale-100', 'opacity-100');
+        }
 
         lockBody();
     };
@@ -719,7 +776,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             lockBody();
-        }, 210);
+        }, 180);
+
+        if (modal === modalElements.delete && confirmDeleteButton) {
+            confirmDeleteButton.disabled = false;
+            confirmDeleteButton.textContent = 'Ya, Hapus';
+        }
     };
 
     document.querySelectorAll('[data-modal-open]').forEach((button) => {
@@ -736,9 +798,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
         modal.dataset.state = 'closed';
 
-        modal.querySelectorAll('[data-modal-close], [data-modal-backdrop]').forEach((element) => {
-            element.addEventListener('click', () => hideModal(modal));
+        const backdrop = modal.querySelector('[data-modal-backdrop]');
+
+        if (backdrop) {
+            backdrop.addEventListener('click', () => hideModal(modal));
+        }
+
+        modal.querySelectorAll('[data-modal-close]').forEach((button) => {
+            button.addEventListener('click', () => hideModal(modal));
         });
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            Object.values(modalElements).forEach((modal) => hideModal(modal));
+        }
     });
 
     document.querySelectorAll('[data-toast]').forEach((toast, index) => {
@@ -821,6 +895,7 @@ document.addEventListener('DOMContentLoaded', function () {
             refreshSelectionState();
         }
     });
+
     const renderRows = (rows) => {
         if (!tbody) return;
 
@@ -839,6 +914,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     </td>
                 </tr>
             `;
+
+            refreshSelectionState();
             return;
         }
 
@@ -878,7 +955,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     <td class="whitespace-nowrap px-4 py-2 text-center">
                         <span class="inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-[0.06em] ${statusClass}">
-                            ${escapeHtml(row.status)}
+                            ${escapeHtml(row.status || '-')}
                         </span>
                     </td>
 
@@ -907,11 +984,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 </tr>
             `;
         });
-            if (selectAllAcrossPages) {
-        getRowCheckboxes().forEach((checkbox) => {
-            checkbox.checked = true;
-        });
-    }
+
+        if (selectAllAcrossPages) {
+            getRowCheckboxes().forEach((checkbox) => {
+                checkbox.checked = true;
+            });
+        }
+
+        refreshSelectionState();
     };
 
     window.fetchSearchData = async function (page = 1) {
@@ -966,7 +1046,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         pages.forEach((pageNumber) => {
             if (prevPage && pageNumber - prevPage > 1) {
-                paginationNumbers.innerHTML += `<span class="px-2 text-slate-400 font-bold">...</span>`;
+                paginationNumbers.innerHTML += `<span class="px-2 font-bold text-slate-400">...</span>`;
             }
 
             paginationNumbers.innerHTML += `
@@ -1020,7 +1100,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        if (event.target.closest('#bulk-delete-trigger')) {
+        if (event.target.closest('#bulk-delete-trigger') && !bulkDeleteTrigger.disabled) {
             if (selectAllAcrossPages) {
                 deleteState = {
                     mode: 'all',
@@ -1093,7 +1173,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (deleteState.mode === 'all') {
                 submitHiddenForm(deleteAllForm);
+                return;
             }
+
+            hideModal(modalElements.delete);
         });
     }
 

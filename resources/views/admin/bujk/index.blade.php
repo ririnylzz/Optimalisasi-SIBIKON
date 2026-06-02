@@ -33,6 +33,7 @@ $availableKabupaten->push($selectedKabupaten);
 }
 
 $latestDataDate = $latestDataDate ?? null;
+$latestUpdatedBy = $latestUpdatedBy ?? auth()->user()?->name ?? null;
 $latestDataDateLabel = null;
 
 if (!blank($latestDataDate)) {
@@ -163,7 +164,11 @@ $toastMessages[] = [
                 @if($latestDataDateLabel)
                 <div class="mt-3 flex flex-wrap items-center gap-2">
                     <span class="inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700">
-                        Data terbaru per {{ $latestDataDateLabel }}
+                        Data terakhir diperbarui {{ $latestDataDateLabel }}
+
+                        @if(!blank($latestUpdatedBy))
+                            oleh {{ $latestUpdatedBy }}
+                        @endif
                     </span>
                 </div>
                 @endif

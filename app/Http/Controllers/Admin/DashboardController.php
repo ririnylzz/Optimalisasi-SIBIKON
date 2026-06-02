@@ -674,6 +674,7 @@ class DashboardController extends Controller
             'editingTkk' => $editingTkk,
             'kabupatenOptions' => $this->kaltimKabupatenOptions(),
             'latestDataDate' => $latestDataDate,
+            'latestUpdatedBy' => auth()->user()?->name,
         ]);
     }
 
@@ -723,13 +724,11 @@ class DashboardController extends Controller
     {
         $payload = $this->validateTkkPayload($request);
 
-        $payload['created_by'] = auth()->user()->name ?? 'Admin';
-
-        $payload['tanggal_input'] = now()->toDateString();
+        $payload['tanggal_update'] = $payload['tanggal_update'] ?? now()->toDateString();
 
         Tkk::query()->create($payload);
 
-        $this->updateLatestTkkDataDate();
+        $this->updateLatestTkkDataDate($payload['tanggal_update']);
 
         return redirect()
             ->route('admin.tenaga-kerja-konstruksi')
@@ -740,11 +739,11 @@ class DashboardController extends Controller
     {
         $payload = $this->validateTkkPayload($request);
 
-        $payload['tanggal_update'] = now()->toDateString();
+        $payload['tanggal_update'] = $payload['tanggal_update'] ?? now()->toDateString();
 
         $tkk->update($payload);
 
-        $this->updateLatestTkkDataDate();
+        $this->updateLatestTkkDataDate($payload['tanggal_update']);
 
         return redirect()
             ->route('admin.tenaga-kerja-konstruksi')
@@ -895,9 +894,9 @@ class DashboardController extends Controller
                     continue;
                 }
 
-                $payload['created_by'] = auth()->user()->name ?? 'Admin';
-
-                $payload['tanggal_input'] = now()->toDateString();
+                $payload['tanggal_update'] = Carbon::parse(
+                    $validated['tanggal_data_terbaru']
+                )->toDateString();
 
                 Tkk::query()->create($payload);
                 $imported++;
@@ -976,7 +975,7 @@ class DashboardController extends Controller
             'tanggal_aktif' => $row->tanggal_aktif,
             'tanggal_kadaluwarsa' => $row->tanggal_kadaluwarsa,
             'status' => $status,
-            'created_by' => $row->created_by,
+            'tanggal_update' => $row->tanggal_update ?? null,
         ];
     }
 
