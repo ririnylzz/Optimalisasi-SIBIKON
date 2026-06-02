@@ -226,14 +226,18 @@ $latestDataDateLabel = $latestDataDate;
                 plugins: {
 
                     legend: {
-                        position: 'right',
+                        position: 'bottom',
 
                         labels: {
 
                             color: textColor,
                             usePointStyle: true,
                             pointStyle: 'circle',
-                            padding: 12,
+
+                            padding: 18,
+
+                            boxWidth: 14,
+                            boxHeight: 14,
 
                             font: {
                                 size: 11
@@ -247,8 +251,14 @@ $latestDataDateLabel = $latestDataDate;
 
                                     const value = data.datasets[0].data[i];
 
+                                    const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+
+                                    const percent = total
+                                        ? ((value / total) * 100).toFixed(1)
+                                        : 0;
+
                                     return {
-                                        text: `${label} : ${formatNumber(value)}`,
+                                        text: `${label} : ${formatNumber(value)} (${percent}%)`,
                                         fillStyle: data.datasets[0].backgroundColor[i],
                                         strokeStyle: data.datasets[0].backgroundColor[i],
                                         lineWidth: 0,

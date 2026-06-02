@@ -52,7 +52,7 @@ $latestDataDateLabel = $latestDataDate;
         </div>
 
         <form method="GET"
-            action="{{ route('admin.tenaga-kerja-konstruksi') }}"
+            action="{{ route('admin.dashboard-tkk') }}"
             class="flex flex-wrap items-end gap-3 p-5"
         >
             {{-- Kabupaten --}}
@@ -222,6 +222,7 @@ $latestDataDateLabel = $latestDataDate;
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script>
     const gridColor = 'rgba(148, 163, 184, 0.16)';
     const textColor = '#475569';
@@ -462,6 +463,7 @@ $latestDataDateLabel = $latestDataDate;
 
         new Chart(el, {
             type: 'pie',
+
             data: {
                 labels,
                 datasets: [{
@@ -472,6 +474,7 @@ $latestDataDateLabel = $latestDataDate;
                     radius: '78%'
                 }]
             },
+
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -494,7 +497,7 @@ $latestDataDateLabel = $latestDataDate;
 
                             font: {
                                 size: 12,
-                                weight: '600'
+                                weight: 'normal'
                             },
 
                             generateLabels(chart) {
@@ -505,8 +508,14 @@ $latestDataDateLabel = $latestDataDate;
 
                                     const value = data.datasets[0].data[i];
 
+                                    const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+
+                                    const percent = total
+                                        ? ((value / total) * 100).toFixed(1)
+                                        : 0;
+
                                     return {
-                                        text: `${label} : ${formatNumber(value)}`,
+                                        text: `${label} : ${formatNumber(value)} (${percent}%)`,
                                         fillStyle: data.datasets[0].backgroundColor[i],
                                         strokeStyle: data.datasets[0].backgroundColor[i],
                                         lineWidth: 0,
