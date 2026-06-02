@@ -1,11 +1,11 @@
 @extends('layouts.admin')
 
-@section('page-title', 'Data Rantai Pasok')
-@section('page-subtitle', 'Kelola data rantai pasok konstruksi di Kalimantan Timur.')
+@section('page-title', 'Data Pemanfaat Produk Jasa Konstruksi')
+@section('page-subtitle', 'Kelola data pemanfaat produk jasa konstruksi di Kalimantan Timur.')
 
 @section('content')
 @php
-$isEditing = $editingRantaiPasok !== null;
+$isEditing = $editingPemanfaatProduk !== null;
 
 $requestedPanel = request('panel');
 $initialPanel = 'closed';
@@ -83,14 +83,14 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
             <span>/</span>
             <span class="font-medium text-slate-500">Masyarakat Jasa Konstruksi</span>
             <span>/</span>
-            <span class="font-medium text-slate-700">Rantai Pasok</span>
+            <span class="font-medium text-slate-700">Pemanfaat Produk</span>
         </div>
     </div>
 
     <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-                <h3 class="text-base font-bold text-slate-900">Tabel Data Rantai Pasok</h3>
+                <h3 class="text-base font-bold text-slate-900">Tabel Data Pemanfaat Produk</h3>
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
@@ -110,41 +110,28 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
             </div>
         </div>
 
-        <form id="rantai-filter-form" method="GET" action="{{ route('admin.rantai-pasok') }}" class="mt-8 grid grid-cols-1 gap-3 text-xs md:grid-cols-2 xl:grid-cols-4">
-            <div>
+        <form id="pemanfaat-filter-form" method="GET" action="{{ route('admin.pemanfaat-produk') }}" class="mt-8 grid grid-cols-1 gap-3 text-xs md:grid-cols-2 xl:grid-cols-4">
+            <div class="xl:col-span-2">
                 <label for="search" class="mb-2 block text-xs font-semibold text-slate-600">Filter / keyword</label>
                 <input
                     id="search"
                     type="text"
                     name="search"
                     value="{{ $search }}"
-                    placeholder="Cari nama atau bidang usaha"
+                    placeholder="Cari nama bangunan, alamat, kabupaten, provinsi, atau pengelola"
                     autocomplete="off"
                     class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
             </div>
 
             <div>
-                <label for="filter_bidang_usaha" class="mb-2 block text-xs font-semibold text-slate-600">Bidang usaha</label>
+                <label for="filter_tahun_anggaran" class="mb-2 block text-xs font-semibold text-slate-600">Tahun Anggaran</label>
                 <select
-                    id="filter_bidang_usaha"
-                    name="bidang_usaha"
+                    id="filter_tahun_anggaran"
+                    name="tahun_anggaran"
                     class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
-                    <option value="">Semua bidang</option>
-                    @foreach($bidangOptions as $bidang)
-                    <option value="{{ $bidang }}" @selected($bidangFilter===$bidang)>{{ $bidang }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div>
-                <label for="filter_kabupaten" class="mb-2 block text-xs font-semibold text-slate-600">Kabupaten / Kota</label>
-                <select
-                    id="filter_kabupaten"
-                    name="kabupaten"
-                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
-                    <option value="">Semua kabupaten/kota</option>
-                    @foreach($regencyFilterOptions as $kabupaten)
-                    <option value="{{ $kabupaten }}" @selected($regencyFilter===$kabupaten)>{{ $kabupaten }}</option>
+                    <option value="">Semua tahun</option>
+                    @foreach($tahunOptions as $tahun)
+                    <option value="{{ $tahun }}" @selected((string) $tahunFilter===(string) $tahun)>{{ $tahun }}</option>
                     @endforeach
                 </select>
             </div>
@@ -162,12 +149,11 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
             </div>
         </form>
 
-        <div id="rantai-table-container">
-            @include('admin.rantai-pasok.partials.table', [
-            'rantaiPasoks' => $rantaiPasoks,
+        <div id="pemanfaat-table-container">
+            @include('admin.pemanfaat-produk.partials.table', [
+            'pemanfaatProduks' => $pemanfaatProduks,
             'search' => $search,
-            'bidangFilter' => $bidangFilter,
-            'regencyFilter' => $regencyFilter,
+            'tahunFilter' => $tahunFilter,
             'perPage' => $perPage,
             ])
         </div>
@@ -175,20 +161,21 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
 </div>
 
 <div class="absolute left-[-9999px] top-auto h-0 w-0 overflow-hidden opacity-0" aria-hidden="true">
-    <form id="bulk-delete-form" action="{{ route('admin.rantai-pasok.bulk-destroy') }}" method="POST">
+    <form id="bulk-delete-form" action="{{ route('admin.pemanfaat-produk.bulk-destroy') }}" method="POST">
         @csrf
         @method('DELETE')
         <div id="bulk-delete-inputs"></div>
         <button type="submit" data-hidden-submit>submit</button>
     </form>
 
-    <form id="delete-all-form" action="{{ route('admin.rantai-pasok.destroy-all') }}" method="POST">
+    <form id="delete-all-form" action="{{ route('admin.pemanfaat-produk.destroy-all') }}" method="POST">
         @csrf
         @method('DELETE')
         <button type="submit" data-hidden-submit>submit</button>
     </form>
 </div>
 
+{{-- Upload Modal --}}
 <div id="upload-modal" data-modal-wrapper="upload" class="pointer-events-none fixed inset-0 z-[70] hidden p-4 opacity-0 transition duration-200">
     <div data-modal-backdrop class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition duration-200"></div>
 
@@ -197,18 +184,16 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
             <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
                 <div>
                     <h3 class="text-xl font-bold text-slate-900">Import CSV / XLSX</h3>
-                    <p class="mt-1 text-sm text-slate-500">Upload file Rantai Pasok melalui template CSV atau XLSX.</p>
+                    <p class="mt-1 text-sm text-slate-500">Upload file Pemanfaat Produk melalui template CSV atau XLSX.</p>
                 </div>
 
                 <button type="button" data-modal-close class="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    ✕
                 </button>
             </div>
 
             <div class="px-5 py-4">
-                <form id="rantai-import-form" action="{{ route('admin.rantai-pasok.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <form id="pemanfaat-import-form" action="{{ route('admin.pemanfaat-produk.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
 
                     <div>
@@ -229,9 +214,9 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
 
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-600">
                         <p class="font-semibold text-slate-800">Aturan import:</p>
-                        <p>1. File yang didukung: <span class="font-medium text-slate-800">CSV</span> dan <span class="font-medium text-slate-800">XLSX</span>.</p>
-                        <p>2. Header yang didukung: nama, bidang_usaha, alamat, kabupaten, provinsi, kontak.</p>
-                        <p>3. Data dengan nama dan kabupaten sama akan di-update, bukan ditambahkan duplikat baru.</p>
+                        <p>1. File yang didukung: CSV dan XLSX.</p>
+                        <p>2. Header yang didukung: nama_bangunan, pengelola_pemilik_bangunan, alamat, kabupaten, provinsi, nama_pengelola_pemilik, tahun_anggaran, kontak.</p>
+                        <p>3. Data dengan nama bangunan, alamat, kabupaten, dan provinsi sama akan di-update, bukan ditambahkan duplikat baru.</p>
                     </div>
 
                     <div class="flex items-center gap-2">
@@ -249,6 +234,7 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
     </div>
 </div>
 
+{{-- Manual Modal --}}
 <div id="manual-modal" data-modal-wrapper="manual" class="pointer-events-none fixed inset-0 z-[70] hidden p-4 opacity-0 transition duration-200">
     <div data-modal-backdrop class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition duration-200"></div>
 
@@ -256,21 +242,23 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
         <div data-modal-panel class="w-full max-w-5xl translate-y-4 scale-[0.98] rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out">
             <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
                 <div>
-                    <h3 class="text-xl font-bold text-slate-900">{{ $isEditing ? 'Ubah Data Rantai Pasok' : 'Form Rantai Pasok' }}</h3>
-                    <p class="mt-1 text-sm text-slate-500">Isi data rantai pasok secara manual melalui form berikut.</p>
+                    <h3 class="text-xl font-bold text-slate-900">
+                        {{ $isEditing ? 'Ubah Data Pemanfaat Produk' : 'Form Pemanfaat Produk' }}
+                    </h3>
+                    <p class="mt-1 text-sm text-slate-500">
+                        Isi data pemanfaat produk secara manual melalui form berikut.
+                    </p>
                 </div>
 
                 <div class="flex items-center gap-2">
                     @if($isEditing)
-                    <a href="{{ route('admin.rantai-pasok') }}" class="rounded-xl border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+                    <a href="{{ route('admin.pemanfaat-produk') }}" class="rounded-xl border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
                         Reset
                     </a>
                     @endif
 
                     <button type="button" data-modal-close class="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        ✕
                     </button>
                 </div>
             </div>
@@ -288,8 +276,8 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
                 @endif
 
                 <form
-                    id="rantai-manual-form"
-                    action="{{ $isEditing ? route('admin.rantai-pasok.update', $editingRantaiPasok) : route('admin.rantai-pasok.store') }}"
+                    id="pemanfaat-manual-form"
+                    action="{{ $isEditing ? route('admin.pemanfaat-produk.update', $editingPemanfaatProduk) : route('admin.pemanfaat-produk.store') }}"
                     method="POST"
                     class="space-y-3"
                     novalidate>
@@ -300,29 +288,29 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
 
                     <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
                         <div>
-                            <label for="nama" class="mb-2 block text-sm font-medium text-slate-700">Nama</label>
+                            <label for="nama_bangunan" class="mb-2 block text-sm font-medium text-slate-700">Nama Bangunan</label>
                             <input
-                                id="nama"
+                                id="nama_bangunan"
                                 type="text"
-                                name="nama"
-                                value="{{ old('nama', $editingRantaiPasok?->nama) }}"
-                                placeholder="Nama perusahaan / penyedia"
-                                data-required="Nama wajib diisi."
-                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
-                            <p class="mt-1 text-xs text-rose-500 {{ $errors->has('nama') ? '' : 'hidden' }}" data-error-for="nama">{{ $errors->first('nama') }}</p>
+                                name="nama_bangunan"
+                                value="{{ old('nama_bangunan', $editingPemanfaatProduk?->nama_bangunan) }}"
+                                placeholder="Nama bangunan"
+                                data-required="Nama bangunan wajib diisi."
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+                            <p class="mt-1 text-xs text-rose-500 {{ $errors->has('nama_bangunan') ? '' : 'hidden' }}" data-error-for="nama_bangunan">{{ $errors->first('nama_bangunan') }}</p>
                         </div>
 
                         <div>
-                            <label for="bidang_usaha" class="mb-2 block text-sm font-medium text-slate-700">Bidang Usaha</label>
+                            <label for="pengelola_pemilik_bangunan" class="mb-2 block text-sm font-medium text-slate-700">Pengelola/Pemilik Bangunan</label>
                             <input
-                                id="bidang_usaha"
+                                id="pengelola_pemilik_bangunan"
                                 type="text"
-                                name="bidang_usaha"
-                                value="{{ old('bidang_usaha', $editingRantaiPasok?->bidang_usaha) }}"
-                                placeholder="Bidang usaha"
-                                data-required="Bidang usaha wajib diisi."
-                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
-                            <p class="mt-1 text-xs text-rose-500 {{ $errors->has('bidang_usaha') ? '' : 'hidden' }}" data-error-for="bidang_usaha">{{ $errors->first('bidang_usaha') }}</p>
+                                name="pengelola_pemilik_bangunan"
+                                value="{{ old('pengelola_pemilik_bangunan', $editingPemanfaatProduk?->pengelola_pemilik_bangunan) }}"
+                                placeholder="Pengelola/Pemilik bangunan"
+                                data-required="Pengelola/Pemilik bangunan wajib diisi."
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+                            <p class="mt-1 text-xs text-rose-500 {{ $errors->has('pengelola_pemilik_bangunan') ? '' : 'hidden' }}" data-error-for="pengelola_pemilik_bangunan">{{ $errors->first('pengelola_pemilik_bangunan') }}</p>
                         </div>
                     </div>
 
@@ -332,11 +320,12 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
                             id="alamat"
                             name="alamat"
                             rows="2"
-                            placeholder="Alamat"
+                            placeholder="Alamat lengkap bangunan"
                             data-required="Alamat wajib diisi."
-                            class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">{{ old('alamat', $editingRantaiPasok?->alamat) }}</textarea>
+                            class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">{{ old('alamat', $editingPemanfaatProduk?->alamat ?? $editingPemanfaatProduk?->lokasi) }}</textarea>
                         <p class="mt-1 text-xs text-rose-500 {{ $errors->has('alamat') ? '' : 'hidden' }}" data-error-for="alamat">{{ $errors->first('alamat') }}</p>
                     </div>
+
                     <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
                         <div>
                             <label for="provinsi" class="mb-2 block text-sm font-medium text-slate-700">Provinsi</label>
@@ -344,7 +333,7 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
                                 id="provinsi"
                                 name="provinsi"
                                 data-required="Provinsi wajib dipilih."
-                                data-selected="{{ old('provinsi', $editingRantaiPasok?->provinsi ?? 'Kalimantan Timur') }}"
+                                data-selected="{{ old('provinsi', $editingPemanfaatProduk?->provinsi ?? 'Kalimantan Timur') }}"
                                 class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
                                 <option value="">Pilih...</option>
                             </select>
@@ -357,7 +346,7 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
                                 id="kabupaten"
                                 name="kabupaten"
                                 data-required="Kabupaten/Kota wajib dipilih."
-                                data-selected="{{ old('kabupaten', $editingRantaiPasok?->kabupaten) }}"
+                                data-selected="{{ old('kabupaten', $editingPemanfaatProduk?->kabupaten) }}"
                                 class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
                                 <option value="">Pilih provinsi dulu...</option>
                             </select>
@@ -367,19 +356,47 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
 
                     <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
                         <div>
+                            <label for="nama_pengelola_pemilik" class="mb-2 block text-sm font-medium text-slate-700">Nama Pengelola/Pemilik</label>
+                            <input
+                                id="nama_pengelola_pemilik"
+                                type="text"
+                                name="nama_pengelola_pemilik"
+                                value="{{ old('nama_pengelola_pemilik', $editingPemanfaatProduk?->nama_pengelola_pemilik) }}"
+                                placeholder="Nama pengelola/pemilik"
+                                data-required="Nama pengelola/pemilik wajib diisi."
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+                            <p class="mt-1 text-xs text-rose-500 {{ $errors->has('nama_pengelola_pemilik') ? '' : 'hidden' }}" data-error-for="nama_pengelola_pemilik">{{ $errors->first('nama_pengelola_pemilik') }}</p>
+                        </div>
+
+                        <div>
+                            <label for="tahun_anggaran" class="mb-2 block text-sm font-medium text-slate-700">Tahun Anggaran</label>
+                            <input
+                                id="tahun_anggaran"
+                                type="text"
+                                name="tahun_anggaran"
+                                value="{{ old('tahun_anggaran', $editingPemanfaatProduk?->tahun_anggaran) }}"
+                                placeholder="Contoh: 2026"
+                                inputmode="numeric"
+                                maxlength="4"
+                                data-required="Tahun anggaran wajib diisi."
+                                data-year-only="Tahun anggaran harus 4 digit angka."
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+                            <p class="mt-1 text-xs text-rose-500 {{ $errors->has('tahun_anggaran') ? '' : 'hidden' }}" data-error-for="tahun_anggaran">{{ $errors->first('tahun_anggaran') }}</p>
+                        </div>
+
+                        <div>
                             <label for="kontak" class="mb-2 block text-sm font-medium text-slate-700">Kontak</label>
                             <input
                                 id="kontak"
                                 type="text"
                                 name="kontak"
-                                value="{{ old('kontak', $editingRantaiPasok?->kontak) }}"
+                                value="{{ old('kontak', $editingPemanfaatProduk?->kontak) }}"
                                 placeholder="Nomor kontak"
                                 inputmode="numeric"
-                                pattern="[0-9]*"
                                 maxlength="20"
                                 data-required="Kontak wajib diisi."
                                 data-number-only="Kontak hanya boleh diisi angka."
-                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
                             <p class="mt-1 text-xs text-rose-500 {{ $errors->has('kontak') ? '' : 'hidden' }}" data-error-for="kontak">{{ $errors->first('kontak') }}</p>
                         </div>
                     </div>
@@ -399,24 +416,15 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
     </div>
 </div>
 
+{{-- Delete Modal --}}
 <div id="delete-confirm-modal" data-modal-wrapper="delete" class="pointer-events-none fixed inset-0 z-[80] hidden p-4 opacity-0 transition duration-200">
     <div data-modal-backdrop class="absolute inset-0 bg-slate-950/75 backdrop-blur-sm opacity-0 transition duration-200"></div>
 
     <div class="relative z-10 flex min-h-full items-center justify-center">
         <div data-modal-panel class="w-full max-w-md translate-y-4 scale-[0.98] rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out">
             <div class="px-5 py-5">
-                <div class="flex items-start gap-4">
-                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 text-rose-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16" />
-                        </svg>
-                    </div>
-
-                    <div class="min-w-0 flex-1">
-                        <h3 id="delete-modal-title" class="text-lg font-bold text-slate-900">Hapus data Rantai Pasok?</h3>
-                        <p id="delete-modal-text" class="mt-1 text-sm leading-6 text-slate-500">Data ini akan dihapus.</p>
-                    </div>
-                </div>
+                <h3 id="delete-modal-title" class="text-lg font-bold text-slate-900">Hapus data Pemanfaat Produk?</h3>
+                <p id="delete-modal-text" class="mt-2 text-sm leading-6 text-slate-500">Data ini akan dihapus.</p>
 
                 <div class="mt-6 flex items-center justify-end gap-2">
                     <button type="button" data-modal-close class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
@@ -432,14 +440,14 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
     </div>
 </div>
 
-<div id="rantai-script-data" class="hidden" data-initial-panel="{{ $initialPanel }}"></div>
+<div id="pemanfaat-script-data" class="hidden" data-initial-panel="{{ $initialPanel }}"></div>
 @endsection
 
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const body = document.body;
-        const scriptData = document.getElementById('rantai-script-data');
+        const scriptData = document.getElementById('pemanfaat-script-data');
         if (!scriptData) return;
 
         const modalElements = {
@@ -448,16 +456,15 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
             delete: document.getElementById('delete-confirm-modal'),
         };
 
-        const tableContainer = document.getElementById('rantai-table-container');
+        const tableContainer = document.getElementById('pemanfaat-table-container');
         const openButtons = document.querySelectorAll('[data-modal-open]');
         const toastCloseButtons = document.querySelectorAll('[data-toast-close]');
-        const importForm = document.getElementById('rantai-import-form');
-        const manualForm = document.getElementById('rantai-manual-form');
+        const importForm = document.getElementById('pemanfaat-import-form');
+        const manualForm = document.getElementById('pemanfaat-manual-form');
 
-        const filterForm = document.getElementById('rantai-filter-form');
+        const filterForm = document.getElementById('pemanfaat-filter-form');
         const searchInput = document.getElementById('search');
-        const bidangSelect = document.getElementById('filter_bidang_usaha');
-        const filterKabupatenSelect = document.getElementById('filter_kabupaten');
+        const tahunSelect = document.getElementById('filter_tahun_anggaran');
         const perPageSelect = document.getElementById('per_page');
 
         const confirmDeleteButton = document.getElementById('confirm-delete-button');
@@ -793,7 +800,17 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
         const validateManualField = (field) => {
             if (!field) return true;
 
-            const value = field.value.trim();
+            let value = field.value.trim();
+
+            if (field.dataset.numberOnly) {
+                field.value = field.value.replace(/[^0-9]/g, '');
+                value = field.value.trim();
+            }
+
+            if (field.dataset.yearOnly) {
+                field.value = field.value.replace(/[^0-9]/g, '').slice(0, 4);
+                value = field.value.trim();
+            }
 
             if (field.dataset.required && value === '') {
                 showFieldError(field, field.dataset.required);
@@ -802,6 +819,11 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
 
             if (field.dataset.numberOnly && value !== '' && !/^[0-9]+$/.test(value)) {
                 showFieldError(field, field.dataset.numberOnly);
+                return false;
+            }
+
+            if (field.dataset.yearOnly && value !== '' && !/^[0-9]{4}$/.test(value)) {
+                showFieldError(field, field.dataset.yearOnly);
                 return false;
             }
 
@@ -822,13 +844,7 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
 
             requiredFields.forEach((field) => {
                 field.addEventListener('input', function() {
-                    if (field.dataset.numberOnly) {
-                        field.value = field.value.replace(/[^0-9]/g, '');
-                    }
-
-                    if (field.value.trim() !== '') {
-                        validateManualField(field);
-                    }
+                    validateManualField(field);
                 });
 
                 field.addEventListener('blur', function() {
@@ -1022,13 +1038,11 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
             }
 
             const keyword = searchInput ? searchInput.value.trim() : '';
-            const bidang = bidangSelect ? bidangSelect.value : '';
-            const kabupaten = filterKabupatenSelect ? filterKabupatenSelect.value : '';
+            const tahun = tahunSelect ? tahunSelect.value : '';
             const perPage = perPageSelect ? perPageSelect.value : '';
 
             keyword !== '' ? url.searchParams.set('search', keyword) : url.searchParams.delete('search');
-            bidang !== '' ? url.searchParams.set('bidang_usaha', bidang) : url.searchParams.delete('bidang_usaha');
-            kabupaten !== '' ? url.searchParams.set('kabupaten', kabupaten) : url.searchParams.delete('kabupaten');
+            tahun !== '' ? url.searchParams.set('tahun_anggaran', tahun) : url.searchParams.delete('tahun_anggaran');
             perPage !== '' ? url.searchParams.set('per_page', perPage) : url.searchParams.delete('per_page');
 
             return url;
@@ -1056,7 +1070,7 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
                 });
 
                 if (!response.ok) {
-                    throw new Error('Gagal memuat data Rantai Pasok.');
+                    throw new Error('Gagal memuat data Pemanfaat Produk.');
                 }
 
                 const payload = await response.json();
@@ -1086,7 +1100,7 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
             });
         }
 
-        [bidangSelect, filterKabupatenSelect, perPageSelect].forEach((element) => {
+        [tahunSelect, perPageSelect].forEach((element) => {
             if (!element) return;
             element.addEventListener('change', function() {
                 clearTimeout(filterDebounce);
@@ -1119,6 +1133,11 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
                     if (manualForm) {
                         manualForm.reset();
                         resetManualValidation();
+
+                        const provinsiInput = manualForm.querySelector('#provinsi');
+                        if (provinsiInput && !provinsiInput.value) {
+                            provinsiInput.value = 'Kalimantan Timur';
+                        }
                     }
                     @endif
 
@@ -1174,9 +1193,7 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
             tableContainer.addEventListener('change', function(event) {
                 if (event.target.matches('#select-all-rows')) {
                     const checked = event.target.checked;
-                    getRowCheckboxes().forEach((checkbox) => {
-                        checkbox.checked = checked;
-                    });
+                    getRowCheckboxes().forEach((checkbox) => checkbox.checked = checked);
                     refreshSelectionState();
                 }
 
@@ -1186,7 +1203,7 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
             });
 
             tableContainer.addEventListener('click', function(event) {
-                const paginationLink = event.target.closest('.rantai-pagination a');
+                const paginationLink = event.target.closest('.pemanfaat-pagination a');
                 if (paginationLink) {
                     event.preventDefault();
                     clearTimeout(filterDebounce);
@@ -1203,7 +1220,7 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
                         ids: [],
                     };
 
-                    deleteModalTitle.textContent = 'Hapus data Rantai Pasok?';
+                    deleteModalTitle.textContent = 'Hapus data Pemanfaat Produk?';
                     deleteModalText.innerHTML = `Data <span class="font-semibold text-slate-700">${deleteState.name}</span> akan dihapus dari daftar aktif. Tindakan ini tidak bisa dibatalkan.`;
                     confirmDeleteButton.disabled = false;
                     confirmDeleteButton.textContent = 'Ya, Hapus';
@@ -1224,8 +1241,8 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
                         ids
                     };
 
-                    deleteModalTitle.textContent = 'Hapus beberapa data Rantai Pasok?';
-                    deleteModalText.innerHTML = `Sebanyak <span class="font-semibold text-slate-700">${ids.length} data</span> terpilih akan dihapus dari daftar aktif. Tindakan ini tidak bisa dibatalkan.`;
+                    deleteModalTitle.textContent = 'Hapus beberapa data Pemanfaat Produk?';
+                    deleteModalText.innerHTML = `Sebanyak <span class="font-semibold text-slate-700">${ids.length} data</span> terpilih akan dihapus dari daftar aktif.`;
                     confirmDeleteButton.disabled = false;
                     confirmDeleteButton.textContent = 'Ya, Hapus';
 
@@ -1242,8 +1259,8 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
                         ids: []
                     };
 
-                    deleteModalTitle.textContent = 'Hapus semua data Rantai Pasok?';
-                    deleteModalText.innerHTML = 'Semua <span class="font-semibold text-slate-700">data Rantai Pasok aktif</span> akan dihapus. Tindakan ini tidak bisa dibatalkan.';
+                    deleteModalTitle.textContent = 'Hapus semua data Pemanfaat Produk?';
+                    deleteModalText.innerHTML = 'Semua <span class="font-semibold text-slate-700">data Pemanfaat Produk aktif</span> akan dihapus.';
                     confirmDeleteButton.disabled = false;
                     confirmDeleteButton.textContent = 'Ya, Hapus';
 
