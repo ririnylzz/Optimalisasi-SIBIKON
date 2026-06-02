@@ -721,7 +721,15 @@ class DashboardController extends Controller
 
     public function storeTkk(Request $request): RedirectResponse
     {
-        Tkk::query()->create($this->validateTkkPayload($request));
+        $payload = $this->validateTkkPayload($request);
+
+        $payload['created_by'] = auth()->user()->name ?? 'Admin';
+
+        $payload['tanggal_input'] = now()->toDateString();
+
+        Tkk::query()->create($payload);
+
+        $this->updateLatestTkkDataDate();
 
         return redirect()
             ->route('admin.tenaga-kerja-konstruksi')
@@ -730,7 +738,13 @@ class DashboardController extends Controller
 
     public function updateTkk(Request $request, Tkk $tkk): RedirectResponse
     {
-        $tkk->update($this->validateTkkPayload($request));
+        $payload = $this->validateTkkPayload($request);
+
+        $payload['tanggal_update'] = now()->toDateString();
+
+        $tkk->update($payload);
+
+        $this->updateLatestTkkDataDate();
 
         return redirect()
             ->route('admin.tenaga-kerja-konstruksi')
@@ -881,12 +895,18 @@ class DashboardController extends Controller
                     continue;
                 }
 
+                $payload['created_by'] = auth()->user()->name ?? 'Admin';
+
+                $payload['tanggal_input'] = now()->toDateString();
+
                 Tkk::query()->create($payload);
                 $imported++;
             }
-            $latestDataDate = Carbon::parse($validated['tanggal_data_terbaru'])->toDateString();
+           $latestDataDate = Carbon::parse(
+                $validated['tanggal_data_terbaru']
+            )->toDateString();
 
-            Storage::disk('local')->put($this->latestTkkDataDatePath, $latestDataDate);
+            $this->updateLatestTkkDataDate($latestDataDate);
         } catch (Throwable $exception) {
             return redirect()
                 ->back()
@@ -910,6 +930,16 @@ class DashboardController extends Controller
         return $date !== '' ? $date : null;
     }
 
+    private function updateLatestTkkDataDate(?string $date = null): void
+    {
+        $latestDate = $date ?? now()->toDateString();
+
+        Storage::disk('local')->put(
+            $this->latestTkkDataDatePath,
+            $latestDate
+        );
+    }
+
     private function validateTkkPayload(Request $request): array
     {
         return $request->validate([
@@ -921,6 +951,7 @@ class DashboardController extends Controller
             'asosiasi' => ['nullable', 'string', 'max:255'],
             'tanggal_aktif' => ['nullable', 'date'],
             'tanggal_kadaluwarsa' => ['nullable', 'date'],
+            'tanggal_update' => ['nullable', 'date'],
         ], [
             'nama.required' => 'Nama TKK wajib diisi.',
             'kabupaten.in' => 'Kabupaten/Kota harus dipilih dari wilayah Kalimantan Timur.',
@@ -945,6 +976,7 @@ class DashboardController extends Controller
             'tanggal_aktif' => $row->tanggal_aktif,
             'tanggal_kadaluwarsa' => $row->tanggal_kadaluwarsa,
             'status' => $status,
+            'created_by' => $row->created_by,
         ];
     }
 
