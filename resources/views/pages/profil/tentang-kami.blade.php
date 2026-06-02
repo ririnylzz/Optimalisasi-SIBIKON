@@ -18,18 +18,10 @@
                 </h1>
 
                 <p class="max-w-xl text-base leading-8 text-[#21325e]/75">
-                    Bina Konstruksi adalah salah satu bidang pada Dinas Pekerjaan Umum Penataan Ruang dan
-                    Perumahan Rakyat Provinsi Kalimantan Timur yang memiliki tugas, melaksanakan penyiapan
-                    bahan perumusan kebijakan, koordinasi, pembinaan, bimbingan, pengendalian, serta
-                    pengembangan teknis di bina konstruksi. Sesuai Peraturan Menteri Dalam Negeri Nomor
-                    106 Tahun 2017, Bidang Bina Konstruksi dibagi menjadi 3 (tiga) Seksi.
-                </p>
+                    Peraturan Daerah Nomor 9 Tahun 2016 bahwa Dinas Pekerjaan Umum, Penataan Ruang dan Perumahan Rakyat Tipe A menyelanggarakan urusan pemerintahan Bidang Pekerjaan Umum, Penataan Ruang, dan urusan pemerintahan Bidang Perumahan dan Kawasan Pemukiman. Sub urusan Jasa Konstruksi adalah salah satu sub urusan pada urusan pemerintahan bidang pekerjaan umum.
 
-                <a href="#fungsi-bikon"
-                    class="mt-10 inline-flex rounded-xl bg-yellow-400 px-7 py-4 text-sm font-bold leading-tight text-slate-900 transition hover:bg-yellow-300">
-                    BACA<br>
-                    SELENGKAPNYA
-                </a>
+                    Peraturan Gubernur Nomor 43 Tahun 2023, Bidang Bina Konstruksi mempunyai tugas melaksanakan penyiapan bahan perumusan kebijakan, koordinasi, pembinaan, bimbingan, pengendalian serta pengembangan teknis di bidang bina konstruksi.
+                </p>
             </div>
 
             {{-- Card Gambar --}}
