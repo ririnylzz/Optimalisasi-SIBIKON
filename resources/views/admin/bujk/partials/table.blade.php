@@ -40,6 +40,7 @@
                     <th class="px-4 py-3">NIB</th>
                     <th class="px-4 py-3">Nama BUJK</th>
                     <th class="px-4 py-3">Jenis Usaha</th>
+                    <th class="px-4 py-3">Tanggal Terbaru</th>
                     <th class="px-4 py-3">Alamat</th>
                     <th class="px-4 py-3">NPWP</th>
                     <th class="px-4 py-3">Kontak</th>
@@ -63,12 +64,17 @@
                     </td>
                     <td class="px-4 py-3">
                         <div class="flex flex-wrap gap-1.5">
-                            @foreach($item->jenis_bujk_list as $jenis)
+                            @forelse($item->jenis_bujk_list as $jenis)
                             <span class="rounded-full bg-indigo-50 px-2.5 py-1 text-[11px] font-medium text-indigo-700 ring-1 ring-indigo-100">
                                 {{ $jenis }}
                             </span>
-                            @endforeach
+                            @empty
+                            <span class="text-slate-400">-</span>
+                            @endforelse
                         </div>
+                    </td>
+                    <td class="whitespace-nowrap px-4 py-3 text-slate-600">
+                        {{ $item->tgl_update ? \Illuminate\Support\Carbon::parse($item->tgl_update)->format('m/d/y') : '-' }}
                     </td>
                     <td class="max-w-xs px-4 py-3 text-slate-600">{{ $item->alamat_bujk ?: '-' }}</td>
                     <td class="whitespace-nowrap px-4 py-3 text-slate-600">{{ $item->npwp_bujk ?: '-' }}</td>
@@ -114,7 +120,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="9" class="px-4 py-8 text-center text-xs text-slate-500">
+                    <td colspan="10" class="px-4 py-8 text-center text-xs text-slate-500">
                         Belum ada data BUJK yang tampil. Klik tombol tambah data atau upload file untuk mulai mengisi data.
                     </td>
                 </tr>
@@ -177,30 +183,30 @@
         @endforeach
 
         @if($endPage < $bujks->lastPage())
-            @if($endPage < $bujks->lastPage() - 1)
-                <span class="inline-flex h-9 min-w-9 items-center justify-center rounded-xl px-2 text-xs font-semibold text-slate-400">
-                    ...
-                </span>
-                @endif
+        @if($endPage < $bujks->lastPage() - 1)
+        <span class="inline-flex h-9 min-w-9 items-center justify-center rounded-xl px-2 text-xs font-semibold text-slate-400">
+            ...
+        </span>
+        @endif
 
-                <a
-                    href="{{ $bujks->url($bujks->lastPage()) }}"
-                    class="inline-flex h-9 min-w-9 items-center justify-center rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700">
-                    {{ $bujks->lastPage() }}
-                </a>
-                @endif
+        <a
+            href="{{ $bujks->url($bujks->lastPage()) }}"
+            class="inline-flex h-9 min-w-9 items-center justify-center rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700">
+            {{ $bujks->lastPage() }}
+        </a>
+        @endif
 
-                @if($bujks->hasMorePages())
-                <a
-                    href="{{ $bujks->nextPageUrl() }}"
-                    class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700">
-                    Next &raquo;
-                </a>
-                @else
-                <span class="inline-flex cursor-not-allowed items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-400">
-                    Next &raquo;
-                </span>
-                @endif
+        @if($bujks->hasMorePages())
+        <a
+            href="{{ $bujks->nextPageUrl() }}"
+            class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700">
+            Next &raquo;
+        </a>
+        @else
+        <span class="inline-flex cursor-not-allowed items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-400">
+            Next &raquo;
+        </span>
+        @endif
     </nav>
     @endif
 </div>

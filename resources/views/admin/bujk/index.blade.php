@@ -45,6 +45,16 @@ $latestDataDateLabel = $latestDataDate;
 }
 }
 
+$manualUpdateDate = old('tgl_update');
+
+if ($manualUpdateDate === null && $editingBujk?->tgl_update) {
+try {
+$manualUpdateDate = \Illuminate\Support\Carbon::parse($editingBujk->tgl_update)->format('Y-m-d');
+} catch (\Throwable $exception) {
+$manualUpdateDate = null;
+}
+}
+
 $requestedPanel = request('panel');
 $initialPanel = 'closed';
 $hasUploadError = $errors->has('file_import') || $errors->has('tanggal_data_terbaru');
@@ -258,10 +268,10 @@ $toastMessages[] = [
 <div
     id="upload-modal"
     data-modal-wrapper="upload"
-    class="pointer-events-none fixed inset-0 z-[70] hidden p-4 opacity-0 transition duration-200">
+    class="pointer-events-none fixed inset-0 z-[70] hidden overflow-y-auto p-4 opacity-0 transition duration-200">
     <div data-modal-backdrop class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition duration-200"></div>
 
-    <div class="relative z-10 flex min-h-full items-center justify-center">
+    <div class="relative z-10 flex min-h-full items-start justify-center py-6">
         <div
             data-modal-panel
             class="w-full max-w-3xl translate-y-4 scale-[0.98] rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out">
@@ -366,7 +376,7 @@ $toastMessages[] = [
     <div class="relative z-10 flex min-h-full items-center justify-center">
         <div
             data-modal-panel
-            class="w-full max-w-5xl translate-y-4 scale-[0.98] rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out">
+            class="flex max-h-[calc(100vh-3rem)] w-full max-w-5xl translate-y-4 scale-[0.98] flex-col overflow-hidden rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out">
             <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
                 <div>
                     <h3 class="text-xl font-bold text-slate-900">{{ $isEditing ? 'Ubah Data BUJK' : 'Form BUJK' }}</h3>
@@ -395,7 +405,7 @@ $toastMessages[] = [
                 </div>
             </div>
 
-            <div class="px-5 py-4">
+            <div class="overflow-y-auto px-5 py-4">
                 @if($errors->any() && !$hasUploadError)
                 <div class="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
                     <p class="font-semibold">Masih ada input yang perlu diperbaiki:</p>
@@ -453,11 +463,11 @@ $toastMessages[] = [
                             @foreach($jenisOptions as $jenis)
                             <label class="flex items-center gap-3 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700">
                                 <input
-                                    type="checkbox"
-                                    name="jenis_bujk[]"
+                                    type="radio"
+                                    name="jenis_bujk"
                                     value="{{ $jenis }}"
                                     {{ in_array($jenis, $selectedJenis, true) ? 'checked' : '' }}
-                                    class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                                    class="h-4 w-4 border-slate-300 text-indigo-600 focus:ring-indigo-500" />
                                 <span>{{ $jenis }}</span>
                             </label>
                             @endforeach
@@ -465,6 +475,21 @@ $toastMessages[] = [
                         @error('jenis_usaha')
                         <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
                         @enderror
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
+                        <div>
+                            <label for="tgl_update" class="mb-2 block text-sm font-medium text-slate-700">Tanggal data terbaru</label>
+                            <input
+                                id="tgl_update"
+                                type="date"
+                                name="tgl_update"
+                                value="{{ $manualUpdateDate }}"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500" />
+                            @error('tgl_update')
+                            <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
                     <div>
@@ -595,7 +620,7 @@ $toastMessages[] = [
                         </div>
                     </div>
                 </form>
-            </div>
+            </>
         </div>
     </div>
 </div>
@@ -1045,7 +1070,7 @@ $toastMessages[] = [
             const manualFields = {
                 nib: bujkManualForm.querySelector('#nib'),
                 nama: bujkManualForm.querySelector('#nama_bujk'),
-                jenis: bujkManualForm.querySelectorAll('input[name="jenis_bujk[]"]'),
+                jenis: bujkManualForm.querySelectorAll('input[name="jenis_bujk"]'),
                 alamat: bujkManualForm.querySelector('#alamat_bujk'),
                 provinsi: bujkManualForm.querySelector('#provinsi_bujk'),
                 kabupaten: bujkManualForm.querySelector('#kab_kota_bujk'),
@@ -1053,6 +1078,7 @@ $toastMessages[] = [
                 email: bujkManualForm.querySelector('#email_bujk'),
                 telp: bujkManualForm.querySelector('#telp_bujk'),
                 website: bujkManualForm.querySelector('#website_bujk'),
+                tglUpdate: bujkManualForm.querySelector('#tgl_update'),
             };
 
             const onlyNumbers = (value) => {
@@ -1077,7 +1103,7 @@ $toastMessages[] = [
             const getErrorWrapper = (field) => {
                 if (!field) return null;
 
-                if (field.type === 'checkbox') {
+                if (field.type === 'checkbox' || field.type === 'radio') {
                     return field.closest('.grid')?.parentElement || field.parentElement;
                 }
 
@@ -1115,13 +1141,13 @@ $toastMessages[] = [
                 if (message) {
                     field.classList.add('border-rose-500', 'focus:border-rose-500');
 
-                    if (field.type === 'checkbox') {
+                    if (field.type === 'checkbox' || field.type === 'radio') {
                         field.classList.add('text-rose-600', 'focus:ring-rose-500');
                     }
                 } else {
                     field.classList.remove('border-rose-500', 'focus:border-rose-500');
 
-                    if (field.type === 'checkbox') {
+                    if (field.type === 'checkbox' || field.type === 'radio') {
                         field.classList.remove('text-rose-600', 'focus:ring-rose-500');
                     }
                 }
@@ -1147,7 +1173,7 @@ $toastMessages[] = [
 
                 field.classList.remove('border-rose-500', 'focus:border-rose-500');
 
-                if (field.type === 'checkbox') {
+                if (field.type === 'checkbox' || field.type === 'radio') {
                     field.classList.remove('text-rose-600', 'focus:ring-rose-500');
                 }
             };
@@ -1211,9 +1237,17 @@ $toastMessages[] = [
                 const firstJenis = getFirstJenis();
                 if (!firstJenis) return true;
 
-                if (!isAnyJenisChecked()) {
+                const checkedCount = Array.from(manualFields.jenis || []).filter((field) => field.checked).length;
+
+                if (checkedCount < 1) {
                     return showMessage ?
-                        showTrigger(firstJenis, 'Pilih minimal satu jenis usaha.', showPopup) :
+                        showTrigger(firstJenis, 'Pilih salah satu jenis usaha.', showPopup) :
+                        false;
+                }
+
+                if (checkedCount > 1) {
+                    return showMessage ?
+                        showTrigger(firstJenis, 'Jenis usaha hanya boleh dipilih salah satu.', showPopup) :
                         false;
                 }
 
@@ -1337,6 +1371,22 @@ $toastMessages[] = [
                 return true;
             };
 
+            const validateTglUpdate = (showMessage = true, showPopup = false) => {
+                const field = manualFields.tglUpdate;
+                if (!field || field.value.trim() === '') return true;
+
+                field.setCustomValidity('');
+
+                if (!field.checkValidity()) {
+                    return showMessage ?
+                        showTrigger(field, 'Tanggal terbaru tidak valid.', showPopup) :
+                        false;
+                }
+
+                clearTrigger(field);
+                return true;
+            };
+
             const validateAllManualFields = () => {
                 const validators = [
                     validateNib,
@@ -1349,6 +1399,7 @@ $toastMessages[] = [
                     validateEmail,
                     validateTelp,
                     validateWebsite,
+                    validateTglUpdate,
                 ];
 
                 let firstInvalid = null;
@@ -1375,6 +1426,8 @@ $toastMessages[] = [
                             firstInvalid = manualFields.email;
                         } else if (validator === validateTelp) {
                             firstInvalid = manualFields.telp;
+                        } else if (validator === validateTglUpdate) {
+                            firstInvalid = manualFields.tglUpdate;
                         }
                     }
                 }
@@ -1491,6 +1544,16 @@ $toastMessages[] = [
             if (manualFields.website) {
                 manualFields.website.addEventListener('input', function() {
                     validateWebsite();
+                });
+            }
+
+            if (manualFields.tglUpdate) {
+                manualFields.tglUpdate.addEventListener('change', function() {
+                    validateTglUpdate(true, false);
+                });
+
+                manualFields.tglUpdate.addEventListener('blur', function() {
+                    validateTglUpdate(true, false);
                 });
             }
 
