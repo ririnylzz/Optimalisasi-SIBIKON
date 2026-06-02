@@ -6,8 +6,8 @@
 
         {{-- Header --}}
         <div class="text-center mb-12">
-            <span class="inline-block bg-[#f1d00a]/60 text-[#21325e] text-xs font-semibold px-4 py-2 rounded-full mb-4">
-                Hubungi Kami
+            <span class="inline-flex items-center rounded-full bg-[#ECCC4B] px-5 py-2 text-sm font-medium text-slate-900">
+                Hubungi kami
             </span>
 
             <h1 class="text-3xl md:text-4xl font-extrabold text-[#21325e] mb-3">

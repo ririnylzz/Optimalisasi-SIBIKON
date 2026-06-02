@@ -268,10 +268,10 @@ $toastMessages[] = [
 <div
     id="upload-modal"
     data-modal-wrapper="upload"
-    class="pointer-events-none fixed inset-0 z-[70] hidden overflow-y-auto p-4 opacity-0 transition duration-200">
+    class="pointer-events-none fixed inset-0 z-[70] hidden p-4 opacity-0 transition duration-200">
     <div data-modal-backdrop class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition duration-200"></div>
 
-    <div class="relative z-10 flex min-h-full items-start justify-center py-6">
+    <div class="relative z-10 flex min-h-full items-center justify-center">
         <div
             data-modal-panel
             class="w-full max-w-3xl translate-y-4 scale-[0.98] rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out">
@@ -370,10 +370,10 @@ $toastMessages[] = [
 <div
     id="manual-modal"
     data-modal-wrapper="manual"
-    class="pointer-events-none fixed inset-0 z-[70] hidden p-4 opacity-0 transition duration-200">
+    class="pointer-events-none fixed inset-0 z-[70] hidden overflow-y-auto p-4 opacity-0 transition duration-200">
     <div data-modal-backdrop class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition duration-200"></div>
 
-    <div class="relative z-10 flex min-h-full items-center justify-center">
+    <div class="relative z-10 flex min-h-full items-start justify-center py-6">
         <div
             data-modal-panel
             class="flex max-h-[calc(100vh-3rem)] w-full max-w-5xl translate-y-4 scale-[0.98] flex-col overflow-hidden rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out">
@@ -472,6 +472,7 @@ $toastMessages[] = [
                             </label>
                             @endforeach
                         </div>
+                        <p class="mt-1 text-xs text-slate-500">Pilih salah satu saja. BUJK tidak bisa memakai Konstruksi dan Konsultan Konstruksi sekaligus.</p>
                         @error('jenis_usaha')
                         <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
                         @enderror
@@ -479,13 +480,14 @@ $toastMessages[] = [
 
                     <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
                         <div>
-                            <label for="tgl_update" class="mb-2 block text-sm font-medium text-slate-700">Tanggal data terbaru</label>
+                            <label for="tgl_update" class="mb-2 block text-sm font-medium text-slate-700">Tanggal Terbaru / Tanggal Update</label>
                             <input
                                 id="tgl_update"
                                 type="date"
                                 name="tgl_update"
                                 value="{{ $manualUpdateDate }}"
                                 class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500" />
+                            <p class="mt-1 text-xs text-slate-500">Sama seperti tanggal update dari file import. Di tabel akan tampil format mm/dd/yy.</p>
                             @error('tgl_update')
                             <p class="mt-1 text-xs text-rose-500">{{ $message }}</p>
                             @enderror
@@ -620,7 +622,7 @@ $toastMessages[] = [
                         </div>
                     </div>
                 </form>
-            </>
+            </div>
         </div>
     </div>
 </div>
@@ -628,14 +630,14 @@ $toastMessages[] = [
 <div
     id="delete-confirm-modal"
     data-modal-wrapper="delete"
-    class="pointer-events-none fixed inset-0 z-[80] hidden p-4 opacity-0 transition duration-200">
-    <div data-modal-backdrop class="absolute inset-0 bg-slate-950/75 backdrop-blur-sm opacity-0 transition duration-200"></div>
+    class="pointer-events-none fixed inset-0 z-[9999] hidden p-4 opacity-0 transition duration-200">
+    <div data-modal-backdrop class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition duration-200"></div>
 
     <div class="relative z-10 flex min-h-full items-center justify-center">
         <div
             data-modal-panel
             class="w-full max-w-md translate-y-4 scale-[0.98] rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out">
-            <div class="px-5 py-5">
+            <div class="px-6 py-6">
                 <div class="flex items-start gap-4">
                     <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 text-rose-600">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -645,24 +647,24 @@ $toastMessages[] = [
 
                     <div class="min-w-0 flex-1">
                         <h3 id="delete-modal-title" class="text-lg font-bold text-slate-900">Hapus data BUJK?</h3>
-                        <p id="delete-modal-text" class="mt-1 text-sm leading-6 text-slate-500">
-                            Data ini akan dihapus.
+                        <p id="delete-modal-text" class="mt-2 text-sm leading-6 text-slate-500">
+                            Data ini akan dihapus dari daftar aktif.
                         </p>
                     </div>
                 </div>
 
-                <div class="mt-6 flex items-center justify-end gap-2">
+                <div class="mt-7 flex items-center justify-end gap-2">
                     <button
                         type="button"
                         data-modal-close
-                        class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+                        class="rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                         Batal
                     </button>
 
                     <button
                         type="button"
                         id="confirm-delete-button"
-                        class="rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-500">
+                        class="rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-500 disabled:cursor-not-allowed disabled:bg-rose-300">
                         Ya, Hapus
                     </button>
                 </div>
@@ -685,6 +687,8 @@ $toastMessages[] = [
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        document.body.classList.remove('overflow-hidden');
+
         const body = document.body;
         const scriptData = document.getElementById('bujk-script-data');
         if (!scriptData) return;
@@ -752,11 +756,17 @@ $toastMessages[] = [
         };
 
         const hasOpenModal = () => {
-            return Object.values(modalElements).some((modal) => modal && modal.dataset.state === 'open');
+            return Object.values(modalElements).some((modal) => {
+                return modal && modal.dataset.state === 'open' && !modal.classList.contains('hidden');
+            });
         };
 
         const lockBody = () => {
             body.classList.toggle('overflow-hidden', hasOpenModal());
+
+            if (!hasOpenModal()) {
+                body.classList.remove('overflow-hidden');
+            }
         };
 
         const updateQuery = (panelName = null) => {
@@ -775,26 +785,22 @@ $toastMessages[] = [
         const showModal = (modal, panelName = null, writeQuery = true) => {
             if (!modal) return;
 
-            modal.classList.remove('hidden');
+            modal.classList.remove('hidden', 'pointer-events-none', 'opacity-0');
+            modal.classList.add('pointer-events-auto', 'opacity-100');
             modal.dataset.state = 'open';
 
-            requestAnimationFrame(() => {
-                modal.classList.remove('pointer-events-none', 'opacity-0');
-                modal.classList.add('pointer-events-auto', 'opacity-100');
+            const backdrop = modal.querySelector('[data-modal-backdrop]');
+            const panel = modal.querySelector('[data-modal-panel]');
 
-                const backdrop = modal.querySelector('[data-modal-backdrop]');
-                const panel = modal.querySelector('[data-modal-panel]');
+            if (backdrop) {
+                backdrop.classList.remove('opacity-0');
+                backdrop.classList.add('opacity-100');
+            }
 
-                if (backdrop) {
-                    backdrop.classList.remove('opacity-0');
-                    backdrop.classList.add('opacity-100');
-                }
-
-                if (panel) {
-                    panel.classList.remove('translate-y-4', 'scale-[0.98]', 'opacity-0');
-                    panel.classList.add('translate-y-0', 'scale-100', 'opacity-100');
-                }
-            });
+            if (panel) {
+                panel.classList.remove('translate-y-4', 'scale-[0.98]', 'opacity-0');
+                panel.classList.add('translate-y-0', 'scale-100', 'opacity-100');
+            }
 
             lockBody();
 
@@ -804,6 +810,73 @@ $toastMessages[] = [
         };
 
         const hideModal = (modal, writeQuery = true) => {
+            if (!modal) return;
+
+            if (modal === modalElements.delete) {
+                closeDeleteModal();
+                return;
+            }
+
+            modal.dataset.state = 'closed';
+            modal.classList.remove('pointer-events-auto', 'opacity-100');
+            modal.classList.add('pointer-events-none', 'opacity-0');
+
+            const backdrop = modal.querySelector('[data-modal-backdrop]');
+            const panel = modal.querySelector('[data-modal-panel]');
+
+            if (backdrop) {
+                backdrop.classList.remove('opacity-100');
+                backdrop.classList.add('opacity-0');
+            }
+
+            if (panel) {
+                panel.classList.remove('translate-y-0', 'scale-100', 'opacity-100');
+                panel.classList.add('translate-y-4', 'scale-[0.98]', 'opacity-0');
+            }
+
+            setTimeout(() => {
+                if (modal.dataset.state !== 'open') {
+                    modal.classList.add('hidden');
+                }
+
+                lockBody();
+            }, 180);
+
+            if (modal === modalElements.upload) {
+                resetImportForm();
+            }
+
+            if (writeQuery && (modal === modalElements.upload || modal === modalElements.manual)) {
+                updateQuery(null);
+            }
+        };
+
+        const openDeleteModal = () => {
+            const modal = modalElements.delete;
+            if (!modal) return;
+
+            modal.classList.remove('hidden', 'pointer-events-none', 'opacity-0');
+            modal.classList.add('pointer-events-auto', 'opacity-100');
+            modal.dataset.state = 'open';
+
+            const backdrop = modal.querySelector('[data-modal-backdrop]');
+            const panel = modal.querySelector('[data-modal-panel]');
+
+            if (backdrop) {
+                backdrop.classList.remove('opacity-0');
+                backdrop.classList.add('opacity-100');
+            }
+
+            if (panel) {
+                panel.classList.remove('translate-y-4', 'scale-[0.98]', 'opacity-0');
+                panel.classList.add('translate-y-0', 'scale-100', 'opacity-100');
+            }
+
+            body.classList.add('overflow-hidden');
+        };
+
+        const closeDeleteModal = () => {
+            const modal = modalElements.delete;
             if (!modal) return;
 
             modal.dataset.state = 'closed';
@@ -827,15 +900,18 @@ $toastMessages[] = [
                 if (modal.dataset.state !== 'open') {
                     modal.classList.add('hidden');
                 }
-                lockBody();
-            }, 210);
 
-            if (modal === modalElements.upload) {
-                resetImportForm();
-            }
+                const manualOpen = modalElements.manual?.dataset.state === 'open' && !modalElements.manual.classList.contains('hidden');
+                const uploadOpen = modalElements.upload?.dataset.state === 'open' && !modalElements.upload.classList.contains('hidden');
 
-            if (writeQuery && (modal === modalElements.upload || modal === modalElements.manual)) {
-                updateQuery(null);
+                if (!manualOpen && !uploadOpen) {
+                    body.classList.remove('overflow-hidden');
+                }
+            }, 180);
+
+            if (confirmDeleteButton) {
+                confirmDeleteButton.disabled = false;
+                confirmDeleteButton.textContent = 'Ya, Hapus';
             }
         };
 
@@ -1049,12 +1125,22 @@ $toastMessages[] = [
             const backdrop = modal.querySelector('[data-modal-backdrop]');
             if (backdrop) {
                 backdrop.addEventListener('click', function() {
+                    if (modal === modalElements.delete) {
+                        closeDeleteModal();
+                        return;
+                    }
+
                     hideModal(modal, true);
                 });
             }
 
             modal.querySelectorAll('[data-modal-close]').forEach((button) => {
                 button.addEventListener('click', function() {
+                    if (modal === modalElements.delete) {
+                        closeDeleteModal();
+                        return;
+                    }
+
                     hideModal(modal, true);
                 });
             });
@@ -1062,7 +1148,9 @@ $toastMessages[] = [
 
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
-                Object.values(modalElements).forEach((modal) => hideModal(modal, true));
+                closeDeleteModal();
+                hideModal(modalElements.upload, true);
+                hideModal(modalElements.manual, true);
             }
         });
 
@@ -1373,9 +1461,15 @@ $toastMessages[] = [
 
             const validateTglUpdate = (showMessage = true, showPopup = false) => {
                 const field = manualFields.tglUpdate;
-                if (!field || field.value.trim() === '') return true;
+                if (!field) return true;
 
                 field.setCustomValidity('');
+
+                if (field.value.trim() === '') {
+                    return showMessage ?
+                        showTrigger(field, 'Tanggal terbaru wajib diisi.', showPopup) :
+                        false;
+                }
 
                 if (!field.checkValidity()) {
                     return showMessage ?
@@ -1611,6 +1705,8 @@ $toastMessages[] = [
 
                 const singleDeleteButton = event.target.closest('[data-delete-single]');
                 if (singleDeleteButton) {
+                    event.preventDefault();
+
                     deleteState = {
                         mode: 'single',
                         form: singleDeleteButton.closest('form'),
@@ -1619,18 +1715,24 @@ $toastMessages[] = [
                     };
 
                     deleteModalTitle.textContent = 'Hapus data BUJK?';
-                    deleteModalText.innerHTML = `Data <span class="font-semibold text-slate-700">${deleteState.name}</span> akan dihapus dari daftar aktif. Tindakan ini tidak bisa dibatalkan.`;
+                    deleteModalText.innerHTML = `Data <span class="font-semibold text-slate-700">${deleteState.name}</span> akan dihapus dari daftar aktif.`;
                     confirmDeleteButton.disabled = false;
                     confirmDeleteButton.textContent = 'Ya, Hapus';
 
-                    showModal(modalElements.delete, null, false);
+                    openDeleteModal();
                     return;
                 }
 
                 const bulkDeleteTrigger = event.target.closest('#bulk-delete-trigger');
-                if (bulkDeleteTrigger) {
+                if (bulkDeleteTrigger && !bulkDeleteTrigger.disabled) {
+                    event.preventDefault();
+
                     const ids = getSelectedIds();
-                    if (!ids.length) return;
+
+                    if (!ids.length) {
+                        refreshSelectionState();
+                        return;
+                    }
 
                     deleteState = {
                         mode: 'bulk',
@@ -1639,17 +1741,19 @@ $toastMessages[] = [
                         ids,
                     };
 
-                    deleteModalTitle.textContent = 'Hapus beberapa data BUJK?';
-                    deleteModalText.innerHTML = `Sebanyak <span class="font-semibold text-slate-700">${ids.length} data</span> terpilih akan dihapus dari daftar aktif. Tindakan ini tidak bisa dibatalkan.`;
+                    deleteModalTitle.textContent = 'Hapus data BUJK terpilih?';
+                    deleteModalText.innerHTML = `Sebanyak <span class="font-semibold text-slate-700">${ids.length} data BUJK</span> yang dipilih akan dihapus dari daftar aktif.`;
                     confirmDeleteButton.disabled = false;
                     confirmDeleteButton.textContent = 'Ya, Hapus';
 
-                    showModal(modalElements.delete, null, false);
+                    openDeleteModal();
                     return;
                 }
 
                 const deleteAllTrigger = event.target.closest('#delete-all-trigger');
                 if (deleteAllTrigger && !deleteAllTrigger.disabled) {
+                    event.preventDefault();
+
                     deleteState = {
                         mode: 'all',
                         form: null,
@@ -1658,11 +1762,12 @@ $toastMessages[] = [
                     };
 
                     deleteModalTitle.textContent = 'Hapus semua data BUJK?';
-                    deleteModalText.innerHTML = 'Semua <span class="font-semibold text-slate-700">data BUJK aktif</span> akan dihapus. Pastikan kamu benar-benar yakin karena tindakan ini tidak bisa dibatalkan.';
+                    deleteModalText.innerHTML = 'Semua <span class="font-semibold text-slate-700">data BUJK aktif</span> di seluruh halaman akan dihapus, bukan hanya data yang sedang tampil.';
                     confirmDeleteButton.disabled = false;
                     confirmDeleteButton.textContent = 'Ya, Hapus';
 
-                    showModal(modalElements.delete, null, false);
+                    openDeleteModal();
+                    return;
                 }
             });
         }
@@ -1678,6 +1783,11 @@ $toastMessages[] = [
                 }
 
                 if (deleteState.mode === 'bulk') {
+                    if (!deleteState.ids.length) {
+                        closeDeleteModal();
+                        return;
+                    }
+
                     bulkDeleteInputs.innerHTML = '';
 
                     deleteState.ids.forEach((id) => {
@@ -1694,7 +1804,10 @@ $toastMessages[] = [
 
                 if (deleteState.mode === 'all') {
                     submitHiddenForm(deleteAllForm);
+                    return;
                 }
+
+                closeDeleteModal();
             });
         }
 
