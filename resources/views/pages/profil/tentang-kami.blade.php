@@ -41,13 +41,6 @@
 
                 <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent"></div>
 
-                <button type="button"
-                    class="absolute right-7 top-7 flex h-16 w-16 items-center justify-center bg-yellow-400 text-slate-900 shadow-lg transition hover:bg-yellow-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8 5v14l11-7L8 5z" />
-                    </svg>
-                </button>
-
                 <div class="absolute bottom-8 left-8 text-white">
                     <h3 class="text-lg font-extrabold">
                         Dinas PUPR Provinsi Kalimantan Timur
