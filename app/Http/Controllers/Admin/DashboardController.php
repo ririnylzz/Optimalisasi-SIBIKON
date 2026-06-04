@@ -18,6 +18,8 @@ use Throwable;
 class DashboardController extends Controller
 {
     protected string $latestTkkDataDatePath = 'tkk/latest-data-date.txt';
+    protected string $latestTkkUpdatedByPath = 'tkk/latest-updated-by.txt';
+
     public function index()
     {
         $bujkRows = DB::table('bujk')
@@ -666,6 +668,7 @@ class DashboardController extends Controller
 
         $totalTkk = Tkk::query()->count();
         $latestDataDate = $this->getLatestTkkDataDate();
+        $latestUpdatedBy = $this->getLatestTkkUpdatedBy();
 
         return view('admin.tkk-data', [
             'rows' => $rows,
@@ -674,6 +677,7 @@ class DashboardController extends Controller
             'editingTkk' => $editingTkk,
             'kabupatenOptions' => $this->kaltimKabupatenOptions(),
             'latestDataDate' => $latestDataDate,
+            'latestUpdatedBy' => $latestUpdatedBy,
         ]);
     }
 
@@ -721,7 +725,14 @@ class DashboardController extends Controller
 
     public function storeTkk(Request $request): RedirectResponse
     {
-        Tkk::query()->create($this->validateTkkPayload($request));
+        $payload = $this->validateTkkPayload($request);
+
+        $payload['tanggal_update'] = $payload['tanggal_update'] ?? now()->toDateString();
+
+        Tkk::query()->create($payload);
+
+        $this->updateLatestTkkDataDate($payload['tanggal_update']);
+        $this->updateLatestTkkUpdatedBy();
 
         return redirect()
             ->route('admin.tenaga-kerja-konstruksi')
@@ -730,7 +741,14 @@ class DashboardController extends Controller
 
     public function updateTkk(Request $request, Tkk $tkk): RedirectResponse
     {
-        $tkk->update($this->validateTkkPayload($request));
+        $payload = $this->validateTkkPayload($request);
+
+        $payload['tanggal_update'] = $payload['tanggal_update'] ?? now()->toDateString();
+
+        $tkk->update($payload);
+
+        $this->updateLatestTkkDataDate($payload['tanggal_update']);
+        $this->updateLatestTkkUpdatedBy();
 
         return redirect()
             ->route('admin.tenaga-kerja-konstruksi')
@@ -812,6 +830,9 @@ class DashboardController extends Controller
 
     public function importTkk(Request $request): RedirectResponse
     {
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
+
         $validated = $request->validate([
             'file_import' => ['required', 'file', 'mimes:xlsx,xls,csv,txt', 'max:10240'],
             'tanggal_data_terbaru' => ['required', 'date'],
@@ -881,12 +902,19 @@ class DashboardController extends Controller
                     continue;
                 }
 
+                $payload['tanggal_update'] = Carbon::parse(
+                    $validated['tanggal_data_terbaru']
+                )->toDateString();
+
                 Tkk::query()->create($payload);
                 $imported++;
             }
-            $latestDataDate = Carbon::parse($validated['tanggal_data_terbaru'])->toDateString();
+           $latestDataDate = Carbon::parse(
+                $validated['tanggal_data_terbaru']
+            )->toDateString();
 
-            Storage::disk('local')->put($this->latestTkkDataDatePath, $latestDataDate);
+            $this->updateLatestTkkDataDate($latestDataDate);
+            $this->updateLatestTkkUpdatedBy();
         } catch (Throwable $exception) {
             return redirect()
                 ->back()
@@ -910,23 +938,71 @@ class DashboardController extends Controller
         return $date !== '' ? $date : null;
     }
 
+    private function updateLatestTkkDataDate(?string $date = null): void
+    {
+        $latestDate = $date ?? now()->toDateString();
+
+        Storage::disk('local')->put(
+            $this->latestTkkDataDatePath,
+            $latestDate
+        );
+    }
+
+    private function getLatestTkkUpdatedBy(): ?string
+    {
+        if (!Storage::disk('local')->exists($this->latestTkkUpdatedByPath)) {
+            return auth()->user()?->name;
+        }
+
+        $name = trim((string) Storage::disk('local')->get($this->latestTkkUpdatedByPath));
+
+        return $name !== '' ? $name : auth()->user()?->name;
+    }
+
+    private function updateLatestTkkUpdatedBy(): void
+    {
+        $name = auth()->user()?->name;
+
+        if (blank($name)) {
+            return;
+        }
+
+        Storage::disk('local')->put(
+            $this->latestTkkUpdatedByPath,
+            $name
+        );
+    }
+
     private function validateTkkPayload(Request $request): array
     {
         return $request->validate([
             'nama' => ['required', 'string', 'max:255'],
-            'kabupaten' => ['nullable', 'string', Rule::in(array_keys($this->kaltimKabupatenOptions()))],
-            'klasifikasi' => ['nullable', 'string', 'max:255'],
-            'jabatan_kerja' => ['nullable', 'string', 'max:255'],
-            'jenjang' => ['nullable', 'integer', 'min:1', 'max:9'],
-            'asosiasi' => ['nullable', 'string', 'max:255'],
-            'tanggal_aktif' => ['nullable', 'date'],
-            'tanggal_kadaluwarsa' => ['nullable', 'date'],
+            'kabupaten' => ['required', 'string', Rule::in(array_keys($this->kaltimKabupatenOptions()))],
+            'klasifikasi' => ['required', 'string', 'max:255'],
+            'jabatan_kerja' => ['required', 'string', 'max:255'],
+            'jenjang' => ['required', 'integer', 'min:1', 'max:9'],
+            'asosiasi' => ['required', 'string', 'max:255'],
+            'tanggal_update' => ['required', 'date'],
+            'tanggal_aktif' => ['required', 'date'],
+            'tanggal_kadaluwarsa' => ['required', 'date', 'after_or_equal:tanggal_aktif'],
         ], [
             'nama.required' => 'Nama TKK wajib diisi.',
+            'kabupaten.required' => 'Kabupaten/Kota wajib dipilih.',
             'kabupaten.in' => 'Kabupaten/Kota harus dipilih dari wilayah Kalimantan Timur.',
+            'klasifikasi.required' => 'Klasifikasi wajib diisi.',
+            'jabatan_kerja.required' => 'Jabatan kerja wajib diisi.',
+            'jenjang.required' => 'Jenjang wajib diisi.',
             'jenjang.integer' => 'Jenjang harus berupa angka.',
+            'jenjang.min' => 'Jenjang minimal 1.',
+            'jenjang.max' => 'Jenjang maksimal 9.',
+            'asosiasi.required' => 'Asosiasi wajib diisi.',
+            'tanggal_update.required' => 'Tanggal update data wajib diisi.',
+            'tanggal_update.date' => 'Tanggal update data tidak valid.',
+            'tanggal_aktif.required' => 'Tanggal aktif wajib diisi.',
             'tanggal_aktif.date' => 'Tanggal aktif tidak valid.',
+            'tanggal_kadaluwarsa.required' => 'Tanggal kadaluwarsa wajib diisi.',
             'tanggal_kadaluwarsa.date' => 'Tanggal kadaluwarsa tidak valid.',
+            'tanggal_kadaluwarsa.after_or_equal' => 'Tanggal kadaluwarsa tidak boleh lebih kecil dari tanggal aktif.',
         ]);
     }
 
@@ -945,6 +1021,7 @@ class DashboardController extends Controller
             'tanggal_aktif' => $row->tanggal_aktif,
             'tanggal_kadaluwarsa' => $row->tanggal_kadaluwarsa,
             'status' => $status,
+            'tanggal_update' => $row->tanggal_update ?? null,
         ];
     }
 

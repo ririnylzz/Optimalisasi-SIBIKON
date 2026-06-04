@@ -17,5 +17,8 @@ class Tkk extends Model
         'asosiasi',
         'tanggal_aktif',
         'tanggal_kadaluwarsa',
+        'created_by',
+        'tanggal_input',
+        'tanggal_update',
     ];
 }

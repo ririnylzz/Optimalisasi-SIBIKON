@@ -8,6 +8,7 @@
     $editingTkk = $editingTkk ?? null;
     $kabupatenOptions = $kabupatenOptions ?? [];
     $latestDataDate = $latestDataDate ?? null;
+    $latestUpdatedBy = $latestUpdatedBy ?? auth()->user()?->name ?? null;
 
     $isEditing = $editingTkk !== null;
     $requestedPanel = request('panel');
@@ -89,7 +90,11 @@
                 @if($latestDataDateLabel)
                     <div class="mt-3 flex flex-wrap items-center gap-2">
                         <span class="inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700">
-                            Data terbaru per {{ $latestDataDateLabel }}
+                            Data terakhir diperbarui {{ $latestDataDateLabel }}
+
+                            @if(!blank($latestUpdatedBy))
+                                oleh {{ $latestUpdatedBy }}
+                            @endif
                         </span>
                     </div>
                 @endif
@@ -399,11 +404,11 @@
     </div>
 </div>
 
-<div id="manual-modal" data-modal-wrapper="manual" class="pointer-events-none fixed inset-0 z-[70] hidden p-4 opacity-0 transition duration-200">
+<div id="manual-modal" data-modal-wrapper="manual" class="pointer-events-none fixed inset-0 z-[70] hidden overflow-y-auto p-4 opacity-0 transition duration-200">
     <div data-modal-backdrop class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition duration-200"></div>
 
-    <div class="relative z-10 flex min-h-full items-center justify-center">
-        <div data-modal-panel class="w-full max-w-5xl translate-y-4 scale-[0.98] rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out">
+    <div class="relative z-10 flex min-h-full items-start justify-center py-6">
+        <div data-modal-panel class="flex max-h-[calc(100vh-3rem)] w-full max-w-5xl translate-y-4 scale-[0.98] flex-col overflow-hidden rounded-3xl bg-white opacity-0 shadow-2xl transition duration-200 ease-out">
             <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
                 <div>
                     <h3 class="text-xl font-bold text-slate-900">
@@ -427,7 +432,7 @@
                 </div>
             </div>
 
-            <div class="px-5 py-4">
+            <div class="overflow-y-auto px-5 py-4">
                 @if($errors->any() && !$hasUploadError)
                     <div class="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
                         <p class="font-semibold">Masih ada input yang perlu diperbaiki:</p>
@@ -491,7 +496,7 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 gap-3 lg:grid-cols-4">
+                    <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
                         <div>
                             <label for="jenjang" class="mb-2 block text-sm font-medium text-slate-700">Jenjang</label>
                             <input id="jenjang" type="number" name="jenjang" min="1" max="9" value="{{ old('jenjang', $editingTkk?->jenjang) }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
@@ -502,6 +507,12 @@
                             <label for="asosiasi" class="mb-2 block text-sm font-medium text-slate-700">Asosiasi</label>
                             <input id="asosiasi" type="text" name="asosiasi" value="{{ old('asosiasi', $editingTkk?->asosiasi) }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
                             @error('asosiasi') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div>
+                            <label for="tanggal_update" class="mb-2 block text-sm font-medium text-slate-700">Tanggal Update Data</label>
+                            <input id="tanggal_update" type="date" name="tanggal_update" value="{{ old('tanggal_update', optional($editingTkk ?? null)->tanggal_update) }}" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm">
+                            @error('tanggal_update') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
@@ -1064,6 +1075,184 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (deleteState.mode === 'all') {
                 submitHiddenForm(deleteAllForm);
+            }
+        });
+    }
+
+    const tkkManualForm = document.querySelector('#manual-modal form');
+
+    if (tkkManualForm) {
+        tkkManualForm.setAttribute('novalidate', 'novalidate');
+
+        const requiredTkkFields = [
+            { name: 'nama', message: 'Nama TKK wajib diisi.' },
+            { name: 'kabupaten', message: 'Kabupaten / Kota wajib dipilih.' },
+            { name: 'klasifikasi', message: 'Klasifikasi wajib diisi.' },
+            { name: 'jabatan_kerja', message: 'Jabatan kerja wajib diisi.' },
+            { name: 'jenjang', message: 'Jenjang wajib diisi.' },
+            { name: 'asosiasi', message: 'Asosiasi wajib diisi.' },
+            { name: 'tanggal_update', message: 'Tanggal update data wajib diisi.' },
+            { name: 'tanggal_aktif', message: 'Tanggal aktif wajib diisi.' },
+            { name: 'tanggal_kadaluwarsa', message: 'Tanggal kadaluwarsa wajib diisi.' },
+        ];
+
+        const getTkkField = (name) => tkkManualForm.querySelector(`[name="${name}"]`);
+
+        const getTkkErrorElement = (field) => {
+            if (!field) return null;
+
+            let errorElement = field.parentElement.querySelector(`[data-tkk-error-for="${field.name}"]`);
+
+            if (!errorElement) {
+                errorElement = document.createElement('p');
+                errorElement.setAttribute('data-tkk-error-for', field.name);
+                errorElement.className = 'mt-1 hidden text-xs font-semibold text-rose-500';
+                field.insertAdjacentElement('afterend', errorElement);
+            }
+
+            return errorElement;
+        };
+
+        const setTkkFieldError = (field, message) => {
+            if (!field) return;
+
+            const errorElement = getTkkErrorElement(field);
+
+            field.classList.remove('border-slate-300', 'focus:border-indigo-500', 'focus:ring-indigo-500/10');
+            field.classList.add('border-rose-400', 'focus:border-rose-500', 'focus:ring-rose-500/10');
+
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.remove('hidden');
+            }
+        };
+
+        const clearTkkFieldError = (field) => {
+            if (!field) return;
+
+            const errorElement = getTkkErrorElement(field);
+
+            field.classList.remove('border-rose-400', 'focus:border-rose-500', 'focus:ring-rose-500/10');
+            field.classList.add('border-slate-300', 'focus:border-indigo-500', 'focus:ring-indigo-500/10');
+
+            if (errorElement) {
+                errorElement.textContent = '';
+                errorElement.classList.add('hidden');
+            }
+        };
+
+        const validateTkkField = (fieldConfig, showError = true) => {
+            const field = getTkkField(fieldConfig.name);
+
+            if (!field) return true;
+
+            const value = String(field.value || '').trim();
+
+            if (value === '') {
+                if (showError) {
+                    setTkkFieldError(field, fieldConfig.message);
+                }
+
+                return false;
+            }
+
+            if (fieldConfig.name === 'jenjang') {
+                const numericValue = Number(value);
+
+                if (!Number.isInteger(numericValue) || numericValue < 1 || numericValue > 9) {
+                    if (showError) {
+                        setTkkFieldError(field, 'Jenjang harus berupa angka 1 sampai 9.');
+                    }
+
+                    return false;
+                }
+            }
+
+            if (fieldConfig.name === 'tanggal_kadaluwarsa') {
+                const tanggalAktif = getTkkField('tanggal_aktif');
+
+                if (tanggalAktif && tanggalAktif.value && field.value) {
+                    const aktif = new Date(tanggalAktif.value);
+                    const kadaluwarsa = new Date(field.value);
+
+                    if (kadaluwarsa < aktif) {
+                        if (showError) {
+                            setTkkFieldError(field, 'Tanggal kadaluwarsa tidak boleh lebih kecil dari tanggal aktif.');
+                        }
+
+                        return false;
+                    }
+                }
+            }
+
+            clearTkkFieldError(field);
+            return true;
+        };
+
+        const validateAllTkkFields = () => {
+            let isValid = true;
+            let firstInvalidField = null;
+
+            requiredTkkFields.forEach((fieldConfig) => {
+                const field = getTkkField(fieldConfig.name);
+                const fieldValid = validateTkkField(fieldConfig, true);
+
+                if (!fieldValid) {
+                    isValid = false;
+
+                    if (!firstInvalidField && field) {
+                        firstInvalidField = field;
+                    }
+                }
+            });
+
+            if (firstInvalidField) {
+                firstInvalidField.focus();
+                firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            return isValid;
+        };
+
+        requiredTkkFields.forEach((fieldConfig) => {
+            const field = getTkkField(fieldConfig.name);
+
+            if (!field) return;
+
+            field.setAttribute('required', 'required');
+
+            const label = field.id ? tkkManualForm.querySelector(`label[for="${field.id}"]`) : null;
+
+            if (label && !label.querySelector('[data-required-star]')) {
+                const star = document.createElement('span');
+                star.setAttribute('data-required-star', 'true');
+                star.className = 'text-rose-500';
+                star.textContent = ' *';
+                label.appendChild(star);
+            }
+
+            const eventName = field.tagName === 'SELECT' ? 'change' : 'input';
+
+            field.addEventListener(eventName, function () {
+                validateTkkField(fieldConfig, true);
+
+                if (fieldConfig.name === 'tanggal_aktif') {
+                    const kadaluwarsaConfig = requiredTkkFields.find((item) => item.name === 'tanggal_kadaluwarsa');
+
+                    if (kadaluwarsaConfig) {
+                        validateTkkField(kadaluwarsaConfig, true);
+                    }
+                }
+            });
+
+            field.addEventListener('blur', function () {
+                validateTkkField(fieldConfig, true);
+            });
+        });
+
+        tkkManualForm.addEventListener('submit', function (event) {
+            if (!validateAllTkkFields()) {
+                event.preventDefault();
             }
         });
     }

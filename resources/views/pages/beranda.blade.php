@@ -38,7 +38,7 @@
 
                 <p class="mt-8 max-w-2xl text-lg leading-8 text-white/85 md:text-xl">
                     Platform digital terpadu untuk pengelolaan, pembinaan, dan
-                    pengawasan jasa konstruksi di seluruh Indonesia secara lebih
+                    pengawasan jasa konstruksi di seluruh Provinsi Kalimantan Timur secara lebih
                     modern, terstruktur, dan profesional.
                 </p>
             </div>
@@ -70,45 +70,72 @@
 <section class="border-b border-[#143B5D]/15 bg-[#eef3f8]">
     <div class="flex items-stretch overflow-hidden">
 
-        {{-- Left Label --}}
-        <div
-            class="flex shrink-0 items-center bg-[#f1d00a] px-6 py-3">
-
-            <span class="text-base font-bold text-[#143B5D]">
-                Informasi Kegiatan
+        {{-- Jam WITA kiri --}}
+        <div class="flex w-[250px] shrink-0 items-center justify-center bg-[#f1d00a] px-4 py-3">
+            <span id="wita-clock" class="whitespace-nowrap text-sm font-bold text-[#143B5D]">
+                Memuat waktu...
             </span>
         </div>
 
-        {{-- Right Running Area --}}
+        {{-- Running Text kanan --}}
         <div class="relative flex flex-1 items-center overflow-hidden bg-[#143B5D]">
-
             <div class="running-track flex items-center">
-
                 @foreach ($runningText as $item)
-                <div class="running-item flex items-center text-sm">
+                    <div class="running-item flex items-center text-sm">
+                        <span class="font-semibold text-[#f1d00a]">
+                            {{ $item['tanggal'] }}
+                        </span>
 
-                    {{-- Tanggal --}}
-                    <span class="font-semibold text-[#f1d00a]">
-                        {{ $item['tanggal'] }}
-                    </span>
+                        <span class="ml-2 text-white/90">
+                            {{ $item['judul'] }}
+                        </span>
 
-                    {{-- Judul --}}
-                    <span class="ml-2 text-white/90">
-                        {{ $item['judul'] }}
-                    </span>
-
-                    {{-- Kabupaten --}}
-                    <span class="ml-2 text-white/90">
-                        — {{ $item['kabupaten'] }}
-                    </span>
-                </div>
+                        <span class="ml-2 text-white/90">
+                            — {{ $item['kabupaten'] }}
+                        </span>
+                    </div>
                 @endforeach
-
             </div>
-
         </div>
+
     </div>
 </section>
+
+<script>
+    (function () {
+        const clock = document.getElementById('wita-clock');
+
+        if (!clock) return;
+
+        const monthNames = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+
+        const pad = (value) => String(value).padStart(2, '0');
+
+        const updateWitaClock = () => {
+            const now = new Date();
+
+            // WITA = UTC+8
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const wita = new Date(utc + (8 * 60 * 60 * 1000));
+
+            const tanggal = pad(wita.getDate());
+            const bulan = monthNames[wita.getMonth()];
+            const tahun = wita.getFullYear();
+
+            const jam = pad(wita.getHours());
+            const menit = pad(wita.getMinutes());
+            const detik = pad(wita.getSeconds());
+
+            clock.textContent = `${tanggal} ${bulan} ${tahun} ${jam}:${menit}:${detik} WITA`;
+        };
+
+        updateWitaClock();
+        setInterval(updateWitaClock, 1000);
+    })();
+</script>
 
 {{-- STATISTIK SECTION --}}
 <section class="bg-white px-4 py-20 md:px-6 lg:px-8">

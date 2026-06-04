@@ -22,6 +22,7 @@ use Throwable;
 class BujkController extends Controller
 {
     protected string $latestDataDatePath = 'bujk/latest-data-date.txt';
+    protected string $latestUpdatedByPath = 'bujk/latest-updated-by.txt';
 
     public function index(Request $request)
     {
@@ -75,6 +76,7 @@ class BujkController extends Controller
             : null;
 
         $latestDataDate = $this->getLatestDataDate();
+        $latestUpdatedBy = $this->getLatestUpdatedBy();
 
         $viewData = [
             'bujks' => $bujks,
@@ -86,6 +88,7 @@ class BujkController extends Controller
             'regencyFilterOptions' => $regencyFilterOptions,
             'perPage' => $perPage,
             'latestDataDate' => $latestDataDate,
+            'latestUpdatedBy' => $latestUpdatedBy,
         ];
 
         if ($request->ajax()) {
@@ -100,39 +103,21 @@ class BujkController extends Controller
     public function store(BujkFormRequest $request): RedirectResponse
     {
         $payload = $request->validated();
+        $duplicate = $this->findManualDuplicate($payload);
 
-        $existing = null;
-
-        if (!blank($payload['id_izin'] ?? null)) {
-            $existing = Bujk::query()->where('id_izin', $payload['id_izin'])->first();
-        }
-
-        if (!$existing && !blank($payload['nib'] ?? null)) {
-            $query = Bujk::query()->where('nib', $payload['nib']);
-
-            if (!blank($payload['kode_subklasifikasi'] ?? null)) {
-                $query->where('kode_subklasifikasi', $payload['kode_subklasifikasi']);
-            }
-
-            if (!blank($payload['subklasifikasi'] ?? null)) {
-                $query->where('subklasifikasi', $payload['subklasifikasi']);
-            }
-
-            $existing = $query->first();
-        }
-
-        if ($existing) {
-            $existing->fill($payload);
-            $existing->is_deleted = false;
-            $existing->updated_at = now();
-            $existing->save();
-
+        if ($duplicate) {
             return redirect()
-                ->route('admin.bujk')
-                ->with('success', 'Data BUJK berhasil disimpan dan data lama yang sama dipulihkan.');
+                ->back()
+                ->withInput()
+                ->with('error', 'Data BUJK gagal disimpan karena NIB tersebut sudah ada di tabel BUJK.')
+                ->withErrors([
+                    'nib' => 'NIB ' . ($payload['nib'] ?? '-') . ' sudah terdaftar atas nama ' . ($duplicate->nama_bu ?: 'BUJK lain') . '.',
+                ]);
         }
 
         Bujk::query()->create($payload + ['is_deleted' => false]);
+        $this->syncLatestDataDateFromPayload($payload);
+        $this->syncLatestUpdatedBy();
 
         return redirect()
             ->route('admin.bujk')
@@ -141,10 +126,25 @@ class BujkController extends Controller
 
     public function update(BujkFormRequest $request, Bujk $bujk): RedirectResponse
     {
-        $bujk->update($request->validated() + [
+        $payload = $request->validated();
+        $duplicate = $this->findManualDuplicate($payload, $bujk->id);
+
+        if ($duplicate) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Data BUJK gagal diperbarui karena NIB tersebut sudah dipakai data lain.')
+                ->withErrors([
+                    'nib' => 'NIB ' . ($payload['nib'] ?? '-') . ' sudah dipakai oleh ' . ($duplicate->nama_bu ?: 'BUJK lain') . '.',
+                ]);
+        }
+
+        $bujk->update($payload + [
             'is_deleted' => false,
             'updated_at' => now(),
         ]);
+        $this->syncLatestDataDateFromPayload($payload);
+        $this->syncLatestUpdatedBy();
 
         return redirect()
             ->route('admin.bujk')
@@ -229,6 +229,7 @@ class BujkController extends Controller
 
             $latestDataDate = Carbon::parse($validated['tanggal_data_terbaru'])->toDateString();
             Storage::disk('local')->put($this->latestDataDatePath, $latestDataDate);
+            $this->syncLatestUpdatedBy();
         } catch (ValidationException $exception) {
             throw $exception;
         } catch (Throwable $exception) {
@@ -342,6 +343,59 @@ class BujkController extends Controller
         }
     }
 
+    protected function findManualDuplicate(array $payload, ?int $ignoreId = null): ?Bujk
+    {
+        $nibVariants = $this->nibLookupVariants($payload['nib'] ?? null);
+
+        if (empty($nibVariants)) {
+            return null;
+        }
+
+        return Bujk::query()
+            ->where('is_deleted', false)
+            ->when($ignoreId !== null, fn (Builder $query) => $query->whereKeyNot($ignoreId))
+            ->whereIn('nib', $nibVariants)
+            ->orderBy('id')
+            ->first();
+    }
+
+    protected function nibLookupVariants(mixed $nib): array
+    {
+        if (blank($nib)) {
+            return [];
+        }
+
+        $raw = preg_replace('/\D+/u', '', (string) $nib);
+        $raw = $raw !== null && $raw !== '' ? $raw : trim((string) $nib);
+
+        $normalized = ltrim($raw, '0');
+        $normalized = $normalized === '' ? '0' : $normalized;
+
+        return array_values(array_unique(array_filter([
+            $raw,
+            $normalized,
+            str_pad($normalized, 13, '0', STR_PAD_LEFT),
+        ], fn ($value) => $value !== '')));
+    }
+
+    protected function syncLatestDataDateFromPayload(array $payload): void
+    {
+        if (blank($payload['tgl_update'] ?? null)) {
+            return;
+        }
+
+        try {
+            $incomingDate = Carbon::parse($payload['tgl_update'])->toDateString();
+            $currentDate = $this->getLatestDataDate();
+
+            if (blank($currentDate) || Carbon::parse($incomingDate)->greaterThanOrEqualTo(Carbon::parse($currentDate))) {
+                Storage::disk('local')->put($this->latestDataDatePath, $incomingDate);
+            }
+        } catch (Throwable) {
+            // Guard tambahan. Format tanggal sudah divalidasi oleh FormRequest.
+        }
+    }
+
     protected function applyJenisFilter(Builder $query, string $jenis): void
     {
         $normalized = str_replace(', ', ',', trim($jenis));
@@ -364,6 +418,28 @@ class BujkController extends Controller
         $date = trim((string) Storage::disk('local')->get($this->latestDataDatePath));
 
         return $date !== '' ? $date : null;
+    }
+
+    protected function getLatestUpdatedBy(): ?string
+    {
+        if (!Storage::disk('local')->exists($this->latestUpdatedByPath)) {
+            return auth()->user()?->name;
+        }
+
+        $name = trim((string) Storage::disk('local')->get($this->latestUpdatedByPath));
+
+        return $name !== '' ? $name : auth()->user()?->name;
+    }
+
+    protected function syncLatestUpdatedBy(): void
+    {
+        $name = auth()->user()?->name;
+
+        if (blank($name)) {
+            return;
+        }
+
+        Storage::disk('local')->put($this->latestUpdatedByPath, $name);
     }
 
     protected function squish(?string $value): string
