@@ -22,6 +22,9 @@ class BujkImportService
 
     public function import(UploadedFile $file): array
     {
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
+
         $rawRows = $this->spreadsheetReader->read($file->getRealPath(), $file->getClientOriginalName());
 
         if (empty($rawRows)) {

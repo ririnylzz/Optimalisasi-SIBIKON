@@ -464,6 +464,50 @@
 
 </div>
 
+{{-- MODAL KONFIRMASI HAPUS MODERN --}}
+<div
+    id="modalKonfirmasiHapus"
+    class="pointer-events-none fixed inset-0 z-[9999] hidden p-4 opacity-0 transition-opacity duration-200 items-center justify-center">
+    <div 
+        id="backdropKonfirmasiHapus" 
+        class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition-opacity duration-200"></div>
+
+    <div 
+        id="panelKonfirmasiHapus"
+        class="relative z-10 w-full max-w-md translate-y-4 scale-[0.98] rounded-3xl bg-white p-6 shadow-2xl opacity-0 transition-all duration-200 ease-out">
+        <div class="flex items-start gap-4">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 text-rose-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16" />
+                </svg>
+            </div>
+
+            <div class="min-w-0 flex-1">
+                <h3 id="judulKonfirmasiHapus" class="text-lg font-bold text-slate-900">Hapus data?</h3>
+                <p id="teksKonfirmasiHapus" class="mt-2 text-sm leading-6 text-slate-500">
+                    Apakah Anda yakin ingin menghapus data ini?
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-7 flex items-center justify-end gap-2">
+            <button
+                type="button"
+                id="btnBatalKonfirmasiHapus"
+                class="rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                Batal
+            </button>
+
+            <button
+                type="button"
+                id="btnYaKonfirmasiHapus"
+                class="rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-500">
+                Ya, Hapus
+            </button>
+        </div>
+    </div>
+</div>
+
 {{-- SCRIPT MODAL + VALIDASI FORM + GLOBAL DROPDOWN + TOAST --}}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -824,17 +868,90 @@ document.addEventListener('DOMContentLoaded', function () {
         window.location.href = activeActionButton.dataset.detailUrl;
     });
 
+    const modalKonfirmasiHapus = document.getElementById('modalKonfirmasiHapus');
+    const backdropKonfirmasiHapus = document.getElementById('backdropKonfirmasiHapus');
+    const panelKonfirmasiHapus = document.getElementById('panelKonfirmasiHapus');
+    const judulKonfirmasiHapus = document.getElementById('judulKonfirmasiHapus');
+    const teksKonfirmasiHapus = document.getElementById('teksKonfirmasiHapus');
+    const btnBatalKonfirmasiHapus = document.getElementById('btnBatalKonfirmasiHapus');
+    const btnYaKonfirmasiHapus = document.getElementById('btnYaKonfirmasiHapus');
+
+    let targetFormToSubmit = null;
+
+    function openConfirmDeleteModal(title, text, formToSubmit) {
+        targetFormToSubmit = formToSubmit;
+        judulKonfirmasiHapus.textContent = title;
+        teksKonfirmasiHapus.textContent = text;
+
+        modalKonfirmasiHapus.classList.remove('hidden', 'pointer-events-none', 'opacity-0');
+        modalKonfirmasiHapus.classList.add('flex', 'pointer-events-auto', 'opacity-100');
+
+        setTimeout(() => {
+            if (backdropKonfirmasiHapus) {
+                backdropKonfirmasiHapus.classList.remove('opacity-0');
+                backdropKonfirmasiHapus.classList.add('opacity-100');
+            }
+            if (panelKonfirmasiHapus) {
+                panelKonfirmasiHapus.classList.remove('translate-y-4', 'scale-[0.98]', 'opacity-0');
+                panelKonfirmasiHapus.classList.add('translate-y-0', 'scale-100', 'opacity-100');
+            }
+        }, 10);
+    }
+
+    function closeConfirmDeleteModal() {
+        if (backdropKonfirmasiHapus) {
+            backdropKonfirmasiHapus.classList.remove('opacity-100');
+            backdropKonfirmasiHapus.classList.add('opacity-0');
+        }
+        if (panelKonfirmasiHapus) {
+            panelKonfirmasiHapus.classList.remove('translate-y-0', 'scale-100', 'opacity-100');
+            panelKonfirmasiHapus.classList.add('translate-y-4', 'scale-[0.98]', 'opacity-0');
+        }
+
+        modalKonfirmasiHapus.classList.remove('pointer-events-auto', 'opacity-100');
+        modalKonfirmasiHapus.classList.add('pointer-events-none', 'opacity-0');
+
+        setTimeout(() => {
+            modalKonfirmasiHapus.classList.remove('flex');
+            modalKonfirmasiHapus.classList.add('hidden');
+            targetFormToSubmit = null;
+        }, 200);
+    }
+
+    if (btnBatalKonfirmasiHapus) {
+        btnBatalKonfirmasiHapus.addEventListener('click', closeConfirmDeleteModal);
+    }
+
+    if (modalKonfirmasiHapus) {
+        modalKonfirmasiHapus.addEventListener('click', function (event) {
+            if (event.target === modalKonfirmasiHapus || event.target === backdropKonfirmasiHapus) {
+                closeConfirmDeleteModal();
+            }
+        });
+    }
+
+    if (btnYaKonfirmasiHapus) {
+        btnYaKonfirmasiHapus.addEventListener('click', function () {
+            if (targetFormToSubmit) {
+                targetFormToSubmit.submit();
+            }
+        });
+    }
+
     actionDeleteButton.addEventListener('click', function () {
         if (!activeActionButton) {
             return;
         }
 
-        if (!confirm('Yakin ingin menghapus kegiatan ini?')) {
-            return;
-        }
-
         deletePelatihanForm.action = activeActionButton.dataset.deleteUrl;
-        deletePelatihanForm.submit();
+        
+        hideActionDropdown();
+
+        openConfirmDeleteModal(
+            'Hapus Kegiatan?',
+            'Yakin ingin menghapus kegiatan ini?',
+            deletePelatihanForm
+        );
     });
 
     const createProvinsiSelect = document.getElementById('create_provinsi');

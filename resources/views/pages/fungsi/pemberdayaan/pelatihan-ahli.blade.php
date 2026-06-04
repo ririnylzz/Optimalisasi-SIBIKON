@@ -101,11 +101,6 @@
                                     <span>{{ $item['peserta'] }}</span>
                                 </div>
                             </div>
-
-                            <a href="#"
-                                class="mt-4 inline-flex rounded-md bg-[#293F81] px-4 py-2 text-[11px] font-extrabold text-white transition hover:bg-[#1f326a]">
-                                Lihat Detail
-                            </a>
                         </div>
                     </article>
                     @endforeach

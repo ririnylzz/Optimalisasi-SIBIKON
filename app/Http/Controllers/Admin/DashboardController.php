@@ -18,6 +18,8 @@ use Throwable;
 class DashboardController extends Controller
 {
     protected string $latestTkkDataDatePath = 'tkk/latest-data-date.txt';
+    protected string $latestTkkUpdatedByPath = 'tkk/latest-updated-by.txt';
+
     public function index()
     {
         $bujkRows = DB::table('bujk')
@@ -666,6 +668,7 @@ class DashboardController extends Controller
 
         $totalTkk = Tkk::query()->count();
         $latestDataDate = $this->getLatestTkkDataDate();
+        $latestUpdatedBy = $this->getLatestTkkUpdatedBy();
 
         return view('admin.tkk-data', [
             'rows' => $rows,
@@ -674,7 +677,7 @@ class DashboardController extends Controller
             'editingTkk' => $editingTkk,
             'kabupatenOptions' => $this->kaltimKabupatenOptions(),
             'latestDataDate' => $latestDataDate,
-            'latestUpdatedBy' => auth()->user()?->name,
+            'latestUpdatedBy' => $latestUpdatedBy,
         ]);
     }
 
@@ -729,6 +732,7 @@ class DashboardController extends Controller
         Tkk::query()->create($payload);
 
         $this->updateLatestTkkDataDate($payload['tanggal_update']);
+        $this->updateLatestTkkUpdatedBy();
 
         return redirect()
             ->route('admin.tenaga-kerja-konstruksi')
@@ -744,6 +748,7 @@ class DashboardController extends Controller
         $tkk->update($payload);
 
         $this->updateLatestTkkDataDate($payload['tanggal_update']);
+        $this->updateLatestTkkUpdatedBy();
 
         return redirect()
             ->route('admin.tenaga-kerja-konstruksi')
@@ -825,6 +830,9 @@ class DashboardController extends Controller
 
     public function importTkk(Request $request): RedirectResponse
     {
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
+
         $validated = $request->validate([
             'file_import' => ['required', 'file', 'mimes:xlsx,xls,csv,txt', 'max:10240'],
             'tanggal_data_terbaru' => ['required', 'date'],
@@ -906,6 +914,7 @@ class DashboardController extends Controller
             )->toDateString();
 
             $this->updateLatestTkkDataDate($latestDataDate);
+            $this->updateLatestTkkUpdatedBy();
         } catch (Throwable $exception) {
             return redirect()
                 ->back()
@@ -936,6 +945,31 @@ class DashboardController extends Controller
         Storage::disk('local')->put(
             $this->latestTkkDataDatePath,
             $latestDate
+        );
+    }
+
+    private function getLatestTkkUpdatedBy(): ?string
+    {
+        if (!Storage::disk('local')->exists($this->latestTkkUpdatedByPath)) {
+            return auth()->user()?->name;
+        }
+
+        $name = trim((string) Storage::disk('local')->get($this->latestTkkUpdatedByPath));
+
+        return $name !== '' ? $name : auth()->user()?->name;
+    }
+
+    private function updateLatestTkkUpdatedBy(): void
+    {
+        $name = auth()->user()?->name;
+
+        if (blank($name)) {
+            return;
+        }
+
+        Storage::disk('local')->put(
+            $this->latestTkkUpdatedByPath,
+            $name
         );
     }
 
