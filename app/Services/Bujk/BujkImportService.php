@@ -204,6 +204,7 @@ class BujkImportService
             'updated' => $updated,
             'untouched' => $untouched,
             'merged_rows' => $mergedRows,
+            'duplicate_rows_in_file' => $mergedRows,
             'deduplicated' => $deduplicated,
             'sbu_created' => $sbuCreated,
             'sbu_updated' => $sbuUpdated,
