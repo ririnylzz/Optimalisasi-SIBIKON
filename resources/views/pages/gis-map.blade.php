@@ -1,11 +1,14 @@
+{{-- Memasukkan file CSS Leaflet dan style tambahan khusus untuk tampilan peta GIS --}}
 @push('styles')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 <style>
+    /* Mengatur tampilan dasar container Leaflet agar font mengikuti font aplikasi */
     .leaflet-container {
         font-family: inherit;
     }
 
+    /* Mengatur posisi layer peta agar tidak menutupi elemen UI lain */
     .leaflet-pane {
         z-index: 10 !important;
     }
@@ -20,6 +23,7 @@
         z-index: 30 !important;
     }
 
+    /* Mengatur tampilan scrollbar pada daftar card hasil data GIS */
     .gis-card-scroll::-webkit-scrollbar {
         width: 6px;
     }
@@ -36,9 +40,10 @@
 </style>
 @endpush
 
-{{-- GIS SECTION --}}
+{{-- GIS SECTION: Bagian utama untuk menampilkan peta sebaran data konstruksi --}}
 <section class="bg-[#FFFFFF] px-4 py-20 md:px-6 lg:px-8">
     <div class="mx-auto max-w-7xl">
+        {{-- Judul dan deskripsi singkat fitur GIS pada halaman publik --}}
         <div class="mb-12 text-center">
             <p class="mb-4 text-xs font-bold uppercase tracking-[0.45em] text-[#7282cc]">
                 GIS KONSTRUKSI
@@ -57,7 +62,7 @@
 
         <div class="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.08)]">
 
-            {{-- HEADER + SEARCH/FILTER --}}
+            {{-- HEADER + SEARCH/FILTER: Bagian untuk memilih kategori data dan melakukan pencarian/filter wilayah --}}
             <div class="border-b border-slate-200 bg-white px-6 py-5">
                 <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                     <div>
@@ -71,7 +76,7 @@
                     </div>
 
                     <div class="grid w-full grid-cols-1 gap-3 md:grid-cols-2 xl:w-[820px] xl:grid-cols-[1fr_1.25fr_1fr_1fr_auto]">
-                        {{-- KATEGORI --}}
+                        {{-- Filter kategori utama: BUJK, TKK, atau Rantai Pasok --}}
                         <div>
                             <label class="mb-1 block text-[11px] font-bold uppercase tracking-wide text-slate-500">
                                 Kategori Data
@@ -85,7 +90,7 @@
                             </select>
                         </div>
 
-                        {{-- SEARCH --}}
+                        {{-- Input pencarian nama sesuai kategori data yang dipilih --}}
                         <div>
                             <label id="gisSearchLabel" class="mb-1 block text-[11px] font-bold uppercase tracking-wide text-slate-500">
                                 Cari Nama BU
@@ -97,7 +102,7 @@
                                 class="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none transition focus:border-[#2596BE] focus:ring-2 focus:ring-[#2596BE]/20">
                         </div>
 
-                        {{-- KAB/KOTA --}}
+                        {{-- Filter wilayah berdasarkan kabupaten/kota di Kalimantan Timur --}}
                         <div>
                             <label class="mb-1 block text-[11px] font-bold uppercase tracking-wide text-slate-500">
                                 Kabupaten/Kota
@@ -109,7 +114,7 @@
                             </select>
                         </div>
 
-                        {{-- FILTER KHUSUS --}}
+                        {{-- Filter tambahan yang berubah sesuai kategori, seperti jenjang TKK atau bidang usaha rantai pasok --}}
                         <div id="gisSpecialFilterWrapper" class="hidden">
                             <label id="gisSpecialFilterLabel" class="mb-1 block text-[11px] font-bold uppercase tracking-wide text-slate-500">
                                 Filter
@@ -121,7 +126,7 @@
                             </select>
                         </div>
 
-                        {{-- RESET --}}
+                        {{-- Tombol untuk mengosongkan semua filter dan mengembalikan peta ke kondisi awal --}}
                         <div class="flex items-end">
                             <button
                                 id="gisResetFilter"
@@ -134,13 +139,14 @@
                 </div>
             </div>
 
-            {{-- MAP + CARD --}}
+            {{-- MAP + CARD: Area utama yang berisi peta interaktif dan daftar data hasil filter --}}
             <div class="grid grid-cols-1 gap-0 lg:grid-cols-[1.35fr_0.65fr]">
 
-                {{-- MAP --}}
+                {{-- MAP: Menampilkan peta Kalimantan Timur menggunakan Leaflet dan GeoJSON kabupaten/kota --}}
                 <div class="relative h-[640px] overflow-hidden border-b border-slate-200 lg:border-b-0 lg:border-r">
                     <div id="gisPublicMap" class="absolute inset-0 h-full w-full"></div>
 
+                    {{-- Legenda warna untuk menjelaskan tingkat jumlah data pada setiap wilayah --}}
                     <div class="absolute bottom-4 left-4 z-[500] rounded-2xl bg-white/95 p-4 text-xs shadow-lg">
                         <p class="mb-2 font-bold text-slate-800">Legenda Jumlah Data</p>
 
@@ -148,7 +154,7 @@
                     </div>
                 </div>
 
-                {{-- CARD HASIL DATA --}}
+                {{-- CARD HASIL DATA: Menampilkan data BUJK/TKK/Rantai Pasok sesuai hasil pencarian dan filter --}}
                 <div class="h-[640px] overflow-hidden bg-slate-50 p-5">
                     <div class="flex items-center justify-between gap-3">
                         <div>
@@ -176,10 +182,12 @@
     </div>
 </section>
 
+{{-- Memasukkan script Leaflet dan logika interaktif untuk fitur GIS --}}
 @push('scripts')
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
+    // Konfigurasi utama setiap kategori data GIS, termasuk judul, label search, endpoint, dan filter khusus
     const GIS_CATEGORY_CONFIG = {
         'bujk': {
             title: 'Peta Sebaran BUJK',
@@ -223,6 +231,7 @@
         },
     };
 
+    // Variabel global untuk menyimpan objek peta, layer wilayah, kategori aktif, dan data yang sedang ditampilkan
     const regionLayerMap = {};
     let gisMap = null;
     let geojsonLayer = null;
@@ -232,6 +241,7 @@
     let currentSummary = [];
     let currentMapItems = [];
 
+    // Menyamakan format nama wilayah agar data dari database cocok dengan nama wilayah pada GeoJSON
     function normalizeRegionName(name) {
         return String(name || '')
             .toLowerCase()
@@ -242,16 +252,19 @@
             .trim();
     }
 
+    // Menyamakan format teks input agar proses pencarian tidak sensitif terhadap huruf besar/kecil
     function normalizeText(value) {
         return String(value || '')
             .toLowerCase()
             .trim();
     }
 
+    // Mengecek apakah peta sedang dalam zoom detail untuk menyesuaikan tampilan warna wilayah
     function isDetailZoom() {
         return gisMap && gisMap.getZoom() >= 10;
     }
 
+    // Mengatur transparansi warna wilayah berdasarkan jumlah data dan level zoom peta
     function getFillOpacityByZoom(total) {
         total = Number(total) || 0;
 
@@ -262,12 +275,14 @@
         return total > 0 ? 1 : 0.35;
     }
 
+    // Menjalankan inisialisasi peta, filter, dan data awal setelah halaman selesai dimuat
     document.addEventListener('DOMContentLoaded', function() {
         initGisMap();
         initGisFilters();
         loadGisCategory('bujk');
     });
 
+    // Mengaktifkan event listener pada kategori, search, filter wilayah, filter khusus, dan tombol reset
     function initGisFilters() {
         const categoryFilter = document.getElementById('gisCategoryFilter');
         const searchInput = document.getElementById('gisSearchInput');
@@ -308,6 +323,7 @@
         }
     }
 
+    // Mengubah judul, label pencarian, placeholder, dan filter khusus sesuai kategori yang dipilih
     function updateGisHeaderByCategory(category) {
         const config = GIS_CATEGORY_CONFIG[category];
 
@@ -336,6 +352,7 @@
         });
     }
 
+    // Memuat data dari endpoint berdasarkan kategori yang dipilih, lalu memperbarui card dan peta
     function loadGisCategory(category) {
         currentCategory = category;
         activeRegionName = null;
@@ -381,6 +398,7 @@
             });
     }
 
+    // Mengisi pilihan bidang usaha khusus untuk kategori Rantai Pasok
     function updateRantaiPasokBidangUsahaOptions(options) {
         const select = document.getElementById('gisSpecialFilter');
 
@@ -393,6 +411,7 @@
         });
     }
 
+    // Mengisi pilihan jenjang khusus untuk kategori TKK
     function updateTkkJenjangOptions(options) {
         const select = document.getElementById('gisSpecialFilter');
 
@@ -405,6 +424,7 @@
         });
     }
 
+    // Mengisi pilihan kabupaten/kota berdasarkan data yang diterima dari endpoint
     function fillKabupatenOptions(options) {
         const select = document.getElementById('gisKabupatenFilter');
 
@@ -417,6 +437,7 @@
         });
     }
 
+    // Menampilkan status loading saat data GIS sedang dimuat dari server
     function renderGisLoading() {
         const list = document.getElementById('gisCardList');
         const count = document.getElementById('gisResultCount');
@@ -432,6 +453,7 @@
         }
     }
 
+    // Menampilkan pesan error jika endpoint atau data GIS gagal dimuat
     function renderGisError() {
         const list = document.getElementById('gisCardList');
         const count = document.getElementById('gisResultCount');
@@ -447,6 +469,7 @@
         }
     }
 
+    // Menerapkan pencarian dan filter, lalu memperbarui daftar card serta warna wilayah pada peta
     function applyGisFilters() {
         const searchValue = normalizeText(document.getElementById('gisSearchInput')?.value);
         const kabupatenValue = normalizeText(document.getElementById('gisKabupatenFilter')?.value);
@@ -482,6 +505,7 @@
         }, 100);
     }
 
+    // Menampilkan daftar data dalam bentuk card sesuai kategori aktif; dibatasi 100 data agar tampilan tetap ringan
     function renderGisCards(items) {
         const list = document.getElementById('gisCardList');
         const count = document.getElementById('gisResultCount');
@@ -529,6 +553,7 @@
         });
     }
 
+    // Membuat tampilan card untuk data BUJK
     function renderBujkCard(item) {
         return `
             <button type="button" class="gis-data-card w-full rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#2596BE] hover:shadow-md" data-region="${escapeHtml(item.kabupaten || '')}">
@@ -551,6 +576,7 @@
         `;
     }
 
+    // Membuat tampilan card untuk data TKK, termasuk status masa berlaku sertifikat
     function renderTkkCard(item) {
         const statusClass = item.status === 'kadaluwarsa'
             ? 'bg-red-100 text-red-700'
@@ -579,6 +605,7 @@
         `;
     }
 
+    // Membuat tampilan card untuk data Rantai Pasok
     function renderRantaiPasokCard(item) {
         return `
             <button type="button" class="gis-data-card w-full rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#2596BE] hover:shadow-md" data-region="${escapeHtml(item.kabupaten || '')}">
@@ -600,10 +627,12 @@
         `;
     }
 
+    // Menyimpan ringkasan jumlah data per wilayah dari server sebagai dasar pewarnaan peta
     function updateMapBySummary(summary) {
         currentSummary = summary || [];
     }
 
+    // Memperbarui warna, tooltip, dan highlight wilayah berdasarkan hasil filter yang sedang aktif
     function updateMapByFilteredData(items) {
         if (!geojsonLayer) return;
 
@@ -644,6 +673,7 @@
         });
     }
 
+    // Mengarahkan zoom peta ke wilayah yang dipilih dari card data
     function focusRegion(regionName) {
         const key = normalizeRegionName(regionName);
         const layer = regionLayerMap[key];
@@ -664,6 +694,7 @@
         layer.openTooltip();
     }
 
+    // Menentukan warna wilayah berdasarkan jumlah data dan kategori aktif
     function getColor(total) {
         total = Number(total) || 0;
 
@@ -698,6 +729,7 @@
         return '#F3F4F6';
     }
 
+    // Menentukan isi legenda warna sesuai kategori aktif
     function getLegendItems() {
         if (currentCategory === 'tkk') {
             return [
@@ -733,6 +765,7 @@
         ];
     }
 
+    // Menampilkan legenda warna pada peta berdasarkan kategori data yang dipilih
     function renderGisLegend() {
         const legend = document.getElementById('gisLegendList');
 
@@ -748,6 +781,7 @@
         }).join('');
     }
 
+    // Mengambil nama wilayah dari beberapa kemungkinan properti yang ada di file GeoJSON
     function getRegionName(feature) {
         const props = feature.properties || {};
 
@@ -759,6 +793,7 @@
             '';
     }
 
+    // Membuat peta Leaflet, memuat tile OpenStreetMap, dan menampilkan batas wilayah Kalimantan Timur dari GeoJSON
     function initGisMap() {
         const mapEl = document.getElementById('gisPublicMap');
         if (!mapEl) return;
@@ -840,6 +875,7 @@
             });
     }
 
+    // Mengamankan teks sebelum ditampilkan ke HTML untuk mengurangi risiko karakter berbahaya/XSS
     function escapeHtml(value) {
         return String(value || '')
             .replaceAll('&', '&amp;')
