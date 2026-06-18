@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
+    // Menyimpan data user baru (proses registrasi)
     public function store(Request $request)
     {
         $request->validate([

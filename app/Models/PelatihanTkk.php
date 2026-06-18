@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class PelatihanTkk extends Model
 {
+    // Menentukan nama tabel yang digunakan oleh model ini
     protected $table = 'pelatihan_tkk';
 
+    // Menentukan field yang boleh diisi secara mass assignment (create/update)
     protected $fillable = [
         'tahun',
         'nama_kegiatan',

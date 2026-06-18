@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 
 class PelatihanTkkController extends Controller
 {
+    // Menampilkan daftar pelatihan dengan fitur search, filter, pagination
     public function index(Request $request)
     {
         $search = $request->search;
@@ -30,6 +31,7 @@ class PelatihanTkkController extends Controller
         return view('admin.pelatihan-sertifikasi.index', compact('pelatihan'));
     }
 
+// Menyimpan data pelatihan baru ke database
    public function store(Request $request)
     {
         $validated = $request->validate([
@@ -57,6 +59,7 @@ class PelatihanTkkController extends Controller
             ->with('success', 'Data berhasil ditambahkan');
     }
 
+    // Menampilkan detail pelatihan beserta data peserta dan rekap statistik
     public function show(PelatihanTkk $pelatihan)
     {
         $pesertaRows = PelatihanTkkPeserta::where('pelatihan_tkk_id', $pelatihan->id)
@@ -91,6 +94,7 @@ class PelatihanTkkController extends Controller
         ));
     }
 
+    // Update data pelatihan berdasarkan input form
     public function update(Request $request, PelatihanTkk $pelatihan)
     {
         $validated = $this->validateRequest($request);
@@ -102,6 +106,7 @@ class PelatihanTkkController extends Controller
             ->with('success', 'Data berhasil diperbarui');
     }
 
+    // Menghapus data pelatihan
     public function destroy(PelatihanTkk $pelatihan)
     {
         $pelatihan->delete();
@@ -111,6 +116,7 @@ class PelatihanTkkController extends Controller
             ->with('success', 'Data berhasil dihapus');
     }
 
+    // Menambah data peserta pada pelatihan tertentu
     public function storePeserta(Request $request, PelatihanTkk $pelatihan)
     {
         $validated = $this->validatePesertaRequest($request);
@@ -124,6 +130,7 @@ class PelatihanTkkController extends Controller
             ->with('success', 'Data peserta berhasil ditambahkan');
     }
 
+    // Update data peserta pelatihan
     public function updatePeserta(Request $request, PelatihanTkk $pelatihan, PelatihanTkkPeserta $peserta)
     {
         if ((int) $peserta->pelatihan_tkk_id !== (int) $pelatihan->id) {
@@ -139,6 +146,7 @@ class PelatihanTkkController extends Controller
             ->with('success', 'Data peserta berhasil diperbarui');
     }
 
+    // Menghapus satu peserta dari pelatihan
     public function destroyPeserta(PelatihanTkk $pelatihan, PelatihanTkkPeserta $peserta)
     {
         if ((int) $peserta->pelatihan_tkk_id !== (int) $pelatihan->id) {
@@ -152,6 +160,7 @@ class PelatihanTkkController extends Controller
             ->with('success', 'Data peserta berhasil dihapus');
     }
 
+    // Menghapus beberapa peserta sekaligus (bulk delete)
     public function bulkDestroyPeserta(Request $request, PelatihanTkk $pelatihan)
     {
         $validated = $request->validate(
@@ -175,6 +184,7 @@ class PelatihanTkkController extends Controller
             ->with('success', 'Data peserta terpilih berhasil dihapus');
     }
 
+    // Menghapus semua peserta pada satu pelatihan
     public function destroyAllPeserta(PelatihanTkk $pelatihan)
     {
         PelatihanTkkPeserta::where('pelatihan_tkk_id', $pelatihan->id)->delete();
@@ -184,6 +194,7 @@ class PelatihanTkkController extends Controller
             ->with('success', 'Semua data peserta berhasil dihapus');
     }
 
+    // Validasi input data peserta
     private function validatePesertaRequest(Request $request): array
     {
         return $request->validate(
@@ -203,42 +214,30 @@ class PelatihanTkkController extends Controller
             ],
             [
                 'nama.required' => 'Nama wajib diisi.',
-
                 'nik.required' => 'NIK wajib diisi.',
                 'nik.regex' => 'NIK harus diisi dengan angka.',
-
                 'email.required' => 'Email wajib diisi.',
                 'email.email' => 'Format email tidak valid.',
-
                 'telp.required' => 'No. Telp wajib diisi.',
                 'telp.regex' => 'No. Telp harus diisi dengan angka.',
-
                 'pendidikan_jurusan.required' => 'Pendidikan/Jurusan wajib dipilih.',
-                'pendidikan_jurusan.in' => 'Pendidikan/Jurusan tidak valid.',
-
                 'asn.required' => 'ASN wajib dipilih.',
-                'asn.in' => 'Pilihan ASN tidak valid.',
-
                 'jabatan_instansi.required' => 'Jabatan/Instansi wajib diisi.',
                 'alamat.required' => 'Alamat wajib diisi.',
-
                 'provinsi.required' => 'Provinsi wajib dipilih.',
                 'kab_kota.required' => 'Kab./Kota wajib dipilih.',
-
                 'waktu_daftar.required' => 'Waktu Daftar wajib diisi.',
-                'waktu_daftar.date' => 'Waktu Daftar tidak valid.',
-
                 'status_peserta.required' => 'Status Peserta wajib dipilih.',
             ]
         );
     }
 
+    // Validasi input data pelatihan
     private function validateRequest(Request $request): array
     {
         return $request->validate(
             [
                 '_form_mode' => ['nullable', 'string'],
-
                 'tahun' => ['required', 'integer', 'min:2020'],
                 'status' => ['required', 'in:dibuka,selesai'],
                 'jenis_peserta' => ['required', 'string', 'max:255'],
@@ -253,30 +252,23 @@ class PelatihanTkkController extends Controller
                 'tempat_kegiatan' => ['required', 'string', 'max:255'],
                 'provinsi' => ['required', 'string', 'max:255'],
                 'kabupaten_kota' => ['required', 'string', 'max:255'],
-
                 'syarat_tambahan' => ['nullable', 'string'],
             ],
             [
                 'tahun.required' => 'Tahun wajib dipilih.',
                 'tahun.integer' => 'Tahun harus berupa angka.',
                 'tahun.min' => 'Tahun tidak valid.',
-
                 'status.required' => 'Status Kegiatan wajib dipilih.',
                 'status.in' => 'Status Kegiatan tidak valid.',
-
                 'jenis_peserta.required' => 'Jenis Peserta wajib dipilih.',
                 'metode_kegiatan.required' => 'Metode Kegiatan wajib dipilih.',
-
                 'nama_kegiatan.required' => 'Nama Kegiatan wajib diisi.',
                 'nama_kegiatan.max' => 'Nama Kegiatan maksimal 255 karakter.',
-
                 'waktu_kegiatan.required' => 'Waktu Kegiatan wajib diisi.',
                 'waktu_kegiatan.date' => 'Waktu Kegiatan harus berupa tanggal yang valid.',
-
                 'realisasi_peserta.required' => 'Realisasi Jumlah Peserta wajib diisi.',
                 'realisasi_peserta.integer' => 'Realisasi Jumlah Peserta harus berupa angka.',
                 'realisasi_peserta.min' => 'Realisasi Jumlah Peserta minimal 1.',
-
                 'sumber_dana.required' => 'Sumber Dana wajib dipilih.',
                 'standar_kompetensi.required' => 'Standar Kompetensi wajib dipilih.',
                 'tuk.required' => 'Tempat Uji Kompetensi wajib diisi.',
@@ -288,6 +280,7 @@ class PelatihanTkkController extends Controller
         );
     }
 
+    // Mapping data sebelum disimpan ke database
     private function preparePayload(array $validated): array
     {
         unset($validated['_form_mode']);

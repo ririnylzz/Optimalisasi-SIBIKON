@@ -11,6 +11,7 @@ use Illuminate\View\View;
 
 class AuthController extends Controller
 {
+    // Menampilkan halaman login atau redirect jika sudah login
     public function showLogin(): View|RedirectResponse
     {
         if (Auth::check()) {
@@ -22,6 +23,7 @@ class AuthController extends Controller
         ]);
     }
 
+    // Proses autentikasi login user berdasarkan email atau username
     public function login(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -49,6 +51,7 @@ class AuthController extends Controller
         return redirect()->intended(route('admin.dashboard'));
     }
 
+    // Logout user dan menghapus session autentikasi
     public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
