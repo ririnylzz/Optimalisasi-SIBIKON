@@ -1,5 +1,6 @@
 <?php
 
+// Request validasi dan normalisasi data BUJK sebelum disimpan atau diupdate
 namespace App\Http\Requests\Admin\Bujk;
 
 use App\Support\BujkDataNormalizer;
@@ -10,11 +11,13 @@ class BujkFormRequest extends FormRequest
 {
     protected int $selectedJenisUsahaCount = 0;
 
+    // Menentukan apakah user diizinkan melakukan request
     public function authorize(): bool
     {
         return true;
     }
 
+    // Menyiapkan dan menormalkan data sebelum validasi dijalankan
     protected function prepareForValidation(): void
     {
         $rawJenisUsaha = $this->input('jenis_bujk', $this->input('jenis_usaha'));
@@ -26,6 +29,7 @@ class BujkFormRequest extends FormRequest
         $this->merge(app(BujkDataNormalizer::class)->normalizeFormInput($this->all()));
     }
 
+    // Validasi tambahan setelah rules utama dijalankan
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator): void {
@@ -35,6 +39,7 @@ class BujkFormRequest extends FormRequest
         });
     }
 
+    // Rules validasi untuk semua field BUJK
     public function rules(): array
     {
         return [
@@ -81,6 +86,7 @@ class BujkFormRequest extends FormRequest
         ];
     }
 
+    // Pesan error default untuk validasi input
     public function messages(): array
     {
         return [
@@ -92,6 +98,7 @@ class BujkFormRequest extends FormRequest
         ];
     }
 
+    // Mengubah nama field agar lebih mudah dibaca user
     public function attributes(): array
     {
         return [
@@ -138,6 +145,7 @@ class BujkFormRequest extends FormRequest
         ];
     }
 
+    // Redirect kembali ke form dengan anchor khusus
     protected function getRedirectUrl(): string
     {
         return parent::getRedirectUrl() . '#form-bujk';

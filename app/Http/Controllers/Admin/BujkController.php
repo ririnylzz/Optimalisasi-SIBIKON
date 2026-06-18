@@ -24,6 +24,7 @@ class BujkController extends Controller
     protected string $latestDataDatePath = 'bujk/latest-data-date.txt';
     protected string $latestUpdatedByPath = 'bujk/latest-updated-by.txt';
 
+    // menampilkan daftar BUJK dengan filter, search, dan pagination
     public function index(Request $request)
     {
         $perPage = in_array((int) $request->integer('per_page'), [10, 25, 50, 100], true)
@@ -100,6 +101,7 @@ class BujkController extends Controller
         return view('admin.bujk.index', $viewData);
     }
 
+    // menyimpan data BUJK baru
     public function store(BujkFormRequest $request): RedirectResponse
     {
         $payload = $request->validated();
@@ -124,6 +126,7 @@ class BujkController extends Controller
             ->with('success', 'Data BUJK berhasil ditambahkan.');
     }
 
+    // update data BUJK
     public function update(BujkFormRequest $request, Bujk $bujk): RedirectResponse
     {
         $payload = $request->validated();
@@ -151,6 +154,7 @@ class BujkController extends Controller
             ->with('success', 'Data BUJK berhasil diperbarui.');
     }
 
+    // soft delete BUJK
     public function destroy(Bujk $bujk): RedirectResponse
     {
         $bujk->update([
@@ -163,6 +167,7 @@ class BujkController extends Controller
             ->with('success', 'Data BUJK berhasil dihapus dari daftar aktif.');
     }
 
+    // bulk delete BUJK
     public function bulkDestroy(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -201,6 +206,7 @@ class BujkController extends Controller
             );
     }
 
+    // hapus semua BUJK
     public function destroyAll(): RedirectResponse
     {
         $affected = Bujk::query()
@@ -220,6 +226,7 @@ class BujkController extends Controller
             );
     }
 
+    // import data BUJK dari file
     public function import(BujkImportRequest $request, BujkImportService $importService): RedirectResponse
     {
         $validated = $request->validated();
@@ -245,6 +252,7 @@ class BujkController extends Controller
             ->with('import_summary', $summary);
     }
 
+    // ambil provinsi (API)
     public function provinceOptions(): JsonResponse
     {
         try {
@@ -289,6 +297,7 @@ class BujkController extends Controller
         }
     }
 
+    // ambil kabupaten/kota (API)
     public function regencyOptions(Request $request): JsonResponse
     {
         $provinceCode = $this->squish((string) $request->query('province_code'));
@@ -343,6 +352,7 @@ class BujkController extends Controller
         }
     }
 
+    // cari duplikasi NIB
     protected function findManualDuplicate(array $payload, ?int $ignoreId = null): ?Bujk
     {
         $nibVariants = $this->nibLookupVariants($payload['nib'] ?? null);
@@ -359,6 +369,7 @@ class BujkController extends Controller
             ->first();
     }
 
+    // generate variasi NIB
     protected function nibLookupVariants(mixed $nib): array
     {
         if (blank($nib)) {
@@ -378,6 +389,7 @@ class BujkController extends Controller
         ], fn ($value) => $value !== '')));
     }
 
+    // sync tanggal data terbaru
     protected function syncLatestDataDateFromPayload(array $payload): void
     {
         if (blank($payload['tgl_update'] ?? null)) {
@@ -396,6 +408,7 @@ class BujkController extends Controller
         }
     }
 
+    // filter jenis usaha BUJK
     protected function applyJenisFilter(Builder $query, string $jenis): void
     {
         $normalized = str_replace(', ', ',', trim($jenis));
@@ -409,6 +422,7 @@ class BujkController extends Controller
         });
     }
 
+    // ambil tanggal update terakhir
     protected function getLatestDataDate(): ?string
     {
         if (!Storage::disk('local')->exists($this->latestDataDatePath)) {
@@ -420,6 +434,7 @@ class BujkController extends Controller
         return $date !== '' ? $date : null;
     }
 
+    // ambil user terakhir update
     protected function getLatestUpdatedBy(): ?string
     {
         if (!Storage::disk('local')->exists($this->latestUpdatedByPath)) {
@@ -431,6 +446,7 @@ class BujkController extends Controller
         return $name !== '' ? $name : auth()->user()?->name;
     }
 
+    // simpan user update terakhir
     protected function syncLatestUpdatedBy(): void
     {
         $name = auth()->user()?->name;
@@ -442,11 +458,13 @@ class BujkController extends Controller
         Storage::disk('local')->put($this->latestUpdatedByPath, $name);
     }
 
+    // bersihkan spasi berlebih
     protected function squish(?string $value): string
     {
         return trim(preg_replace('/\s+/u', ' ', (string) $value) ?? '');
     }
 
+    // normalisasi region ke uppercase
     protected function normalizeRegionValue(?string $value): string
     {
         return Str::upper($this->squish($value));

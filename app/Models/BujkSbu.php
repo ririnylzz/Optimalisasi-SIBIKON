@@ -1,5 +1,6 @@
 <?php
 
+// Model relasi SBU yang terhubung dengan data BUJK untuk menyimpan sertifikasi/subklasifikasi
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -10,6 +11,7 @@ class BujkSbu extends Model
 {
     protected $table = 'bujk_sbu';
 
+    // Field yang boleh diisi secara mass assignment
     protected $fillable = [
         'bujk_id',
         'id_izin',
@@ -46,6 +48,7 @@ class BujkSbu extends Model
         'is_deleted',
     ];
 
+    // Casting tipe data otomatis untuk field tertentu
     protected $casts = [
         'is_deleted' => 'boolean',
         'tanggal_ditetapkan' => 'datetime',
@@ -53,11 +56,13 @@ class BujkSbu extends Model
         'tgl_update' => 'datetime',
     ];
 
+    // Relasi many-to-one: SBU dimiliki oleh satu BUJK
     public function bujk(): BelongsTo
     {
         return $this->belongsTo(Bujk::class, 'bujk_id');
     }
 
+    // Scope untuk mengambil data aktif (tidak dihapus)
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_deleted', false);

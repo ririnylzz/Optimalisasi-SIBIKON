@@ -1,11 +1,14 @@
 <?php
 
 return [
+
+    // daftar pilihan jenis usaha yang valid dalam sistem BUJK
     'jenis_usaha' => [
         'Konstruksi',
         'Konsultan Konstruksi',
     ],
 
+    // pemetaan wilayah provinsi ke kabupaten/kota
     'regions' => [
         'KALIMANTAN TIMUR' => [
             'KOTA SAMARINDA',
@@ -21,6 +24,7 @@ return [
         ],
     ],
 
+    // mapping berbagai variasi nama kolom agar bisa dikenali saat import file
     'header_aliases' => [
         'id_izin' => ['id_izin', 'id izin', 'id_perizinan', 'nomor_izin'],
         'nib' => ['nib', 'nomor_induk_berusaha'],

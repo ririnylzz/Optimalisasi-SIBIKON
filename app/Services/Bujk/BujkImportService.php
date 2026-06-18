@@ -14,12 +14,14 @@ use Illuminate\Validation\ValidationException;
 
 class BujkImportService
 {
+    // Caption: Inisialisasi service untuk membaca file spreadsheet dan normalisasi data BUJK
     public function __construct(
         protected SimpleSpreadsheetReader $spreadsheetReader,
         protected BujkDataNormalizer $normalizer,
     ) {
     }
 
+    // Caption: Proses utama import data BUJK dan SBU dari file upload
     public function import(UploadedFile $file): array
     {
         set_time_limit(0);
@@ -216,6 +218,7 @@ class BujkImportService
         ];
     }
 
+    // Caption: Aturan validasi field saat proses import
     protected function rules(): array
     {
         return [
@@ -262,6 +265,7 @@ class BujkImportService
         ];
     }
 
+    // Caption: Pesan error validasi import
     protected function messages(): array
     {
         return [
@@ -285,6 +289,7 @@ class BujkImportService
         ];
     }
 
+    // Caption: Label atribut untuk pesan validasi agar lebih mudah dibaca
     protected function attributes(): array
     {
         return [
@@ -331,6 +336,7 @@ class BujkImportService
         ];
     }
 
+    // Caption: Membersihkan dan menormalisasi data sebelum diproses
     protected function cleanRecord(array $record): array
     {
         $cleaned = [];
@@ -357,6 +363,7 @@ class BujkImportService
         return $cleaned;
     }
 
+    // Caption: Mencari data BUJK yang sudah ada berdasarkan NIB atau variasinya
     protected function findExistingRecord(array $record): ?Bujk
     {
         $exact = Bujk::query()
@@ -374,11 +381,13 @@ class BujkImportService
             ->first();
     }
 
+    // Caption: Membuat signature unik untuk data BUJK
     protected function makeSignature(array $record): string
     {
         return 'nib:' . $this->normalizeNibForDuplicate($record['nib'] ?? null);
     }
 
+    // Caption: Membuat signature unik untuk data SBU
     protected function makeSbuSignature(array $record): string
     {
         $parts = [
@@ -392,6 +401,7 @@ class BujkImportService
         return sha1(json_encode($parts, JSON_UNESCAPED_UNICODE));
     }
 
+    // Caption: Mengecek apakah record memiliki identitas SBU
     protected function hasSbuIdentity(array $record): bool
     {
         return !blank($record['kode_subklasifikasi'] ?? null)
@@ -402,6 +412,7 @@ class BujkImportService
             || !blank($record['pelaksana_sertifikasi'] ?? null);
     }
 
+    // Caption: Membentuk payload SBU untuk disimpan ke database
     protected function makeSbuPayload(array $record, string $sbuSignature, ?int $bujkId): array
     {
         return [
@@ -440,6 +451,7 @@ class BujkImportService
         ];
     }
 
+    // Caption: Normalisasi teks untuk keperluan signature unik
     protected function normalizeTextForSignature(mixed $value): string
     {
         if (blank($value)) {
@@ -452,6 +464,7 @@ class BujkImportService
         return $value;
     }
 
+    // Caption: Normalisasi NIB agar konsisten untuk deteksi duplikat
     protected function normalizeNibForDuplicate(mixed $nib): string
     {
         if (blank($nib)) {
@@ -469,6 +482,7 @@ class BujkImportService
         return $normalized === '' ? '0' : $normalized;
     }
 
+    // Caption: Membuat variasi NIB untuk pencarian duplikasi
     protected function nibLookupVariants(mixed $nib): array
     {
         $variants = [];
@@ -492,6 +506,7 @@ class BujkImportService
         return array_values(array_unique(array_filter($variants, fn ($value) => $value !== '')));
     }
 
+    // Caption: Menggabungkan data lama dan baru secara cerdas per field
     protected function mergeRows(array $base, array $incoming): array
     {
         $merged = [];
@@ -515,6 +530,7 @@ class BujkImportService
         return $merged;
     }
 
+    // Caption: Memilih nilai jika salah satu kosong
     protected function preferValue(mixed $base, mixed $incoming): mixed
     {
         if (blank($base) && !blank($incoming)) {
@@ -524,6 +540,7 @@ class BujkImportService
         return $base;
     }
 
+    // Caption: Memilih nilai terpanjang sebagai prioritas
     protected function preferLongerValue(?string $base, ?string $incoming): ?string
     {
         if (blank($base)) {
@@ -537,6 +554,7 @@ class BujkImportService
         return mb_strlen($incoming) > mb_strlen($base) ? $incoming : $base;
     }
 
+    // Caption: Menggabungkan teks unik dari dua sumber
     protected function mergeUniqueText(mixed $base, mixed $incoming, string $separator = ' | ', ?int $maxLength = null): ?string
     {
         $values = [];

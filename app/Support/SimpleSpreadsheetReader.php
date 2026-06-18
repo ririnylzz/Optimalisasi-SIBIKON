@@ -11,6 +11,7 @@ use ZipArchive;
 
 class SimpleSpreadsheetReader
 {
+    // Membaca file spreadsheet (CSV/TXT/XLSX) sesuai format
     public function read(string $absolutePath, ?string $originalName = null): array
     {
         $extension = strtolower(pathinfo($originalName ?: $absolutePath, PATHINFO_EXTENSION));
@@ -22,6 +23,7 @@ class SimpleSpreadsheetReader
         };
     }
 
+    // Membaca file CSV/TXT menjadi array
     protected function readCsv(string $path): array
     {
         $handle = fopen($path, 'rb');
@@ -42,6 +44,7 @@ class SimpleSpreadsheetReader
         return $this->rowsToAssociativeRows($rows);
     }
 
+    // Membaca file XLSX (Excel) dan memilih sheet terbaik
     protected function readXlsx(string $path): array
     {
         if (!class_exists(ZipArchive::class) || !class_exists(DOMDocument::class)) {
@@ -92,6 +95,7 @@ class SimpleSpreadsheetReader
         }
     }
 
+    // Membaca shared string dari file XLSX
     protected function readSharedStrings(ZipArchive $zip): array
     {
         $xml = $zip->getFromName('xl/sharedStrings.xml');
@@ -120,6 +124,7 @@ class SimpleSpreadsheetReader
         return $values;
     }
 
+    // Membaca daftar sheet dan relasinya di XLSX
     protected function readSheets(ZipArchive $zip): array
     {
         $workbookXml = $zip->getFromName('xl/workbook.xml');
@@ -180,6 +185,7 @@ class SimpleSpreadsheetReader
         return $sheets;
     }
 
+    // Parsing baris worksheet menjadi array
     protected function parseWorksheetRows(string $xml, array $sharedStrings): array
     {
         $xpath = $this->createXPath($xml);
@@ -231,6 +237,7 @@ class SimpleSpreadsheetReader
         return $rows;
     }
 
+    // Membaca nilai cell pada worksheet
     protected function readCellValue(DOMXPath $xpath, DOMElement $cell, array $sharedStrings): ?string
     {
         $type = $this->getAttributeValue($cell, 't');
@@ -256,11 +263,13 @@ class SimpleSpreadsheetReader
         return $rawValue;
     }
 
+    // Mengubah rows menjadi associative array
     protected function rowsToAssociativeRows(array $rows): array
     {
         return $this->rowsToAssociativeRowsWithMeta($rows)['rows'];
     }
 
+    // Mengubah rows menjadi associative array lengkap dengan metadata header
     protected function rowsToAssociativeRowsWithMeta(array $rows): array
     {
         $headerInfo = $this->detectHeaderRow($rows);
@@ -296,6 +305,7 @@ class SimpleSpreadsheetReader
         ];
     }
 
+    // Mendeteksi baris header pada spreadsheet
     protected function detectHeaderRow(array $rows): ?array
     {
         foreach ($rows as $rowIndex => $row) {
@@ -320,6 +330,7 @@ class SimpleSpreadsheetReader
         return null;
     }
 
+    // Mengubah label header menjadi field standar
     protected function resolveHeaderAlias(mixed $value): ?string
     {
         $normalized = strtolower(trim((string) $value));
@@ -341,6 +352,7 @@ class SimpleSpreadsheetReader
         return null;
     }
 
+    // Mengecek apakah row kosong
     protected function rowIsEmpty(array $row): bool
     {
         foreach ($row as $cell) {
@@ -352,6 +364,7 @@ class SimpleSpreadsheetReader
         return true;
     }
 
+    // Membersihkan cell spreadsheet
     protected function sanitizeSpreadsheetCell(mixed $value): ?string
     {
         if ($value === null) {
@@ -363,6 +376,7 @@ class SimpleSpreadsheetReader
         return $cleaned === '' ? null : $cleaned;
     }
 
+    // Membersihkan cell CSV
     protected function sanitizeCsvCell(mixed $value): ?string
     {
         if ($value === null) {
@@ -375,6 +389,7 @@ class SimpleSpreadsheetReader
         return $value === '' ? null : $value;
     }
 
+    // Deteksi delimiter CSV
     protected function detectCsvDelimiter(string $path): string
     {
         $firstLine = '';
@@ -401,6 +416,7 @@ class SimpleSpreadsheetReader
         return $selected;
     }
 
+    // Mengubah sparse row menjadi full row
     protected function expandSparseRow(array $row): array
     {
         ksort($row);
@@ -414,6 +430,7 @@ class SimpleSpreadsheetReader
         return $expanded;
     }
 
+    // Mengubah huruf kolom Excel menjadi index angka
     protected function columnLettersToIndex(string $columnLetters): int
     {
         $letters = strtoupper($columnLetters);
@@ -426,6 +443,7 @@ class SimpleSpreadsheetReader
         return max(0, $index - 1);
     }
 
+    // Membuat XPath dari XML
     protected function createXPath(string $xml): ?DOMXPath
     {
         $cleanXml = preg_replace('/^\xEF\xBB\xBF/', '', $xml);
@@ -442,6 +460,7 @@ class SimpleSpreadsheetReader
         return new DOMXPath($dom);
     }
 
+    // Mengambil semua text node
     protected function collectTextNodes(DOMXPath $xpath, string $expression, ?DOMNode $contextNode = null): string
     {
         $nodes = $xpath->query($expression, $contextNode);
@@ -459,6 +478,7 @@ class SimpleSpreadsheetReader
         return trim(preg_replace('/\s+/u', ' ', implode('', $textParts)));
     }
 
+    // Mengambil atribut XML
     protected function getAttributeValue(DOMElement $element, string $attributeName): ?string
     {
         if ($element->hasAttribute($attributeName)) {
@@ -478,6 +498,7 @@ class SimpleSpreadsheetReader
         return null;
     }
 
+    // Normalisasi path ZIP Excel
     protected function normalizeZipPath(string $target): string
     {
         $target = str_replace('\\', '/', trim($target));

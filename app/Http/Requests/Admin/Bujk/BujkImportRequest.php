@@ -1,16 +1,19 @@
 <?php
 
+// Request validasi untuk proses import data BUJK (CSV, TXT, XLSX)
 namespace App\Http\Requests\Admin\Bujk;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 class BujkImportRequest extends FormRequest
 {
+    // Menentukan apakah user diizinkan melakukan proses import
     public function authorize(): bool
     {
         return true;
     }
 
+    // Aturan validasi file import dan tanggal data
     public function rules(): array
     {
         return [
@@ -19,6 +22,7 @@ class BujkImportRequest extends FormRequest
         ];
     }
 
+    // Pesan error validasi untuk proses import
     public function messages(): array
     {
         return [
@@ -32,6 +36,7 @@ class BujkImportRequest extends FormRequest
         ];
     }
 
+    // Label atribut agar pesan error lebih mudah dipahami user
     public function attributes(): array
     {
         return [

@@ -1,5 +1,6 @@
 <?php
 
+// Model BUJK untuk mengelola data Badan Usaha Jasa Konstruksi
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -10,6 +11,7 @@ class Bujk extends Model
 {
     protected $table = 'bujk';
 
+    // Mapping alias atribut lama ke nama kolom baru di database
     protected const ATTRIBUTE_ALIASES = [
         'nama_bujk' => 'nama_bu',
         'npwp_bujk' => 'npwp',
@@ -22,6 +24,7 @@ class Bujk extends Model
         'website_bujk' => 'website',
     ];
 
+    // Field yang boleh diisi secara mass assignment
     protected $fillable = [
         'id_izin',
         'nib',
@@ -76,6 +79,7 @@ class Bujk extends Model
         'website_bujk',
     ];
 
+    // Casting tipe data otomatis
     protected $casts = [
         'is_deleted' => 'boolean',
         'tanggal_ditetapkan' => 'datetime',
@@ -84,6 +88,7 @@ class Bujk extends Model
         'last_perubahan_at' => 'datetime',
     ];
 
+    // Override getter untuk mendukung alias atribut
     public function getAttribute($key)
     {
         if (isset(static::ATTRIBUTE_ALIASES[$key])) {
@@ -93,6 +98,7 @@ class Bujk extends Model
         return parent::getAttribute($key);
     }
 
+    // Override setter untuk mendukung alias atribut
     public function setAttribute($key, $value)
     {
         if (isset(static::ATTRIBUTE_ALIASES[$key])) {
@@ -106,16 +112,19 @@ class Bujk extends Model
         return parent::setAttribute($key, $value);
     }
 
+    // Relasi BUJK ke data SBU (1 ke banyak)
     public function sbu(): HasMany
     {
         return $this->hasMany(BujkSbu::class, 'bujk_id');
     }
 
+    // Scope untuk mengambil data aktif (tidak terhapus)
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_deleted', false);
     }
 
+    // Accessor: mengubah jenis usaha menjadi array list
     public function getJenisBujkListAttribute(): array
     {
         return collect(explode(',', (string) $this->jenis_usaha))
@@ -126,6 +135,7 @@ class Bujk extends Model
             ->all();
     }
 
+    // Accessor: format tampilan kontak (telepon/email/website)
     public function getKontakDisplayAttribute(): string
     {
         return collect([
@@ -135,6 +145,7 @@ class Bujk extends Model
         ])->filter()->implode(' / ');
     }
 
+    // Accessor: memastikan website selalu format URL lengkap
     public function getWebsiteUrlAttribute(): ?string
     {
         if (blank($this->website)) {

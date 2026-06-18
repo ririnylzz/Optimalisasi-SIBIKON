@@ -10,6 +10,7 @@ use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 
 class BujkDataNormalizer
 {
+    // Menormalisasi input form BUJK
     public function normalizeFormInput(array $input): array
     {
         return [
@@ -56,6 +57,7 @@ class BujkDataNormalizer
         ];
     }
 
+    // Membersihkan data website
     public function sanitizeWebsite(mixed $value): ?string
     {
         $normalized = $this->sanitizeText($value);
@@ -67,11 +69,13 @@ class BujkDataNormalizer
         return preg_replace('/\s+/', '', $normalized);
     }
 
+    // Normalisasi baris hasil import
     public function normalizeImportedRow(array $row): array
     {
         return $this->normalizeFormInput($row);
     }
 
+    // Menggabungkan jenis usaha menjadi string
     public function implodeJenisUsaha(mixed $value): ?string
     {
         $jenisList = $this->normalizeJenisBujk($value);
@@ -79,11 +83,13 @@ class BujkDataNormalizer
         return empty($jenisList) ? $this->sanitizeText($value) : implode(', ', $jenisList);
     }
 
+    // Alias penggabungan jenis BUJK
     public function implodeJenisBujk(mixed $value): ?string
     {
         return $this->implodeJenisUsaha($value);
     }
 
+    // Normalisasi jenis BUJK
     public function normalizeJenisBujk(mixed $value): array
     {
         $values = is_array($value)
@@ -112,6 +118,7 @@ class BujkDataNormalizer
         return empty($ordered) ? $normalized->values()->all() : $ordered;
     }
 
+    // Normalisasi nama provinsi
     public function normalizeProvince(mixed $value): ?string
     {
         $lookup = $this->normalizeLookupKey($value);
@@ -132,6 +139,7 @@ class BujkDataNormalizer
         return $this->sanitizeUpperText($value);
     }
 
+    // Normalisasi kabupaten/kota
     public function normalizeKabupatenKota(mixed $value): ?string
     {
         $lookup = $this->normalizeLookupKey($value);
@@ -168,6 +176,7 @@ class BujkDataNormalizer
         return $this->sanitizeUpperText($value);
     }
 
+    // Membersihkan identifier
     public function sanitizeIdentifier(mixed $value): ?string
     {
         if ($value === null) {
@@ -179,6 +188,7 @@ class BujkDataNormalizer
         return $normalized === '' ? null : $normalized;
     }
 
+    // Membersihkan nomor telepon
     public function sanitizePhone(mixed $value): ?string
     {
         if ($value === null) {
@@ -190,6 +200,7 @@ class BujkDataNormalizer
         return $normalized === '' ? null : $normalized;
     }
 
+    // Membersihkan dan normalisasi email
     public function sanitizeEmail(mixed $value): ?string
     {
         $normalized = $this->sanitizeText($value);
@@ -197,6 +208,7 @@ class BujkDataNormalizer
         return $normalized === null ? null : Str::lower($normalized);
     }
 
+    // Membersihkan nilai integer
     public function sanitizeInteger(mixed $value): ?int
     {
         if ($value === null || $value === '') {
@@ -208,6 +220,7 @@ class BujkDataNormalizer
         return $numeric === '' ? null : (int) $numeric;
     }
 
+    // Normalisasi format tanggal dan waktu
     public function sanitizeDateTime(mixed $value): ?string
     {
         if ($value === null || $value === '') {
@@ -229,6 +242,7 @@ class BujkDataNormalizer
         }
     }
 
+    // Membersihkan teks
     public function sanitizeText(mixed $value): ?string
     {
         if ($value === null) {
@@ -240,6 +254,7 @@ class BujkDataNormalizer
         return $normalized === '' ? null : $normalized;
     }
 
+    // Mengubah teks menjadi uppercase
     public function sanitizeUpperText(mixed $value): ?string
     {
         $normalized = $this->sanitizeText($value);
@@ -247,6 +262,7 @@ class BujkDataNormalizer
         return $normalized === null ? null : strtoupper($normalized);
     }
 
+    // Mengambil nilai pertama dari beberapa key
     protected function first(array $input, array $keys): mixed
     {
         foreach ($keys as $key) {
@@ -258,6 +274,7 @@ class BujkDataNormalizer
         return null;
     }
 
+    // Normalisasi key untuk pencarian
     protected function normalizeLookupKey(mixed $value): string
     {
         if ($value === null) {
