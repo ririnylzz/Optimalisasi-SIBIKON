@@ -7,21 +7,13 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-/**
- * @extends Factory<User>
- */
+// Factory untuk membuat data User (keperluan seeding dan testing)
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
+    // Password default yang digunakan ulang agar konsisten
     protected static ?string $password;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    // Struktur data default saat membuat User
     public function definition(): array
     {
         return [
@@ -33,9 +25,7 @@ class UserFactory extends Factory
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
+    // Menandai user sebagai belum melakukan verifikasi email
     public function unverified(): static
     {
         return $this->state(fn (array $attributes) => [

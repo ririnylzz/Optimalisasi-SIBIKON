@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 class PublicDashboardController extends Controller
 {
+    // Menampilkan dashboard publik tenaga kerja konstruksi (TKK) beserta statistiknya
     public function tenagaKerja()
     {
         $items = $this->getPublicTkkItems()
@@ -120,6 +121,7 @@ class PublicDashboardController extends Controller
         ]);
     }
 
+    // Menampilkan dashboard TKK aktif beserta statistik sertifikat yang masih berlaku
     public function tkkAktif()
     {
         $today = now()->startOfDay();
@@ -268,28 +270,23 @@ class PublicDashboardController extends Controller
         return view('pages.dashboard-tkk-aktif-publik', [
             'totalTkkAktif' => $totalTkkAktif,
             'totalWilayah' => $totalWilayah,
-
             'distribusiJenjang' => $distribusiJenjang,
             'distribusiMasaBerlaku' => $distribusiJenjang,
-
             'statusSertifikat' => $statusSertifikat,
             'perbandinganStatus' => $statusSertifikat,
-
             'topKabupaten' => $topKabupaten,
             'topKabupatenAktif' => $topKabupaten,
-
             'topKlasifikasi' => $topKlasifikasi,
             'topJenjangAktif' => $distribusiJenjang,
-
             'proyeksiKadaluarsa' => $proyeksiKadaluarsa,
             'trenKadaluarsa' => $proyeksiKadaluarsa,
-
             'totalAkanKadaluarsa' => $statusSertifikat
                 ->firstWhere('label', 'Kadaluarsa Tahun Ini')['value'] ?? 0,
             'latestDataDate' => $latestDataDate,
         ]);
     }
 
+    // Menampilkan dashboard publik data BUJK beserta ringkasan statistiknya
     public function bujk()
     {
         $items = $this->getPublicBujkItems();
@@ -409,6 +406,7 @@ class PublicDashboardController extends Controller
         ]);
     }
 
+    // Menampilkan dashboard publik data SBU beserta ringkasan statistiknya
     public function sbu()
     {
         $items = $this->getPublicSbuItems();
@@ -567,6 +565,7 @@ class PublicDashboardController extends Controller
         ]);
     }
 
+    // Mengambil data SBU publik dari database dengan normalisasi field
     private function getPublicSbuItems(): Collection
     {
         $table = $this->getSbuSourceTable();
@@ -622,6 +621,7 @@ class PublicDashboardController extends Controller
             ->values();
     }
 
+    // Menentukan tabel sumber SBU yang tersedia di database
     private function getSbuSourceTable(): ?string
     {
         $candidateTables = [
@@ -649,6 +649,7 @@ class PublicDashboardController extends Controller
         return null;
     }
 
+    // Mengambil data BUJK publik dari database dengan normalisasi field
     private function getPublicBujkItems(): Collection
     {
         if (!Schema::hasTable('bujk')) {
@@ -688,6 +689,7 @@ class PublicDashboardController extends Controller
             ->values();
     }
 
+    // Mengambil data TKK publik dari database dengan normalisasi field
     private function getPublicTkkItems(): Collection
     {
         $table = $this->getTkkTableName();
@@ -731,6 +733,7 @@ class PublicDashboardController extends Controller
             ->values();
     }
 
+    // Menentukan nama tabel TKK yang tersedia di database
     private function getTkkTableName(): ?string
     {
         if (Schema::hasTable('tkk')) {
@@ -744,6 +747,7 @@ class PublicDashboardController extends Controller
         return null;
     }
 
+    // Mengambil nilai kolom pertama yang cocok dari sebuah row database
     private function publicValue(object $row, array $columns): mixed
     {
         foreach ($columns as $column) {
@@ -755,6 +759,7 @@ class PublicDashboardController extends Controller
         return null;
     }
 
+    // Mengambil nilai kolom secara fleksibel berdasarkan nama yang mirip (case-insensitive & fuzzy match)
     private function publicValueSmart(object $row, array $keys): mixed
     {
         $vars = get_object_vars($row);
@@ -781,6 +786,7 @@ class PublicDashboardController extends Controller
         return null;
     }
 
+    // Normalisasi jenis BUJK menjadi kategori standar
     private function normalizeJenisBujk($value): string
     {
         if (blank($value)) {
@@ -801,6 +807,7 @@ class PublicDashboardController extends Controller
         return $value;
     }
 
+    // Normalisasi nilai kualifikasi SBU (K, M, B, Spesialis)
     private function normalizeKualifikasiSbu($value): ?string
     {
         if (blank($value)) {
@@ -829,6 +836,7 @@ class PublicDashboardController extends Controller
         return $value;
     }
 
+    // Normalisasi jenjang TKK dari berbagai format input
     private function normalizePublicJenjang($value): ?string
     {
         if (blank($value)) {
@@ -844,6 +852,7 @@ class PublicDashboardController extends Controller
         return $value;
     }
 
+    // Normalisasi nama kabupaten/kota ke format standar Kalimantan Timur
     private function normalizePublicKabupaten($value): ?string
     {
         if (blank($value)) {
@@ -906,6 +915,7 @@ class PublicDashboardController extends Controller
         return $map[$upperValue] ?? $upperValue;
     }
 
+    // Mengecek apakah tahun kadaluarsa sama dengan tahun tertentu
     private function isSameExpiredYear($date, int $year): bool
     {
         if (blank($date)) {

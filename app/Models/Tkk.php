@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+// Model TKK: menyimpan data tenaga kerja konstruksi
 class Tkk extends Model
 {
     protected $table = 'tkk';

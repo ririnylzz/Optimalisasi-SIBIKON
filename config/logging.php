@@ -7,57 +7,26 @@ use Monolog\Processor\PsrLogMessageProcessor;
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Default Log Channel
-    |--------------------------------------------------------------------------
-    |
-    | This option defines the default log channel that is utilized to write
-    | messages to your logs. The value provided here should match one of
-    | the channels present in the list of "channels" configured below.
-    |
-    */
-
+    // Ini log yang dipakai aplikasi secara default
     'default' => env('LOG_CHANNEL', 'stack'),
 
-    /*
-    |--------------------------------------------------------------------------
-    | Deprecations Log Channel
-    |--------------------------------------------------------------------------
-    |
-    | This option controls the log channel that should be used to log warnings
-    | regarding deprecated PHP and library features. This allows you to get
-    | your application ready for upcoming major versions of dependencies.
-    |
-    */
-
+    // Buat nyimpen peringatan kalau ada fitur lama yang sudah mau ditinggalkan
     'deprecations' => [
         'channel' => env('LOG_DEPRECATIONS_CHANNEL', 'null'),
         'trace' => env('LOG_DEPRECATIONS_TRACE', false),
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Log Channels
-    |--------------------------------------------------------------------------
-    |
-    | Here you may configure the log channels for your application. Laravel
-    | utilizes the Monolog PHP logging library, which includes a variety
-    | of powerful log handlers and formatters that you're free to use.
-    |
-    | Available drivers: "single", "daily", "slack", "syslog",
-    |                    "errorlog", "monolog", "custom", "stack"
-    |
-    */
-
+    // Semua jenis cara nyimpen catatan error/log
     'channels' => [
 
+        // Gabungan beberapa log jadi satu
         'stack' => [
             'driver' => 'stack',
             'channels' => explode(',', (string) env('LOG_STACK', 'single')),
             'ignore_exceptions' => false,
         ],
 
+        // Simpan log di satu file aja
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
@@ -65,6 +34,7 @@ return [
             'replace_placeholders' => true,
         ],
 
+        // Simpan log per hari (biar rapi & tidak numpuk)
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
@@ -73,6 +43,7 @@ return [
             'replace_placeholders' => true,
         ],
 
+        // Kirim error ke Slack (biar langsung kelihatan di chat)
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
@@ -82,6 +53,7 @@ return [
             'replace_placeholders' => true,
         ],
 
+        // Kirim log ke layanan monitoring (Papertrail)
         'papertrail' => [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'debug'),
@@ -94,6 +66,7 @@ return [
             'processors' => [PsrLogMessageProcessor::class],
         ],
 
+        // Log tampil di terminal / server
         'stderr' => [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'debug'),
@@ -105,6 +78,7 @@ return [
             'processors' => [PsrLogMessageProcessor::class],
         ],
 
+        // Log ke sistem komputer/server langsung
         'syslog' => [
             'driver' => 'syslog',
             'level' => env('LOG_LEVEL', 'debug'),
@@ -112,17 +86,20 @@ return [
             'replace_placeholders' => true,
         ],
 
+        // Log error standar PHP
         'errorlog' => [
             'driver' => 'errorlog',
             'level' => env('LOG_LEVEL', 'debug'),
             'replace_placeholders' => true,
         ],
 
+        // Tidak nyimpen log sama sekali (dimatikan)
         'null' => [
             'driver' => 'monolog',
             'handler' => NullHandler::class,
         ],
 
+        // Cadangan kalau semua log error
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 class KegiatanController extends Controller
 {
+    // data statis kegiatan (rakor, sosialisasi, forum) yang akan ditampilkan di website
     private function kegiatanData()
     {
         return [
@@ -68,6 +69,7 @@ class KegiatanController extends Controller
         ];
     }
 
+    // menampilkan halaman kegiatan rakor beserta data dan running text kegiatan
     public function rakor()
     {
         $kegiatan = $this->kegiatanData()['rakor'];
@@ -79,6 +81,7 @@ class KegiatanController extends Controller
         ]);
     }
 
+    // menampilkan halaman kegiatan sosialisasi beserta data dan running text kegiatan
     public function sosialisasi()
     {
         $kegiatan = $this->kegiatanData()['sosialisasi'];
@@ -90,6 +93,7 @@ class KegiatanController extends Controller
         ]);
     }
 
+    // menampilkan halaman kegiatan forum beserta data dan running text kegiatan
     public function forum()
     {
         $kegiatan = $this->kegiatanData()['forum'];
@@ -101,6 +105,7 @@ class KegiatanController extends Controller
         ]);
     }
 
+    // menampilkan halaman beranda dengan running text kegiatan
     public function beranda()
     {
         return view('welcome', [
@@ -109,8 +114,10 @@ class KegiatanController extends Controller
         ]);
     }
 
+    // membuat running text dari daftar kegiatan yang masih akan datang
     private function runningTextKegiatan()
     {
+        // mapping bulan Indonesia ke format Carbon
         $bulan = [
             'Januari' => 'January',
             'Februari' => 'February',
@@ -126,8 +133,10 @@ class KegiatanController extends Controller
             'Desember' => 'December',
         ];
 
+        // tanggal hari ini sebagai batas filter kegiatan
         $today = now()->startOfDay();
 
+        // menggabungkan semua jenis kegiatan menjadi satu collection
         $semuaKegiatan = collect([
             ...$this->kegiatanData()['rakor'],
             ...$this->kegiatanData()['sosialisasi'],
@@ -135,6 +144,7 @@ class KegiatanController extends Controller
         ]);
 
         return $semuaKegiatan
+            // filter hanya kegiatan yang tanggalnya belum lewat
             ->filter(function ($item) use ($bulan, $today) {
 
                 $tanggal = strtr($item['tanggal'], $bulan);
@@ -147,6 +157,7 @@ class KegiatanController extends Controller
                 return $tanggalKegiatan->greaterThanOrEqualTo($today);
             })
 
+            // sorting berdasarkan tanggal kegiatan
             ->sortBy(function ($item) use ($bulan) {
 
                 $tanggal = strtr($item['tanggal'], $bulan);
@@ -157,6 +168,7 @@ class KegiatanController extends Controller
                 );
             })
 
+            // ambil maksimal 5 kegiatan terdekat
             ->take(5)
             ->values();
     }
