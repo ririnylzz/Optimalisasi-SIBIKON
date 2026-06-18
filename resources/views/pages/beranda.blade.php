@@ -38,7 +38,7 @@
 
                 <p class="mt-8 max-w-2xl text-lg leading-8 text-white/85 md:text-xl">
                     Platform digital terpadu untuk pengelolaan, pembinaan, dan
-                    pengawasan jasa konstruksi di seluruh Indonesia secara lebih
+                    pengawasan jasa konstruksi di seluruh Provinsi Kalimantan Timur secara lebih
                     modern, terstruktur, dan profesional.
                 </p>
             </div>

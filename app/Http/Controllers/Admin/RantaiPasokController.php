@@ -190,6 +190,9 @@ class RantaiPasokController extends Controller
 
     public function import(Request $request): RedirectResponse
     {
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
+
         $validated = $request->validate([
             'file_import' => ['required', 'file', 'mimes:csv,txt,xlsx', 'max:10240'],
         ], [
