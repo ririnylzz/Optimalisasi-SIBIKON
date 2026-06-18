@@ -657,14 +657,6 @@ $latestDataDateLabel = $latestDataDate;
         bluePalette
     );
 
-    // barChart(
-    //     'topKlasifikasiChart',
-    //     @json(collect($topKlasifikasi)->pluck('label')),
-    //     @json(collect($topKlasifikasi)->pluck('value')),
-    //     true,
-    //     bluePalette
-    // );
-
     createTopKlasifikasiChart(
         @json($topKlasifikasi)
     );
