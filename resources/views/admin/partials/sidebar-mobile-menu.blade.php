@@ -1,21 +1,29 @@
 <div class="relative z-10">
     <div class="space-y-1.5">
+
+        {{-- ===================== DASHBOARD SECTION ===================== --}}
         <div class="pt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-100/45">
             Dashboard
         </div>
 
+        {{-- Link utama dashboard BUJK --}}
         <a href="{{ route('admin.dashboard') }}"
         class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.dashboard') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">
             Dashboard Badan Usaha Jasa Konstruksi
         </a>
 
+        {{-- Dashboard TKK masih non-aktif --}}
         <a href="#"
         class="block cursor-not-allowed rounded-xl px-3 py-2.5 text-sm text-blue-100/35">
             Dashboard Tenaga Kerja Konstruksi
         </a>
 
-        <div class="pt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-100/45">Data Master</div>
+        {{-- ===================== DATA MASTER SECTION ===================== --}}
+        <div class="pt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-100/45">
+            Data Master
+        </div>
 
+        {{-- Menu data master pengguna sampai buku tamu --}}
         <a href="{{ route('admin.pengguna') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.pengguna') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Pengguna</a>
         <a href="{{ route('admin.jabatan-kerja') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.jabatan-kerja') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Jabatan Kerja</a>
         <a href="{{ route('admin.prodi-pendidikan') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.prodi-pendidikan') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Prodi Pendidikan</a>
@@ -25,8 +33,12 @@
         <a href="{{ route('admin.file-upload') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.file-upload') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">File Upload</a>
         <a href="{{ route('admin.buku-tamu') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.buku-tamu') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Buku Tamu</a>
 
-        <div class="pt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-100/45">Masyarakat Jasa Konstruksi</div>
+        {{-- ===================== MASYARAKAT JASA KONSTRUKSI ===================== --}}
+        <div class="pt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-100/45">
+            Masyarakat Jasa Konstruksi
+        </div>
 
+        {{-- Menu asosiasi, lembaga, dan stakeholder konstruksi --}}
         <a href="{{ route('admin.pengguna-jasa') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.pengguna-jasa') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Pengguna Jasa</a>
         <a href="{{ route('admin.asosiasi-perusahaan') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.asosiasi-perusahaan') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Asosiasi Perusahaan</a>
         <a href="{{ route('admin.asosiasi-profesi') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.asosiasi-profesi') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Asosiasi Profesi</a>
@@ -38,18 +50,27 @@
         <a href="{{ route('admin.rantai-pasok') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.rantai-pasok') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Rantai Pasok</a>
         <a href="{{ route('admin.bujk') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.bujk') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">BUJK</a>
 
-        <div class="pt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-100/45">Manajemen Berita</div>
+        {{-- ===================== MANAJEMEN BERITA ===================== --}}
+        <div class="pt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-100/45">
+            Manajemen Berita
+        </div>
 
         <a href="{{ route('admin.kategori') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.kategori') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Kategori</a>
         <a href="{{ route('admin.berita') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.berita') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Berita</a>
 
-        <div class="pt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-100/45">Lainnya</div>
+        {{-- ===================== MENU LAINNYA ===================== --}}
+        <div class="pt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-100/45">
+            Lainnya
+        </div>
 
         <a href="{{ route('admin.acara-kegiatan') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.acara-kegiatan') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Acara/Kegiatan</a>
         <a href="{{ route('admin.peraturan') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.peraturan') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Peraturan</a>
         <a href="{{ route('admin.tenaga-kerja-konstruksi') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.tenaga-kerja-konstruksi') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Tenaga Kerja Konstruksi</a>
 
+        {{-- ===================== DROPDOWN PELATIHAN (ALPINE JS) ===================== --}}
         <div x-data="{ openPelatihan: {{ request()->routeIs('admin.pelatihan-sertifikasi.*') ? 'true' : 'false' }} }" class="space-y-1">
+
+            {{-- Button toggle dropdown pelatihan --}}
             <button
                 type="button"
                 @click="openPelatihan = !openPelatihan"
@@ -60,6 +81,7 @@
             >
                 <span>Pelatihan/Sertifikasi</span>
 
+                {{-- Icon arrow dropdown --}}
                 <svg
                     :class="openPelatihan ? 'rotate-90' : ''"
                     xmlns="http://www.w3.org/2000/svg"
@@ -72,16 +94,20 @@
                 </svg>
             </button>
 
+            {{-- Submenu pelatihan --}}
             <div
                 x-show="openPelatihan"
                 x-transition
                 class="ml-4 space-y-1 border-l border-white/10 pl-4"
             >
+
+                {{-- Rencana pelatihan (masih dummy link) --}}
                 <a href="#"
                 class="block rounded-lg px-3 py-2 text-sm text-blue-100/70 hover:bg-white/5 hover:text-white">
                     Rencana Pelatihan (TNA)
                 </a>
 
+                {{-- Menu utama pelatihan sertifikasi --}}
                 <a href="{{ route('admin.pelatihan-sertifikasi.index') }}"
                 class="block rounded-lg px-3 py-2 text-sm
                 {{ request()->routeIs('admin.pelatihan-sertifikasi.index')
@@ -90,11 +116,13 @@
                     Pelatihan dan Sertifikasi TKK Ahli
                 </a>
 
+                {{-- Bimtek masih placeholder --}}
                 <a href="#"
                 class="block rounded-lg px-3 py-2 text-sm text-blue-100/70 hover:bg-white/5 hover:text-white">
                     Bimbingan Teknis/Pelatihan
                 </a>
 
+                {{-- Sertifikasi instruktur/asesor --}}
                 <a href="#"
                 class="block rounded-lg px-3 py-2 text-sm text-blue-100/70 hover:bg-white/5 hover:text-white">
                     Pelatihan dan Sertifikasi Instruktur/Asesor
@@ -102,13 +130,19 @@
             </div>
         </div>
 
+        {{-- ===================== TERTIB & ADMINISTRASI ===================== --}}
         <a href="{{ route('admin.tertib-usaha') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.tertib-usaha') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Tertib Usaha</a>
         <a href="{{ route('admin.tertib-penyelenggaraan') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.tertib-penyelenggaraan') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Tertib Penyelenggaraan</a>
         <a href="{{ route('admin.tertib-pemanfaatan') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.tertib-pemanfaatan') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Tertib Pemanfaatan</a>
+
+        {{-- ===================== SURAT & ARSIP ===================== --}}
         <a href="{{ route('admin.surat-menyurat') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.surat-menyurat') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Surat Menyurat</a>
         <a href="{{ route('admin.arsip') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.arsip') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Arsip</a>
+
+        {{-- ===================== DOKUMEN & PERJADIN ===================== --}}
         <a href="{{ route('admin.penandatangan-dokumen') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.penandatangan-dokumen') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Penandatangan Dokumen</a>
         <a href="{{ route('admin.anggaran-perjadin') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.anggaran-perjadin') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Anggaran Perjadin</a>
         <a href="{{ route('admin.perjadin') }}" class="block rounded-xl px-3 py-2.5 text-sm {{ request()->routeIs('admin.perjadin') ? 'bg-[#28428B] text-[#F7E578] font-semibold' : 'text-blue-100/85 hover:bg-white/7' }}">Perjadin</a>
+
     </div>
 </div>

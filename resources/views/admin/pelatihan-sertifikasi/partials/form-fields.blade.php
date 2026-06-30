@@ -1,4 +1,4 @@
-@php
+@php 
     $prefix = $prefix ?? 'create';
 
     $standarOptions = [
@@ -59,6 +59,9 @@
     ];
 @endphp
 
+{{-- Form kegiatan pelatihan & sertifikasi --}}
+
+{{-- Informasi dasar kegiatan --}}
 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
 
     {{-- TAHUN --}}
@@ -89,7 +92,7 @@
         </p>
     </div>
 
-    {{-- STATUS --}}
+    {{-- STATUS KEGIATAN --}}
     <div class="field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">
             Status Kegiatan
@@ -120,7 +123,7 @@
         </p>
     </div>
 
-    {{-- JENIS PESERTA --}}
+    {{-- JENIS & METODE KEGIATAN --}}
     <div class="field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">
             Jenis Peserta
@@ -159,7 +162,6 @@
         </p>
     </div>
 
-    {{-- METODE --}}
     <div class="field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">
             Metode Kegiatan
@@ -196,7 +198,7 @@
 
 </div>
 
-{{-- NAMA KEGIATAN --}}
+{{-- Nama kegiatan --}}
 <div class="field-group">
     <label class="mb-2 block text-sm font-medium text-slate-700">
         Nama Kegiatan
@@ -216,9 +218,9 @@
     </p>
 </div>
 
+{{-- Waktu & realisasi peserta --}}
 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
 
-    {{-- WAKTU --}}
     <div class="field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">
             Waktu Kegiatan
@@ -237,7 +239,6 @@
         </p>
     </div>
 
-    {{-- PESERTA --}}
     <div class="field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">
             Realisasi Jumlah Peserta
@@ -260,9 +261,9 @@
 
 </div>
 
+{{-- Pendanaan & standar kompetensi --}}
 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
 
-    {{-- SUMBER DANA --}}
     <div class="field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">
             Sumber Dana
@@ -295,7 +296,6 @@
         </p>
     </div>
 
-    {{-- STANDAR --}}
     <div class="field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">
             Standar Kompetensi
@@ -324,9 +324,9 @@
 
 </div>
 
+{{-- Lembaga & TUK --}}
 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
 
-    {{-- TUK --}}
     <div class="field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">
             Tempat Uji Kompetensi (TUK)
@@ -345,7 +345,6 @@
         </p>
     </div>
 
-    {{-- LSP --}}
     <div class="field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">
             Lembaga Sertifikasi Profesi (LSP)
@@ -374,7 +373,7 @@
 
 </div>
 
-{{-- TEMPAT --}}
+{{-- Lokasi kegiatan --}}
 <div class="field-group">
     <label class="mb-2 block text-sm font-medium text-slate-700">
         Tempat Kegiatan
@@ -393,9 +392,9 @@
     </p>
 </div>
 
+{{-- Wilayah kegiatan --}}
 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
 
-    {{-- PROVINSI --}}
     <div class="field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">
             Provinsi
@@ -423,7 +422,6 @@
         </p>
     </div>
 
-    {{-- KABUPATEN --}}
     <div class="field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">
             Kabupaten/Kota
@@ -449,7 +447,7 @@
 
 </div>
 
-{{-- SYARAT --}}
+{{-- Syarat tambahan --}}
 <div class="field-group">
     <label class="mb-2 block text-sm font-medium text-slate-700">
         Syarat Tambahan

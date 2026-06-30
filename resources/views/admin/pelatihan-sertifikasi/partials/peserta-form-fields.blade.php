@@ -2,7 +2,11 @@
     $formPrefix = $formPrefix ?? 'create';
 @endphp
 
+{{-- Form peserta pelatihan --}}
+
 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+
+    {{-- Identitas peserta --}}
     <div class="peserta-field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">Nama</label>
 
@@ -17,6 +21,7 @@
         <p class="peserta-field-error mt-2 hidden text-xs font-semibold text-rose-500"></p>
     </div>
 
+    {{-- Identitas peserta (NIK) --}}
     <div class="peserta-field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">NIK</label>
 
@@ -36,6 +41,8 @@
 </div>
 
 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+
+    {{-- Kontak peserta --}}
     <div class="peserta-field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">Email</label>
 
@@ -51,6 +58,7 @@
         <p class="peserta-field-error mt-2 hidden text-xs font-semibold text-rose-500"></p>
     </div>
 
+    {{-- Kontak peserta (telepon) --}}
     <div class="peserta-field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">No. Telp</label>
 
@@ -70,6 +78,8 @@
 </div>
 
 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+
+    {{-- Pendidikan & ASN --}}
     <div class="peserta-field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">Pendidikan/Jurusan</label>
 
@@ -88,6 +98,7 @@
         <p class="peserta-field-error mt-2 hidden text-xs font-semibold text-rose-500"></p>
     </div>
 
+    {{-- Pendidikan & ASN (status ASN) --}}
     <div class="peserta-field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">ASN</label>
 
@@ -106,6 +117,8 @@
 </div>
 
 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+
+    {{-- Data pekerjaan --}}
     <div class="peserta-field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">Jabatan/Instansi</label>
 
@@ -120,6 +133,7 @@
         <p class="peserta-field-error mt-2 hidden text-xs font-semibold text-rose-500"></p>
     </div>
 
+    {{-- Lokasi peserta --}}
     <div class="peserta-field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">Provinsi</label>
 
@@ -129,7 +143,10 @@
             data-label="Provinsi"
             data-provinsi-peserta
             class="peserta-form-control w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm transition focus:border-[#28428B] focus:ring-4 focus:ring-blue-100">
+
             <option value="" disabled hidden selected>Pilih</option>
+
+            {{-- Data wilayah Indonesia --}}
             <option value="Aceh">Aceh</option>
             <option value="Sumatera Utara">Sumatera Utara</option>
             <option value="Sumatera Barat">Sumatera Barat</option>
@@ -171,6 +188,8 @@
 </div>
 
 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+
+    {{-- Lokasi administrasi --}}
     <div class="peserta-field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">Kab./Kota</label>
 
@@ -186,6 +205,7 @@
         <p class="peserta-field-error mt-2 hidden text-xs font-semibold text-rose-500"></p>
     </div>
 
+    {{-- Tanggal pendaftaran --}}
     <div class="peserta-field-group">
         <label class="mb-2 block text-sm font-medium text-slate-700">Tanggal Daftar</label>
 
@@ -200,6 +220,7 @@
     </div>
 </div>
 
+{{-- Alamat peserta --}}
 <div class="peserta-field-group">
     <label class="mb-2 block text-sm font-medium text-slate-700">Alamat</label>
 
@@ -214,6 +235,7 @@
     <p class="peserta-field-error mt-2 hidden text-xs font-semibold text-rose-500"></p>
 </div>
 
+{{-- Status peserta --}}
 <div class="peserta-field-group">
     <label class="mb-2 block text-sm font-medium text-slate-700">Status Peserta</label>
 

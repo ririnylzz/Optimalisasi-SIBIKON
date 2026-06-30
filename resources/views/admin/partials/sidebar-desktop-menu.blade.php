@@ -1,13 +1,22 @@
 @php
+    {{-- Base class untuk styling menu utama --}}
     $menuBase = 'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition';
+
+    {{-- Style menu kondisi tidak aktif --}}
     $menuIdle = 'text-blue-100/85 hover:bg-white/7 hover:text-white';
+
+    {{-- Style menu ketika aktif (route sedang digunakan) --}}
     $menuActive = 'bg-[#28428B] text-[#F7E578] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]';
 
+    {{-- Style judul section sidebar --}}
     $sectionTitleClass = 'mb-2 flex items-center text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-100/45';
+
+    {{-- Style sub menu item --}}
     $subItemBase = 'relative block rounded-lg px-3 py-2 text-[13px] leading-relaxed';
     $subItemIdle = 'text-blue-100/70 hover:bg-white/6 hover:text-white';
     $subItemActive = 'bg-[#28428B] text-[#F7E578] font-semibold';
 
+    {{-- Deteksi apakah menu Masyarakat Jasa Konstruksi sedang aktif --}}
     $mjkActive = request()->routeIs(
         'admin.masyarakat-jasa-konstruksi',
         'admin.pengguna-jasa',
@@ -23,27 +32,48 @@
     );
 @endphp
 
+
 <div class="relative z-10 flex-1 overflow-y-auto scrollbar-dark px-3 py-4">
+
+    {{-- SECTION: MENU UTAMA --}}
     <div class="mb-6">
+
+        {{-- Judul section sidebar (Menu / ••• saat collapsed) --}}
         <p
             x-text="(sidebarPinned || sidebarHovered) ? 'Menu' : '•••'"
             :class="(sidebarPinned || sidebarHovered) ? 'text-left px-2' : 'text-center justify-center'"
             class="{{ $sectionTitleClass }}"
         ></p>
 
-        <div x-data="{ open: {{ request()->routeIs('admin.dashboard-tkk') || request()->routeIs('admin.bujk') || request()->routeIs('admin.dashboard') ? 'true' : 'false' }} }" class="space-y-1.5">
+        {{-- Container menu Dashboard --}}
+        <div
+            x-data="{ open: {{ request()->routeIs('admin.dashboard-tkk') || request()->routeIs('admin.bujk') || request()->routeIs('admin.dashboard') ? 'true' : 'false' }} }"
+            class="space-y-1.5"
+        >
+
+            {{-- Tombol dropdown Dashboard --}}
             <button
                 type="button"
                 @click="open = !open"
-                class="group flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-[13px] font-medium transition {{ request()->routeIs('admin.dashboard-tkk') || request()->routeIs('admin.bujk') || request()->routeIs('admin.dashboard') ? $menuActive : $menuIdle }}"
+                class="group flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-[13px] font-medium transition
+                {{ request()->routeIs('admin.dashboard-tkk') || request()->routeIs('admin.bujk') || request()->routeIs('admin.dashboard') ? $menuActive : $menuIdle }}"
             >
                 <div class="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 12l9-9 9 9M4.5 10.5V20a1 1 0 001 1h4.5v-6h4v6H18.5a1 1 0 001-1v-9.5"/>
+
+                    {{-- Icon home dashboard --}}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                            d="M3 12l9-9 9 9M4.5 10.5V20a1 1 0 001 1h4.5v-6h4v6H18.5a1 1 0 001-1v-9.5"/>
                     </svg>
-                    <span x-show="sidebarPinned || sidebarHovered" x-transition>Dashboard</span>
+
+                    {{-- Label dashboard --}}
+                    <span x-show="sidebarPinned || sidebarHovered" x-transition>
+                        Dashboard
+                    </span>
                 </div>
 
+                {{-- Icon arrow expand --}}
                 <svg
                     x-show="sidebarPinned || sidebarHovered"
                     :class="open ? 'rotate-90' : ''"
@@ -53,25 +83,35 @@
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                 >
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 5l7 7-7 7" />
                 </svg>
             </button>
 
+            {{-- Submenu Dashboard --}}
             <div x-show="open && (sidebarPinned || sidebarHovered)" x-transition class="relative ml-6 pl-4">
                 <div class="absolute bottom-2 left-[6px] top-1 w-px bg-white/15"></div>
 
                 <div class="space-y-1">
+
+                    {{-- Sub: Dashboard BUJK --}}
                     <a href="{{ route('admin.dashboard') }}"
                         class="{{ $subItemBase }} {{ request()->routeIs('admin.dashboard') || request()->routeIs('admin.bujk') ? $subItemActive : $subItemIdle }}">
-                        <span class="absolute left-[-12px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full {{ request()->routeIs('admin.dashboard') || request()->routeIs('admin.bujk') ? 'bg-[#F7E578]' : 'bg-white/30' }}"></span>
+                        <span class="absolute left-[-12px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full
+                            {{ request()->routeIs('admin.dashboard') || request()->routeIs('admin.bujk') ? 'bg-[#F7E578]' : 'bg-white/30' }}">
+                        </span>
                         Dashboard Badan Usaha Jasa Konstruksi
                     </a>
 
+                    {{-- Sub: Dashboard TKK --}}
                     <a href="{{ route('admin.dashboard-tkk') }}"
                         class="{{ $subItemBase }} {{ request()->routeIs('admin.dashboard-tkk') ? $subItemActive : $subItemIdle }}">
-                        <span class="absolute left-[-12px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full {{ request()->routeIs('admin.dashboard-tkk') ? 'bg-[#F7E578]' : 'bg-white/30' }}"></span>
+                        <span class="absolute left-[-12px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full
+                            {{ request()->routeIs('admin.dashboard-tkk') ? 'bg-[#F7E578]' : 'bg-white/30' }}">
+                        </span>
                         Dashboard Tenaga Kerja Konstruksi
                     </a>
+
                 </div>
             </div>
         </div>
@@ -84,7 +124,9 @@
             class="{{ $sectionTitleClass }}"
         ></p>
 
+        {{-- Container menu utama Data Master --}}
         <div class="space-y-1.5">
+            {{-- Menu: Pengguna --}}
             <a href="{{ route('admin.pengguna') }}" class="{{ $menuBase }} {{ request()->routeIs('admin.pengguna') ? $menuActive : $menuIdle }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5V18a4 4 0 00-5-3.87M17 20H7m10 0v-2a5.002 5.002 0 00-9.288 0M15 7a3 3 0 11-6 0" />
@@ -92,6 +134,7 @@
                 <span x-show="sidebarPinned || sidebarHovered">Pengguna</span>
             </a>
 
+            {{-- Menu: Jabatan Kerja --}}
             <a href="{{ route('admin.jabatan-kerja') }}" class="{{ $menuBase }} {{ request()->routeIs('admin.jabatan-kerja') ? $menuActive : $menuIdle }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2m-6 0h6m-6 0H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V8a2 2 0 00-2-2h-3" />
@@ -99,6 +142,7 @@
                 <span x-show="sidebarPinned || sidebarHovered">Jabatan Kerja</span>
             </a>
 
+            {{-- Menu: Prodi Pendidikan --}}
             <a href="{{ route('admin.prodi-pendidikan') }}" class="{{ $menuBase }} {{ request()->routeIs('admin.prodi-pendidikan') ? $menuActive : $menuIdle }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422A12.083 12.083 0 0112 20.055a12.083 12.083 0 01-6.16-9.477L12 14z" />
@@ -106,6 +150,7 @@
                 <span x-show="sidebarPinned || sidebarHovered">Prodi Pendidikan</span>
             </a>
 
+            {{-- Menu: Pegawai --}}
             <a href="{{ route('admin.pegawai') }}" class="{{ $menuBase }} {{ request()->routeIs('admin.pegawai') ? $menuActive : $menuIdle }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.121 17.804A11.953 11.953 0 0112 15c2.5 0 4.824.765 6.879 2.071M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -113,6 +158,7 @@
                 <span x-show="sidebarPinned || sidebarHovered">Pegawai</span>
             </a>
 
+            {{-- Menu: Masyarakat Jasa Konstruksi --}}
             <div x-data="{ open: {{ $mjkActive ? 'true' : 'false' }} }" class="space-y-1.5">
                 <button
                     type="button"
@@ -126,6 +172,7 @@
                         <span x-show="sidebarPinned || sidebarHovered">Masyarakat Jasa Konstruksi</span>
                     </div>
 
+                    {{-- Arrow indikator dropdown --}}
                     <svg
                         x-show="sidebarPinned || sidebarHovered"
                         :class="open ? 'rotate-90' : ''"
@@ -139,6 +186,7 @@
                     </svg>
                 </button>
 
+                {{-- Submenu container --}}
                 <div x-show="open && (sidebarPinned || sidebarHovered)" x-transition class="relative ml-6 pl-4">
                     <div class="absolute bottom-2 left-[6px] top-1 w-px bg-white/15"></div>
 
@@ -165,6 +213,7 @@
                 </div>
             </div>
 
+            {{-- Menu: Paket Konstruksi --}}
             <a href="{{ route('admin.paket-konstruksi') }}" class="{{ $menuBase }} {{ request()->routeIs('admin.paket-konstruksi') ? $menuActive : $menuIdle }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
@@ -172,6 +221,7 @@
                 <span x-show="sidebarPinned || sidebarHovered">Paket Konstruksi</span>
             </a>
 
+            {{-- Menu: Kotak Saran --}}
             <a href="{{ route('admin.kotak-saran') }}" class="{{ $menuBase }} {{ request()->routeIs('admin.kotak-saran') ? $menuActive : $menuIdle }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 8l9 6 9-6m-18 8h18V8H3v8z" />
@@ -179,6 +229,7 @@
                 <span x-show="sidebarPinned || sidebarHovered">Kotak Saran</span>
             </a>
 
+            {{-- Menu: File Upload --}}
             <a href="{{ route('admin.file-upload') }}" class="{{ $menuBase }} {{ request()->routeIs('admin.file-upload') ? $menuActive : $menuIdle }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 8l-4-4m0 0L8 8m4-4v12" />
@@ -186,6 +237,7 @@
                 <span x-show="sidebarPinned || sidebarHovered">File Upload</span>
             </a>
 
+            {{-- Menu: Buku Tamu --}}
             <a href="{{ route('admin.buku-tamu') }}" class="{{ $menuBase }} {{ request()->routeIs('admin.buku-tamu') ? $menuActive : $menuIdle }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.483 9.246 5 7.5 5 5.014 5 3 6.12 3 7.5v9C3 15.12 5.014 14 7.5 14c1.746 0 3.332.483 4.5 1.253m0-9C13.168 5.483 14.754 5 16.5 5c2.486 0 4.5 1.12 4.5 2.5v9c0-1.38-2.014-2.5-4.5-2.5-1.746 0-3.332.483-4.5 1.253"/>
@@ -196,12 +248,13 @@
     </div>
 
     <div class="mb-6">
-        <p
+    <p
             x-text="(sidebarPinned || sidebarHovered) ? 'Manajemen Berita' : '•••'"
             :class="(sidebarPinned || sidebarHovered) ? 'text-left px-2' : 'text-center justify-center'"
             class="{{ $sectionTitleClass }}"
         ></p>
 
+        <!-- Menu: Kategori Berita -->
         <div class="space-y-1.5">
             <a href="{{ route('admin.kategori') }}" class="{{ $menuBase }} {{ request()->routeIs('admin.kategori') ? $menuActive : $menuIdle }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -210,6 +263,7 @@
                 <span x-show="sidebarPinned || sidebarHovered">Kategori</span>
             </a>
 
+            <!-- Menu: Daftar Berita -->
             <a href="{{ route('admin.berita') }}" class="{{ $menuBase }} {{ request()->routeIs('admin.berita') ? $menuActive : $menuIdle }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 5H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2zM7 9h10M7 13h6" />
@@ -220,6 +274,7 @@
     </div>
 
     <div class="mb-6">
+        <!-- Section Title: Sub Pengaturan -->
         <p
             x-text="(sidebarPinned || sidebarHovered) ? 'Sub Pengaturan' : '•••'"
             :class="(sidebarPinned || sidebarHovered) ? 'text-left px-2' : 'text-center justify-center'"
@@ -227,6 +282,7 @@
         ></p>
 
         <div class="space-y-1.5">
+            <!-- Menu: Acara & Kegiatan -->
             <a href="{{ route('admin.acara-kegiatan') }}" class="{{ $menuBase }} {{ request()->routeIs('admin.acara-kegiatan') ? $menuActive : $menuIdle }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10m-13 9h16a1 1 0 001-1V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a1 1 0 001 1z" />
@@ -234,6 +290,7 @@
                 <span x-show="sidebarPinned || sidebarHovered">Acara/Kegiatan</span>
             </a>
 
+            <!-- Menu: Peraturan -->
             <a href="{{ route('admin.peraturan') }}" class="{{ $menuBase }} {{ request()->routeIs('admin.peraturan') ? $menuActive : $menuIdle }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6M7 4h10a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z" />
@@ -244,12 +301,14 @@
     </div>
 
     <div class="mb-6">
+        <!-- Section Title: Sub Pemberdayaan -->
         <p
             x-text="(sidebarPinned || sidebarHovered) ? 'Sub Pemberdayaan' : '•••'"
             :class="(sidebarPinned || sidebarHovered) ? 'text-left px-2' : 'text-center justify-center'"
             class="{{ $sectionTitleClass }}"
         ></p>
 
+        <!-- Menu: Tenaga Kerja Konstruksi -->
         <div class="space-y-1.5">
             <a href="{{ route('admin.tenaga-kerja-konstruksi') }}" class="{{ $menuBase }} {{ request()->routeIs('admin.tenaga-kerja-konstruksi') ? $menuActive : $menuIdle }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -258,6 +317,7 @@
                 <span x-show="sidebarPinned || sidebarHovered">Tenaga Kerja Konstruksi</span>
             </a>
 
+            <!-- Menu: Tenaga Kerja Konstruksi -->
             <div x-data="{ open: {{ request()->routeIs('admin.pelatihan-sertifikasi.*') ? 'true' : 'false' }} }" class="space-y-1.5">
                 <button
                     type="button"
@@ -315,6 +375,7 @@
     </div>
 
     <div class="mb-6">
+        <!-- Section: Sub Pengawasan -->
         <p
             x-text="(sidebarPinned || sidebarHovered) ? 'Sub Pengawasan' : '•••'"
             :class="(sidebarPinned || sidebarHovered) ? 'text-left px-2' : 'text-center justify-center'"
@@ -346,6 +407,7 @@
     </div>
 
     <div class="mb-6">
+        <!-- Section: Arsip / Surat -->
         <p
             x-text="(sidebarPinned || sidebarHovered) ? 'Arsip / Surat' : '•••'"
             :class="(sidebarPinned || sidebarHovered) ? 'text-left px-2' : 'text-center justify-center'"
@@ -370,6 +432,7 @@
     </div>
 
     <div class="pb-6">
+        <!-- Section: Keuangan -->
         <p
             x-text="(sidebarPinned || sidebarHovered) ? 'Keuangan' : '•••'"
             :class="(sidebarPinned || sidebarHovered) ? 'text-left px-2' : 'text-center justify-center'"
