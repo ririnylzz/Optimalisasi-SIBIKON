@@ -37,6 +37,15 @@
     }
 
     $toastMessages = [];
+    $importSummary = session('import_summary');
+    $importSummary = is_array($importSummary) ? $importSummary : null;
+    $uploadedTotalRows = (int) ($importSummary['total_rows'] ?? 0);
+    $uploadedPreparedRows = (int) ($importSummary['prepared_rows'] ?? 0);
+    $uploadedDuplicateRows = (int) ($importSummary['duplicate_rows_in_file'] ?? $importSummary['merged_rows'] ?? 0);
+    $uploadedSkippedRows = (int) ($importSummary['skipped'] ?? 0);
+    $uploadedCreatedRows = (int) ($importSummary['created'] ?? 0);
+    $uploadedUpdatedRows = (int) ($importSummary['updated'] ?? 0);
+
 
     if (session('success')) {
         $toastMessages[] = ['type' => 'success', 'message' => session('success')];
@@ -335,7 +344,7 @@
             </div>
 
             <div class="px-5 py-4">
-                <form action="{{ route('admin.tenaga-kerja-konstruksi.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <form id="tkk-import-form" action="{{ route('admin.tenaga-kerja-konstruksi.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
 
                     <div>
@@ -394,7 +403,7 @@
                             Batal
                         </button>
 
-                        <button type="submit" class="rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500">
+                        <button type="submit" data-import-submit class="rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-80">
                             Proses Import
                         </button>
                     </div>
@@ -403,6 +412,129 @@
         </div>
     </div>
 </div>
+
+<div
+    id="import-loading-modal"
+    class="pointer-events-none fixed inset-0 hidden p-4 opacity-0 transition duration-200"
+    style="z-index: 120;"
+    aria-live="assertive"
+    aria-busy="true">
+    <div data-import-loading-backdrop class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition duration-200"></div>
+
+    <div class="relative z-10 flex min-h-full items-center justify-center">
+        <div
+            data-import-loading-panel
+            class="w-full max-w-md translate-y-4 scale-[0.98] rounded-3xl bg-white p-6 opacity-0 shadow-2xl transition duration-200 ease-out">
+            <div class="flex items-start gap-4">
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                </div>
+
+                <div class="min-w-0 flex-1">
+                    <h3 class="text-lg font-bold text-slate-900">Sedang memproses import</h3>
+                    <p id="import-loading-text" class="mt-1 text-sm leading-6 text-slate-500">
+                        File sedang di-upload dan dibaca oleh sistem. Mohon tunggu, jangan tutup halaman ini.
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <div class="h-2.5 overflow-hidden rounded-full bg-slate-200">
+                    <div id="import-loading-bar" class="h-full rounded-full bg-indigo-600 transition-all duration-500 ease-out" style="width: 12%;"></div>
+                </div>
+                <p id="import-loading-percent" class="mt-2 text-right text-xs font-semibold text-slate-500">12%</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if($importSummary)
+<div
+    id="import-summary-modal"
+    class="fixed inset-0 p-4 opacity-100 transition duration-200"
+    style="z-index: 110;"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="import-summary-title">
+    <div data-import-summary-close class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-100 transition duration-200"></div>
+
+    <div class="relative z-10 flex min-h-full items-center justify-center">
+        <div
+            data-import-summary-panel
+            class="w-full max-w-xl translate-y-0 scale-100 rounded-3xl bg-white opacity-100 shadow-2xl transition duration-200 ease-out">
+            <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
+                <div>
+                    <h3 id="import-summary-title" class="text-xl font-bold text-slate-900">Import berhasil</h3>
+                    <p class="mt-1 text-sm text-slate-500">
+                        File {{ $importSummary['filename'] ?? 'TKK' }} selesai diproses.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    data-import-summary-close
+                    class="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+                    aria-label="Tutup informasi import">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="px-5 py-5">
+                <div class="rounded-2xl border border-emerald-500/30 bg-emerald-500 px-4 py-4 text-white">
+                    <p class="text-sm font-semibold text-white">
+                        Ada {{ number_format($uploadedDuplicateRows, 0, ',', '.') }} data duplikat dalam file upload.
+                    </p>
+                    <p class="mt-1 text-xs leading-5 text-white/95">
+                        Duplikat dihitung dari baris dengan kunci data yang sama di dalam file, lalu digabung agar tidak masuk sebagai data ganda.
+                    </p>
+                </div>
+
+                <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Total baris dibaca</p>
+                        <p class="mt-2 text-2xl font-bold text-slate-900">{{ number_format($uploadedTotalRows, 0, ',', '.') }}</p>
+                    </div>
+
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Data unik diproses</p>
+                        <p class="mt-2 text-2xl font-bold text-slate-900">{{ number_format($uploadedPreparedRows, 0, ',', '.') }}</p>
+                    </div>
+
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Data baru</p>
+                        <p class="mt-2 text-2xl font-bold text-slate-900">{{ number_format($uploadedCreatedRows, 0, ',', '.') }}</p>
+                    </div>
+
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">Data diperbarui</p>
+                        <p class="mt-2 text-2xl font-bold text-slate-900">{{ number_format($uploadedUpdatedRows, 0, ',', '.') }}</p>
+                    </div>
+                </div>
+
+                @if($uploadedSkippedRows > 0)
+                <p class="mt-3 text-xs leading-5 text-rose-600">
+                    {{ number_format($uploadedSkippedRows, 0, ',', '.') }} baris dilewati karena belum valid.
+                </p>
+                @endif
+
+                <div class="mt-5 flex justify-end">
+                    <button
+                        type="button"
+                        data-import-summary-close
+                        class="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
 
 <div id="manual-modal" data-modal-wrapper="manual" class="pointer-events-none fixed inset-0 z-[70] hidden overflow-y-auto p-4 opacity-0 transition duration-200">
     <div data-modal-backdrop class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm opacity-0 transition duration-200"></div>
@@ -608,6 +740,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const deleteAllForm = document.getElementById('delete-all-form');
     const selectAllInfo = document.getElementById('select-all-info');
 
+    const importLoadingModal = document.getElementById('import-loading-modal');
+    const importLoadingBar = document.getElementById('import-loading-bar');
+    const importLoadingPercent = document.getElementById('import-loading-percent');
+    const importLoadingText = document.getElementById('import-loading-text');
+    const importSummaryModal = document.getElementById('import-summary-modal');
+    const importSummaryCloseButtons = document.querySelectorAll('[data-import-summary-close]');
+
+
     const searchEndpoint = scriptData.dataset.searchEndpoint;
     const baseUrl = scriptData.dataset.baseUrl;
     const destroyUrlTemplate = scriptData.dataset.destroyUrlTemplate;
@@ -619,6 +759,91 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentPage = 1;
     let deleteState = { mode: null, form: null, ids: [] };
     let searchDebounce = null;
+
+    let importProgressTimer = null;
+
+    const setImportProgress = (value) => {
+        const progress = Math.max(12, Math.min(96, value));
+
+        if (importLoadingBar) {
+            importLoadingBar.style.width = `${progress}%`;
+        }
+
+        if (importLoadingPercent) {
+            importLoadingPercent.textContent = `${Math.round(progress)}%`;
+        }
+    };
+
+    const showImportLoading = () => {
+        if (!importLoadingModal) return;
+
+        importLoadingModal.classList.remove('hidden', 'pointer-events-none', 'opacity-0');
+        importLoadingModal.classList.add('pointer-events-auto', 'opacity-100');
+
+        const backdrop = importLoadingModal.querySelector('[data-import-loading-backdrop]');
+        const panel = importLoadingModal.querySelector('[data-import-loading-panel]');
+
+        if (backdrop) {
+            backdrop.classList.remove('opacity-0');
+            backdrop.classList.add('opacity-100');
+        }
+
+        if (panel) {
+            panel.classList.remove('translate-y-4', 'scale-[0.98]', 'opacity-0');
+            panel.classList.add('translate-y-0', 'scale-100', 'opacity-100');
+        }
+
+        body.classList.add('overflow-hidden');
+        setImportProgress(12);
+
+        let progress = 12;
+        clearInterval(importProgressTimer);
+        importProgressTimer = setInterval(() => {
+            progress += progress < 70 ? 7 : 2;
+            setImportProgress(progress);
+        }, 450);
+
+        if (importLoadingText) {
+            importLoadingText.textContent = 'File sedang di-upload dan dibaca oleh sistem. Mohon tunggu, jangan tutup halaman ini.';
+        }
+    };
+
+    const closeImportSummaryModal = () => {
+        if (!importSummaryModal) return;
+
+        importSummaryModal.classList.add('pointer-events-none', 'opacity-0');
+        importSummaryModal.classList.remove('opacity-100');
+
+        const backdrop = importSummaryModal.querySelector('[data-import-summary-close]');
+        const panel = importSummaryModal.querySelector('[data-import-summary-panel]');
+
+        if (backdrop) {
+            backdrop.classList.remove('opacity-100');
+            backdrop.classList.add('opacity-0');
+        }
+
+        if (panel) {
+            panel.classList.remove('translate-y-0', 'scale-100', 'opacity-100');
+            panel.classList.add('translate-y-4', 'scale-[0.98]', 'opacity-0');
+        }
+
+        setTimeout(() => {
+            importSummaryModal.classList.add('hidden');
+
+            if (!hasOpenModal()) {
+                body.classList.remove('overflow-hidden');
+            }
+        }, 180);
+    };
+
+    if (importSummaryModal && !importSummaryModal.classList.contains('hidden')) {
+        body.classList.add('overflow-hidden');
+    }
+
+    importSummaryCloseButtons.forEach((button) => {
+        button.addEventListener('click', closeImportSummaryModal);
+    });
+
 
     window.currentPage = currentPage;
 
@@ -736,6 +961,26 @@ document.addEventListener('DOMContentLoaded', function () {
             if (toast) toast.remove();
         });
     });
+
+
+    const tkkImportForm = document.getElementById('tkk-import-form');
+
+    if (tkkImportForm) {
+        tkkImportForm.addEventListener('submit', function () {
+            if (!tkkImportForm.checkValidity()) {
+                return;
+            }
+
+            const submitButton = tkkImportForm.querySelector('[data-import-submit]');
+
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = 'Memproses...';
+            }
+
+            showImportLoading();
+        });
+    }
 
     const getRowCheckboxes = () => Array.from(document.querySelectorAll('[data-row-checkbox]'));
 

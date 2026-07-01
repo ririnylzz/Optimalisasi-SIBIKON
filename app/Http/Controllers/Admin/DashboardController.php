@@ -876,8 +876,21 @@ class DashboardController extends Controller
             $map = $useHeader ? $headerMap : $positionMap;
             $dataRows = $useHeader ? array_slice($rows, 1) : $rows;
 
-            $imported = 0;
+            $totalRows = count($dataRows);
+            $preparedRows = [];
+            $duplicateRows = 0;
             $skipped = 0;
+
+            $latestDataDate = Carbon::parse($validated['tanggal_data_terbaru'])->toDateString();
+
+            $makeKey = function (array $payload): string {
+                return strtolower(trim(preg_replace('/\s+/', ' ', implode('|', [
+                    $payload['nama'] ?? '',
+                    $payload['kabupaten'] ?? '',
+                    $payload['jabatan_kerja'] ?? '',
+                    $payload['jenjang'] ?? '',
+                ]))));
+            };
 
             foreach ($dataRows as $row) {
                 $payload = [];
@@ -895,6 +908,7 @@ class DashboardController extends Controller
                     'asosiasi' => $this->cleanTkkText($payload['asosiasi'] ?? null),
                     'tanggal_aktif' => $this->normalizeTkkDate($payload['tanggal_aktif'] ?? null),
                     'tanggal_kadaluwarsa' => $this->normalizeTkkDate($payload['tanggal_kadaluwarsa'] ?? null),
+                    'tanggal_update' => $latestDataDate,
                 ];
 
                 if (blank($payload['nama'])) {
@@ -902,20 +916,69 @@ class DashboardController extends Controller
                     continue;
                 }
 
-                $payload['tanggal_update'] = Carbon::parse(
-                    $validated['tanggal_data_terbaru']
-                )->toDateString();
+                $key = $makeKey($payload);
+
+                if (isset($preparedRows[$key])) {
+                    $duplicateRows++;
+                }
+
+                $preparedRows[$key] = $payload;
+            }
+
+            $created = 0;
+            $updated = 0;
+
+            DB::beginTransaction();
+
+            foreach ($preparedRows as $payload) {
+                $existingQuery = Tkk::query()
+                    ->where('nama', $payload['nama']);
+
+                if (blank($payload['kabupaten'])) {
+                    $existingQuery->where(function ($query) {
+                        $query->whereNull('kabupaten')
+                            ->orWhere('kabupaten', '');
+                    });
+                } else {
+                    $existingQuery->where('kabupaten', $payload['kabupaten']);
+                }
+
+                if (blank($payload['jabatan_kerja'])) {
+                    $existingQuery->where(function ($query) {
+                        $query->whereNull('jabatan_kerja')
+                            ->orWhere('jabatan_kerja', '');
+                    });
+                } else {
+                    $existingQuery->where('jabatan_kerja', $payload['jabatan_kerja']);
+                }
+
+                if (blank($payload['jenjang'])) {
+                    $existingQuery->whereNull('jenjang');
+                } else {
+                    $existingQuery->where('jenjang', $payload['jenjang']);
+                }
+
+                $existing = $existingQuery->first();
+
+                if ($existing) {
+                    $existing->update($payload);
+                    $updated++;
+                    continue;
+                }
 
                 Tkk::query()->create($payload);
-                $imported++;
+                $created++;
             }
-           $latestDataDate = Carbon::parse(
-                $validated['tanggal_data_terbaru']
-            )->toDateString();
+
+            DB::commit();
 
             $this->updateLatestTkkDataDate($latestDataDate);
             $this->updateLatestTkkUpdatedBy();
         } catch (Throwable $exception) {
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+
             return redirect()
                 ->back()
                 ->withInput()
@@ -924,7 +987,17 @@ class DashboardController extends Controller
 
         return redirect()
             ->route('admin.tenaga-kerja-konstruksi')
-            ->with('success', "Import TKK selesai. Data masuk: {$imported}. Data dilewati: {$skipped}.");
+            ->with('success', 'Import data TKK selesai diproses.')
+            ->with('import_summary', [
+                'context' => 'tkk',
+                'filename' => $file->getClientOriginalName(),
+                'total_rows' => $totalRows,
+                'prepared_rows' => count($preparedRows),
+                'duplicate_rows_in_file' => $duplicateRows,
+                'created' => $created,
+                'updated' => $updated,
+                'skipped' => $skipped,
+            ]);
     }
 
     private function getLatestTkkDataDate(): ?string

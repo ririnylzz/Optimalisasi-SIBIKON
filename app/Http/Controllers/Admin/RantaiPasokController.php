@@ -214,36 +214,72 @@ class RantaiPasokController extends Controller
         }
 
         $header = collect($rows[0])
-            ->map(fn($value) => $this->normalizeHeader($value))
+            ->map(fn ($value) => $this->normalizeHeader($value))
             ->all();
+
+        $dataRows = array_slice($rows, 1);
+        $totalRows = count($dataRows);
+
+        $preparedRows = [];
+        $duplicateRows = 0;
+        $skipped = 0;
+
+        $makeKey = function (array $record): string {
+            return Str::of(implode('|', [
+                $record['nama'] ?? '',
+                $record['kabupaten'] ?? '',
+            ]))
+                ->lower()
+                ->replaceMatches('/\s+/', ' ')
+                ->trim()
+                ->toString();
+        };
+
+        foreach ($dataRows as $row) {
+            $raw = [];
+
+            foreach ($header as $index => $field) {
+                if ($field) {
+                    $raw[$field] = $row[$index] ?? null;
+                }
+            }
+
+            $record = $this->normalizeImportRow($raw);
+
+            if (blank($record['nama'])) {
+                $skipped++;
+                continue;
+            }
+
+            $key = $makeKey($record);
+
+            if (isset($preparedRows[$key])) {
+                $duplicateRows++;
+            }
+
+            $preparedRows[$key] = $record;
+        }
 
         $created = 0;
         $updated = 0;
-        $skipped = 0;
 
         DB::beginTransaction();
 
         try {
-            foreach (array_slice($rows, 1) as $row) {
-                $raw = [];
+            foreach ($preparedRows as $record) {
+                $existingQuery = RantaiPasok::query()
+                    ->where('nama', $record['nama']);
 
-                foreach ($header as $index => $field) {
-                    if ($field) {
-                        $raw[$field] = $row[$index] ?? null;
-                    }
+                if (blank($record['kabupaten'])) {
+                    $existingQuery->where(function ($query) {
+                        $query->whereNull('kabupaten')
+                            ->orWhere('kabupaten', '');
+                    });
+                } else {
+                    $existingQuery->where('kabupaten', $record['kabupaten']);
                 }
 
-                $record = $this->normalizeImportRow($raw);
-
-                if (blank($record['nama'])) {
-                    $skipped++;
-                    continue;
-                }
-
-                $existing = RantaiPasok::query()
-                    ->where('nama', $record['nama'])
-                    ->when(!blank($record['kabupaten']), fn($query) => $query->where('kabupaten', $record['kabupaten']))
-                    ->first();
+                $existing = $existingQuery->first();
 
                 if ($existing) {
                     $existing->fill($record + ['is_deleted' => false]);
@@ -260,7 +296,17 @@ class RantaiPasokController extends Controller
 
             return redirect()
                 ->route('admin.rantai-pasok')
-                ->with('success', "Import berhasil. Created: {$created}, updated: {$updated}, skipped: {$skipped}.");
+                ->with('success', 'Import data Rantai Pasok selesai diproses.')
+                ->with('import_summary', [
+                    'context' => 'rantai-pasok',
+                    'filename' => $file->getClientOriginalName(),
+                    'total_rows' => $totalRows,
+                    'prepared_rows' => count($preparedRows),
+                    'duplicate_rows_in_file' => $duplicateRows,
+                    'created' => $created,
+                    'updated' => $updated,
+                    'skipped' => $skipped,
+                ]);
         } catch (\Throwable $e) {
             DB::rollBack();
 

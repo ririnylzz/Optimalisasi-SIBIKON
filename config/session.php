@@ -1,6 +1,8 @@
 <?php
 use Illuminate\Support\Str;
 
+use Illuminate\Support\Str;
+
 return [
 
     // driver session default yang dipakai aplikasi (penyimpanan login sementara)

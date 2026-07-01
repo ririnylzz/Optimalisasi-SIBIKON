@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class GisController extends Controller
 {
@@ -26,7 +27,7 @@ class GisController extends Controller
     public function data(string $category): JsonResponse
     {
         return match ($category) {
-            'bujk' => response()->json($this->bujkData()),
+            'bujk' => response()->json($this->sbuData()),
             'tkk' => response()->json($this->tkkData()),
             'rantai-pasok' => response()->json($this->rantaiPasokData()),
             default => response()->json([
@@ -38,12 +39,12 @@ class GisController extends Controller
         };
     }
 
-    private function bujkData(): array
+    private function sbuData(): array
     {
-        $table = 'bujk';
+        $table = 'bujk_sbu';
 
         if (!Schema::hasTable($table)) {
-            return $this->emptyPayload();
+            return $this->emptyPayload($this->latestDataDateMeta('bujk/latest-data-date.txt'));
         }
 
         $query = DB::table($table);
@@ -55,24 +56,15 @@ class GisController extends Controller
             });
         }
 
-        /*
-         * Support dua versi struktur tabel:
-         * 1. Struktur lama:
-         *    nama_bujk, kab_kota_bujk, jenis_bujk, alamat_bujk, telp_bujk, email_bujk, website_bujk
-         *
-         * 2. Struktur baru:
-         *    nama_bu, kabupaten, jenis_usaha, dan kolom lain sesuai hasil import BUJK.
-         */
-        if ($this->hasColumn($table, 'kab_kota_bujk')) {
-            $query->whereIn('kab_kota_bujk', array_keys($this->kodeKabupaten));
-        } elseif ($this->hasColumn($table, 'kabupaten')) {
+        if ($this->hasColumn($table, 'kabupaten')) {
             $query->whereNotNull('kabupaten')
                 ->where('kabupaten', '!=', '');
         }
 
-        $rows = $query->get();
-
-        $items = $rows
+        $items = $query
+            ->orderBy('nama_bu')
+            ->orderBy('subklasifikasi')
+            ->get()
             ->map(function ($row) {
                 $namaBu = $this->value($row, [
                     'nama_bu',
@@ -92,6 +84,18 @@ class GisController extends Controller
                     'jenis_bujk',
                     'Jenis_Usaha',
                     'Jenis_BUJK',
+                ]);
+
+                $kodeSubklasifikasi = $this->value($row, [
+                    'kode_subklasifikasi',
+                    'Kode_Subklasifikasi',
+                    'kode_sub_klasifikasi',
+                ]);
+
+                $subklasifikasi = $this->value($row, [
+                    'subklasifikasi',
+                    'Subklasifikasi',
+                    'sub_klasifikasi',
                 ]);
 
                 $alamat = $this->value($row, [
@@ -129,25 +133,16 @@ class GisController extends Controller
                     'Email',
                 ]);
 
-                $website = $this->value($row, [
-                    'website',
-                    'website_bujk',
-                    'Website',
-                ]);
-
-                $asosiasi = $this->value($row, [
-                    'asosiasi',
-                    'Asosiasi',
-                ]);
-
-                $status = $this->value($row, [
-                    'status',
-                    'Status',
+                $tanggalMasaBerlaku = $this->value($row, [
+                    'tanggal_masa_berlaku',
+                    'Tanggal_Masa_Berlaku',
+                    'masa_berlaku',
+                    'Masa_Berlaku',
                 ]);
 
                 return [
                     'id' => $this->value($row, ['id', 'ID']),
-                    'category' => 'bujk',
+                    'category' => 'sbu',
                     'name' => $namaBu,
                     'nama_bu' => $namaBu,
                     'nib' => $nib,
@@ -158,9 +153,18 @@ class GisController extends Controller
                     'provinsi' => $this->value($row, ['propinsi', 'provinsi', 'Provinsi']) ?: 'Kalimantan Timur',
                     'telepon' => $telepon,
                     'email' => $email,
-                    'website' => $website,
-                    'asosiasi' => $asosiasi,
-                    'status' => $status,
+                    'asosiasi' => $this->value($row, ['asosiasi', 'Asosiasi']),
+                    'klasifikasi' => $this->value($row, ['klasifikasi', 'Klasifikasi']),
+                    'kode_subklasifikasi' => $kodeSubklasifikasi,
+                    'subklasifikasi' => $subklasifikasi,
+                    'subklasifikasi_label' => $this->subklasifikasiLabel($kodeSubklasifikasi, $subklasifikasi),
+                    'id_kualifikasi' => $this->value($row, ['id_kualifikasi', 'Id_Kualifikasi', 'ID_Kualifikasi']),
+                    'pelaksana_sertifikasi' => $this->value($row, ['pelaksana_sertifikasi', 'Pelaksana_Sertifikasi']),
+                    'tanggal_ditetapkan' => $this->value($row, ['tanggal_ditetapkan', 'Tanggal_Ditetapkan']),
+                    'tanggal_masa_berlaku' => $tanggalMasaBerlaku,
+                    'tanggal_masa_berlaku_label' => $this->dateLabelIndonesia($tanggalMasaBerlaku),
+                    'valid' => $this->value($row, ['valid', 'Valid']),
+                    'status' => $this->value($row, ['status', 'Status']),
                 ];
             })
             ->filter(function ($item) {
@@ -169,24 +173,7 @@ class GisController extends Controller
             })
             ->values();
 
-        /*
-         * Deduplicate berdasarkan NIB.
-         * Kalau NIB kosong, fallback berdasarkan nama BU + kabupaten.
-         */
-        $items = $items
-            ->groupBy(function ($item) {
-                if (filled($item['nib'])) {
-                    return 'nib:' . trim((string) $item['nib']);
-                }
-
-                return 'nama:' . strtolower((string) $item['name']) . '|kab:' . strtolower((string) $item['kabupaten']);
-            })
-            ->map(function ($group) {
-                return $group->first();
-            })
-            ->values();
-
-        return $this->payload($items);
+        return $this->payload($items, $this->latestDataDateMeta('bujk/latest-data-date.txt'));
     }
 
     private function tkkData(): array
@@ -194,7 +181,7 @@ class GisController extends Controller
         $table = 'tkk';
 
         if (!Schema::hasTable($table)) {
-            return $this->emptyPayload();
+            return $this->emptyPayload($this->latestDataDateMeta('tkk/latest-data-date.txt'));
         }
 
         $items = DB::table($table)
@@ -229,14 +216,14 @@ class GisController extends Controller
             ->filter(fn ($item) => filled($item['kabupaten']))
             ->values();
 
-        return $this->payload($items, [
+        return $this->payload($items, array_merge([
             'jenjang_options' => $items
                 ->pluck('jenjang')
                 ->filter()
                 ->unique()
                 ->sort()
                 ->values(),
-        ]);
+        ], $this->latestDataDateMeta('tkk/latest-data-date.txt')));
     }
 
     private function rantaiPasokData(): array
@@ -244,10 +231,19 @@ class GisController extends Controller
         $table = 'rantai_pasok';
 
         if (!Schema::hasTable($table)) {
-            return $this->emptyPayload();
+            return $this->emptyPayload($this->latestRantaiPasokDataDateMeta($table));
         }
 
-        $items = DB::table($table)
+        $query = DB::table($table);
+
+        if ($this->hasColumn($table, 'is_deleted')) {
+            $query->where(function ($query) {
+                $query->whereNull('is_deleted')
+                    ->orWhere('is_deleted', 0);
+            });
+        }
+
+        $items = $query
             ->get()
             ->map(function ($row) {
                 return [
@@ -264,14 +260,14 @@ class GisController extends Controller
             ->filter(fn ($item) => filled($item['kabupaten']))
             ->values();
 
-        return $this->payload($items, [
+        return $this->payload($items, array_merge([
             'bidang_usaha_options' => $items
                 ->pluck('bidang_usaha')
                 ->filter()
                 ->unique()
                 ->sort()
                 ->values(),
-        ]);
+        ], $this->latestRantaiPasokDataDateMeta($table)));
     }
 
     private function payload(Collection $items, array $extra = []): array
@@ -294,13 +290,104 @@ class GisController extends Controller
         ], $extra);
     }
 
-    private function emptyPayload(): array
+    private function latestDataDateMeta(string $path): array
     {
-        return [
+        if (!Storage::disk('local')->exists($path)) {
+            return [
+                'latest_data_date' => null,
+                'latest_data_date_label' => null,
+            ];
+        }
+
+        $date = trim((string) Storage::disk('local')->get($path));
+
+        return $this->formatLatestDataDate($date);
+    }
+
+    private function latestRantaiPasokDataDateMeta(string $table): array
+    {
+        foreach (['rantai-pasok/latest-data-date.txt', 'rantai_pasok/latest-data-date.txt'] as $path) {
+            if (Storage::disk('local')->exists($path)) {
+                $date = trim((string) Storage::disk('local')->get($path));
+
+                return $this->formatLatestDataDate($date);
+            }
+        }
+
+        return $this->latestDataDateFromTableMeta($table);
+    }
+
+    private function latestDataDateFromTableMeta(string $table): array
+    {
+        if (!Schema::hasTable($table)) {
+            return [
+                'latest_data_date' => null,
+                'latest_data_date_label' => null,
+            ];
+        }
+
+        $dateColumn = null;
+
+        if (Schema::hasColumn($table, 'updated_at')) {
+            $dateColumn = 'updated_at';
+        } elseif (Schema::hasColumn($table, 'created_at')) {
+            $dateColumn = 'created_at';
+        }
+
+        if (!$dateColumn) {
+            return [
+                'latest_data_date' => null,
+                'latest_data_date_label' => null,
+            ];
+        }
+
+        $query = DB::table($table);
+
+        if ($this->hasColumn($table, 'is_deleted')) {
+            $query->where(function ($query) {
+                $query->whereNull('is_deleted')
+                    ->orWhere('is_deleted', 0);
+            });
+        }
+
+        $date = $query->max($dateColumn);
+
+        return $this->formatLatestDataDate($date);
+    }
+
+    private function formatLatestDataDate($date): array
+    {
+        if (blank($date)) {
+            return [
+                'latest_data_date' => null,
+                'latest_data_date_label' => null,
+            ];
+        }
+
+        try {
+            $carbonDate = Carbon::parse($date);
+
+            return [
+                'latest_data_date' => $carbonDate->toDateString(),
+                'latest_data_date_label' => $carbonDate
+                    ->locale('id')
+                    ->translatedFormat('d F Y'),
+            ];
+        } catch (\Throwable) {
+            return [
+                'latest_data_date' => (string) $date,
+                'latest_data_date_label' => (string) $date,
+            ];
+        }
+    }
+
+    private function emptyPayload(array $extra = []): array
+    {
+        return array_merge([
             'items' => [],
             'summary' => [],
             'kabupaten_options' => $this->kabupatenOptions(),
-        ];
+        ], $extra);
     }
 
     private function kabupatenOptions(): Collection
@@ -373,6 +460,26 @@ class GisController extends Controller
         return Schema::hasColumn($table, $column);
     }
 
+    private function subklasifikasiLabel($kodeSubklasifikasi, $subklasifikasi): string
+    {
+        $kodeSubklasifikasi = trim((string) $kodeSubklasifikasi);
+        $subklasifikasi = trim((string) $subklasifikasi);
+
+        if ($kodeSubklasifikasi !== '' && $subklasifikasi !== '') {
+            return $kodeSubklasifikasi . ' - ' . $subklasifikasi;
+        }
+
+        if ($subklasifikasi !== '') {
+            return $subklasifikasi;
+        }
+
+        if ($kodeSubklasifikasi !== '') {
+            return $kodeSubklasifikasi;
+        }
+
+        return '-';
+    }
+
     private function isExpired($date): bool
     {
         if (blank($date)) {
@@ -394,6 +501,21 @@ class GisController extends Controller
 
         try {
             return Carbon::parse($date)->format('d-m-Y');
+        } catch (\Throwable) {
+            return (string) $date;
+        }
+    }
+
+    private function dateLabelIndonesia($date): string
+    {
+        if (blank($date)) {
+            return '-';
+        }
+
+        try {
+            return Carbon::parse($date)
+                ->locale('id')
+                ->translatedFormat('d F Y');
         } catch (\Throwable) {
             return (string) $date;
         }
