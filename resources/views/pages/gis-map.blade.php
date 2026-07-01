@@ -51,7 +51,7 @@
             <span class="mx-auto mt-6 block h-1.5 w-48 rounded-full bg-[#f1d00a]"></span>
 
             <p class="mx-auto mt-6 max-w-3xl text-base leading-8 text-slate-600">
-                Visualisasi sebaran data BUJK, Tenaga Kerja Konstruksi, dan Rantai Pasok berdasarkan wilayah kabupaten/kota di Kalimantan Timur.
+                Visualisasi sebaran data SBU, Tenaga Kerja Konstruksi, dan Rantai Pasok berdasarkan wilayah kabupaten/kota di Kalimantan Timur.
             </p>
         </div>
 
@@ -62,8 +62,14 @@
                 <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                     <div>
                         <h3 id="gisMapTitle" class="text-xl font-extrabold text-[#21325e]">
-                            Peta Sebaran BUJK
+                            Peta Sebaran SBU
                         </h3>
+
+                        <div id="gisLatestDataDateWrapper" class="mt-3">
+                            <span class="inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700">
+                                Data terakhir diperbarui <span id="gisLatestDataDate" class="ml-1">-</span>
+                            </span>
+                        </div>
 
                         <p id="gisMapSubtitle" class="mt-1 text-sm text-slate-500">
                             Pilih kategori data, gunakan pencarian/filter, lalu klik card untuk menuju wilayah terkait.
@@ -79,8 +85,8 @@
                             <select
                                 id="gisCategoryFilter"
                                 class="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none transition focus:border-[#2596BE] focus:ring-2 focus:ring-[#2596BE]/20">
-                                <option value="bujk">BUJK</option>
-                                <option value="tkk">TKK</option>
+                                <option value="bujk">SBU</option>
+                                <option value="tkk">SKK</option>
                                 <option value="rantai-pasok">Rantai Pasok</option>
                             </select>
                         </div>
@@ -88,12 +94,12 @@
                         {{-- SEARCH --}}
                         <div>
                             <label id="gisSearchLabel" class="mb-1 block text-[11px] font-bold uppercase tracking-wide text-slate-500">
-                                Cari Nama BU
+                                Cari Nama BUJK
                             </label>
                             <input
                                 id="gisSearchInput"
                                 type="text"
-                                placeholder="Contoh: PT, CV, nama perusahaan..."
+                                placeholder="Contoh: PT, CV, nama badan usaha..."
                                 class="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none transition focus:border-[#2596BE] focus:ring-2 focus:ring-[#2596BE]/20">
                         </div>
 
@@ -153,7 +159,7 @@
                     <div class="flex items-center justify-between gap-3">
                         <div>
                             <h4 id="gisInfoTitle" class="text-base font-extrabold text-[#21325e]">
-                                Informasi BUJK
+                                Informasi SBU
                             </h4>
                             <p id="gisInfoSubtitle" class="mt-1 text-xs text-slate-500">
                                 Data akan muncul sesuai hasil pencarian atau filter.
@@ -182,17 +188,17 @@
 <script>
     const GIS_CATEGORY_CONFIG = {
         'bujk': {
-            title: 'Peta Sebaran BUJK',
-            infoTitle: 'Informasi BUJK',
-            searchLabel: 'Cari Nama BU',
-            searchPlaceholder: 'Contoh: PT, CV, nama perusahaan...',
+            title: 'Peta Sebaran SBU',
+            infoTitle: 'Informasi SBU',
+            searchLabel: 'Cari Nama BUJK',
+            searchPlaceholder: 'Contoh: PT, CV, nama badan usaha...',
             endpoint: '/gis-data/bujk',
             specialFilter: null,
         },
         'tkk': {
-            title: 'Peta Sebaran TKK',
-            infoTitle: 'Informasi TKK',
-            searchLabel: 'Cari Nama TKK',
+            title: 'Peta Sebaran SKK',
+            infoTitle: 'Informasi SKK',
+            searchLabel: 'Cari Nama SKK',
             searchPlaceholder: 'Contoh: nama tenaga kerja...',
             endpoint: '/gis-data/tkk',
             specialFilter: {
@@ -336,6 +342,16 @@
         });
     }
 
+    function updateGisLatestDataDate(label) {
+        const wrapper = document.getElementById('gisLatestDataDateWrapper');
+        const text = document.getElementById('gisLatestDataDate');
+
+        if (!wrapper || !text) return;
+
+        wrapper.classList.remove('hidden');
+        text.textContent = label || '-';
+    }
+
     function loadGisCategory(category) {
         currentCategory = category;
         activeRegionName = null;
@@ -357,6 +373,7 @@
             .then(payload => {
                 currentData = payload.items || [];
                 currentSummary = payload.summary || [];
+                updateGisLatestDataDate(payload.latest_data_date_label || null);
 
                 if (category === 'rantai-pasok') {
                     updateRantaiPasokBidangUsahaOptions(payload.bidang_usaha_options || []);
@@ -510,7 +527,7 @@
                 return renderRantaiPasokCard(item);
             }
 
-            return renderBujkCard(item);
+            return renderSbuCard(item);
         }).join('');
 
         if (items.length > 100) {
@@ -529,13 +546,13 @@
         });
     }
 
-    function renderBujkCard(item) {
+    function renderSbuCard(item) {
         return `
             <button type="button" class="gis-data-card w-full rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#2596BE] hover:shadow-md" data-region="${escapeHtml(item.kabupaten || '')}">
                 <div class="flex items-start justify-between gap-3">
                     <div>
                         <h5 class="text-sm font-extrabold leading-snug text-[#21325e]">${escapeHtml(item.name || '-')}</h5>
-                        <p class="mt-1 text-xs font-semibold text-[#2596BE]">${escapeHtml(item.jenis_usaha || '-')}</p>
+                        <p class="mt-1 text-xs font-semibold text-[#2596BE]">${escapeHtml(item.subklasifikasi_label || item.subklasifikasi || '-')}</p>
                     </div>
                     <span class="shrink-0 rounded-full bg-[#91C42B]/15 px-2.5 py-1 text-[11px] font-bold text-[#4F7D13]">
                         ${escapeHtml(item.kabupaten || '-')}
@@ -543,9 +560,11 @@
                 </div>
 
                 <div class="mt-3 space-y-2 text-xs text-slate-600">
+                    <p><span class="font-bold text-slate-700">Jenis BUJK:</span> ${escapeHtml(item.jenis_usaha || '-')}</p>
                     <p><span class="font-bold text-slate-700">Alamat:</span> ${escapeHtml(item.alamat || '-')}</p>
                     <p><span class="font-bold text-slate-700">Telepon:</span> ${escapeHtml(item.telepon || '-')}</p>
                     <p><span class="font-bold text-slate-700">Email:</span> ${escapeHtml(item.email || '-')}</p>
+                    <p><span class="font-bold text-slate-700">Masa Berlaku:</span> ${escapeHtml(item.tanggal_masa_berlaku_label || '-')}</p>
                 </div>
             </button>
         `;
