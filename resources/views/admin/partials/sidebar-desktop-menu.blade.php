@@ -1,22 +1,16 @@
 @php
-    {{-- Base class untuk styling menu utama --}}
     $menuBase = 'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition';
 
-    {{-- Style menu kondisi tidak aktif --}}
     $menuIdle = 'text-blue-100/85 hover:bg-white/7 hover:text-white';
 
-    {{-- Style menu ketika aktif (route sedang digunakan) --}}
     $menuActive = 'bg-[#28428B] text-[#F7E578] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]';
 
-    {{-- Style judul section sidebar --}}
     $sectionTitleClass = 'mb-2 flex items-center text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-100/45';
 
-    {{-- Style sub menu item --}}
     $subItemBase = 'relative block rounded-lg px-3 py-2 text-[13px] leading-relaxed';
     $subItemIdle = 'text-blue-100/70 hover:bg-white/6 hover:text-white';
     $subItemActive = 'bg-[#28428B] text-[#F7E578] font-semibold';
 
-    {{-- Deteksi apakah menu Masyarakat Jasa Konstruksi sedang aktif --}}
     $mjkActive = request()->routeIs(
         'admin.masyarakat-jasa-konstruksi',
         'admin.pengguna-jasa',
