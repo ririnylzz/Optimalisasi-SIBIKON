@@ -7,13 +7,19 @@ use App\Models\RantaiPasok;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class RantaiPasokController extends Controller
 {
+    protected string $latestRantaiPasokDataDatePath = 'rantai-pasok/latest-data-date.txt';
+    protected string $latestRantaiPasokUpdatedByPath = 'rantai-pasok/latest-updated-by.txt';
+
     public function rantaiPasok(Request $request): View
     {
         $search = trim((string) $request->query('search', ''));
@@ -107,7 +113,11 @@ class RantaiPasokController extends Controller
                 ->find($request->query('edit'));
         }
 
+        $latestDataDate = $this->getLatestRantaiPasokDataDate();
+        $latestUpdatedBy = $this->getLatestRantaiPasokUpdatedBy();
+
         if ($request->ajax()) {
+
             return response()->json([
                 'html' => view('admin.rantai-pasok.partials.table', compact(
                     'rantaiPasoks',
@@ -128,12 +138,20 @@ class RantaiPasokController extends Controller
             'bidangOptions',
             'regencyFilterOptions',
             'editingRantaiPasok',
+            'latestDataDate',
+            'latestUpdatedBy',
         ));
     }
 
     public function store(Request $request): RedirectResponse
     {
-        RantaiPasok::query()->create($this->validatedData($request));
+        $validated = $this->validatedData($request);
+        $tanggalUpdate = Carbon::parse($validated['tanggal_update'])->toDateString();
+        $payload = $this->prepareManualPayloadForSave($validated);
+
+        RantaiPasok::query()->create($payload + ['is_deleted' => false]);
+        $this->updateLatestRantaiPasokDataDate($tanggalUpdate);
+        $this->updateLatestRantaiPasokUpdatedBy();
 
         return redirect()
             ->route('admin.rantai-pasok')
@@ -142,7 +160,13 @@ class RantaiPasokController extends Controller
 
     public function update(Request $request, RantaiPasok $rantaiPasok): RedirectResponse
     {
-        $rantaiPasok->update($this->validatedData($request));
+        $validated = $this->validatedData($request);
+        $tanggalUpdate = Carbon::parse($validated['tanggal_update'])->toDateString();
+        $payload = $this->prepareManualPayloadForSave($validated);
+
+        $rantaiPasok->update($payload);
+        $this->updateLatestRantaiPasokDataDate($tanggalUpdate);
+        $this->updateLatestRantaiPasokUpdatedBy();
 
         return redirect()
             ->route('admin.rantai-pasok')
@@ -195,12 +219,17 @@ class RantaiPasokController extends Controller
 
         $validated = $request->validate([
             'file_import' => ['required', 'file', 'mimes:csv,txt,xlsx', 'max:10240'],
+            'tanggal_data_terbaru' => ['required', 'date'],
         ], [
             'file_import.required' => 'File import wajib dipilih.',
             'file_import.mimes' => 'File harus berformat CSV atau XLSX.',
+            'tanggal_data_terbaru.required' => 'Tanggal data terbaru wajib diisi.',
+            'tanggal_data_terbaru.date' => 'Tanggal data terbaru tidak valid.',
         ]);
 
         $file = $validated['file_import'];
+        $latestDataDate = Carbon::parse($validated['tanggal_data_terbaru'])->toDateString();
+        $hasTanggalUpdateColumn = Schema::hasColumn('rantai_pasok', 'tanggal_update');
         $extension = strtolower($file->getClientOriginalExtension());
 
         $rows = $extension === 'xlsx'
@@ -245,6 +274,10 @@ class RantaiPasokController extends Controller
             }
 
             $record = $this->normalizeImportRow($raw);
+
+            if ($hasTanggalUpdateColumn) {
+                $record['tanggal_update'] = $latestDataDate;
+            }
 
             if (blank($record['nama'])) {
                 $skipped++;
@@ -294,6 +327,9 @@ class RantaiPasokController extends Controller
 
             DB::commit();
 
+            $this->updateLatestRantaiPasokDataDate($latestDataDate);
+            $this->updateLatestRantaiPasokUpdatedBy();
+
             return redirect()
                 ->route('admin.rantai-pasok')
                 ->with('success', 'Import data Rantai Pasok selesai diproses.')
@@ -325,7 +361,22 @@ class RantaiPasokController extends Controller
             'kabupaten' => ['nullable', 'string', 'max:255'],
             'provinsi' => ['nullable', 'string', 'max:255'],
             'kontak' => ['nullable', 'string', 'max:255'],
+            'tanggal_update' => ['required', 'date'],
+        ], [
+            'tanggal_update.required' => 'Tanggal update data wajib diisi.',
+            'tanggal_update.date' => 'Tanggal update data tidak valid.',
         ]);
+    }
+
+    private function prepareManualPayloadForSave(array $payload): array
+    {
+        if (!Schema::hasColumn('rantai_pasok', 'tanggal_update')) {
+            unset($payload['tanggal_update']);
+        } else {
+            $payload['tanggal_update'] = Carbon::parse($payload['tanggal_update'])->toDateString();
+        }
+
+        return $payload;
     }
 
     private function readCsvRows(string $path): array
@@ -388,4 +439,51 @@ class RantaiPasokController extends Controller
 
         return null;
     }
+
+    private function getLatestRantaiPasokDataDate(): ?string
+    {
+        if (!Storage::disk('local')->exists($this->latestRantaiPasokDataDatePath)) {
+            return null;
+        }
+
+        $date = trim((string) Storage::disk('local')->get($this->latestRantaiPasokDataDatePath));
+
+        return $date !== '' ? $date : null;
+    }
+
+    private function updateLatestRantaiPasokDataDate(?string $date = null): void
+    {
+        $latestDate = $date ?? now()->toDateString();
+
+        Storage::disk('local')->put(
+            $this->latestRantaiPasokDataDatePath,
+            $latestDate
+        );
+    }
+
+    private function getLatestRantaiPasokUpdatedBy(): ?string
+    {
+        if (!Storage::disk('local')->exists($this->latestRantaiPasokUpdatedByPath)) {
+            return auth()->user()?->name;
+        }
+
+        $name = trim((string) Storage::disk('local')->get($this->latestRantaiPasokUpdatedByPath));
+
+        return $name !== '' ? $name : auth()->user()?->name;
+    }
+
+    private function updateLatestRantaiPasokUpdatedBy(): void
+    {
+        $name = auth()->user()?->name;
+
+        if (blank($name)) {
+            return;
+        }
+
+        Storage::disk('local')->put(
+            $this->latestRantaiPasokUpdatedByPath,
+            $name
+        );
+    }
+
 }

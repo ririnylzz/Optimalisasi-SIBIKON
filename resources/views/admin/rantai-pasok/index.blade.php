@@ -6,10 +6,37 @@
 @section('content')
 @php
 $isEditing = $editingRantaiPasok !== null;
+$latestDataDate = $latestDataDate ?? null;
+$latestUpdatedBy = $latestUpdatedBy ?? auth()->user()?->name ?? null;
+$latestDataDateLabel = null;
+
+if (!blank($latestDataDate)) {
+try {
+$latestDataDateLabel = \Illuminate\Support\Carbon::parse($latestDataDate)
+->locale('id')
+->translatedFormat('d F Y');
+} catch (\Throwable $exception) {
+$latestDataDateLabel = $latestDataDate;
+}
+}
+
+$manualUpdateDate = old('tanggal_update');
+
+if ($manualUpdateDate === null && $editingRantaiPasok?->tanggal_update) {
+try {
+$manualUpdateDate = \Illuminate\Support\Carbon::parse($editingRantaiPasok->tanggal_update)->format('Y-m-d');
+} catch (\Throwable $exception) {
+$manualUpdateDate = null;
+}
+}
+
+if ($manualUpdateDate === null) {
+$manualUpdateDate = $latestDataDate ?: now()->toDateString();
+}
 
 $requestedPanel = request('panel');
 $initialPanel = 'closed';
-$hasUploadError = $errors->has('file_import');
+$hasUploadError = $errors->has('file_import') || $errors->has('tanggal_data_terbaru');
 
 if (in_array($requestedPanel, ['upload', 'manual'], true)) {
 $initialPanel = $requestedPanel;
@@ -40,6 +67,8 @@ $toastMessages[] = ['type' => 'error', 'message' => session('error')];
 
 if ($errors->has('file_import')) {
 $toastMessages[] = ['type' => 'error', 'message' => $errors->first('file_import')];
+} elseif ($errors->has('tanggal_data_terbaru')) {
+$toastMessages[] = ['type' => 'error', 'message' => $errors->first('tanggal_data_terbaru')];
 } elseif ($errors->any()) {
 $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
 }
@@ -100,6 +129,18 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
         <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
                 <h3 class="text-base font-bold text-slate-900">Tabel Data Rantai Pasok</h3>
+
+                @if($latestDataDateLabel)
+                <div class="mt-3 flex flex-wrap items-center gap-2">
+                    <span class="inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700">
+                        Data terakhir diperbarui {{ $latestDataDateLabel }}
+
+                        @if(!blank($latestUpdatedBy))
+                            oleh {{ $latestUpdatedBy }}
+                        @endif
+                    </span>
+                </div>
+                @endif
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
@@ -232,6 +273,28 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
                             required
                             class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm text-slate-700 file:mr-3 file:rounded-md file:border-0 file:bg-indigo-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-indigo-500" />
                         @error('file_import')
+                        <p class="mt-2 text-xs text-rose-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="tanggal_data_terbaru" class="mb-2 block text-sm font-medium text-slate-700">
+                            Tanggal data terbaru <span class="text-rose-500">*</span>
+                        </label>
+                        <input
+                            id="tanggal_data_terbaru"
+                            type="date"
+                            name="tanggal_data_terbaru"
+                            value="{{ old('tanggal_data_terbaru', $latestDataDate) }}"
+                            required
+                            oninvalid="this.setCustomValidity('Tanggal data wajib diisi.')"
+                            oninput="this.setCustomValidity('')"
+                            onchange="this.setCustomValidity('')"
+                            class="w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+                        <p class="mt-2 text-xs leading-5 text-slate-500">
+                            Tanggal ini akan dicatat sebagai tanggal data terbaru dan ditampilkan di bawah judul Tabel Data Rantai Pasok.
+                        </p>
+                        @error('tanggal_data_terbaru')
                         <p class="mt-2 text-xs text-rose-500">{{ $message }}</p>
                         @enderror
                     </div>
@@ -456,6 +519,19 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
                                 class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
                             <p class="mt-1 text-xs text-rose-500 {{ $errors->has('bidang_usaha') ? '' : 'hidden' }}" data-error-for="bidang_usaha">{{ $errors->first('bidang_usaha') }}</p>
                         </div>
+                    </div>
+
+                    <div>
+                        <label for="tanggal_update" class="mb-2 block text-sm font-medium text-slate-700">Tanggal Update Data <span class="text-rose-500">*</span></label>
+                        <input
+                            id="tanggal_update"
+                            type="date"
+                            name="tanggal_update"
+                            value="{{ $manualUpdateDate }}"
+                            required
+                            data-required="Tanggal update data wajib diisi."
+                            class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10" />
+                        <p class="mt-1 text-xs text-rose-500 {{ $errors->has('tanggal_update') ? '' : 'hidden' }}" data-error-for="tanggal_update">{{ $errors->first('tanggal_update') }}</p>
                     </div>
 
                     <div>

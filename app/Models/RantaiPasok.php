@@ -23,6 +23,7 @@ class RantaiPasok extends Model
 
     protected $casts = [
         'is_deleted' => 'boolean',
+        'tanggal_update' => 'date',
     ];
 
     public function scopeActive(Builder $query): Builder
