@@ -82,19 +82,19 @@
         <div class="relative flex flex-1 items-center overflow-hidden bg-[#143B5D]">
             <div class="running-track flex items-center">
                 @foreach ($runningText as $item)
-                    <div class="running-item flex items-center text-sm">
-                        <span class="font-semibold text-[#f1d00a]">
-                            {{ $item['tanggal'] }}
-                        </span>
+                <div class="running-item flex items-center text-sm">
+                    <span class="font-semibold text-[#f1d00a]">
+                        {{ $item['tanggal'] }}
+                    </span>
 
-                        <span class="ml-2 text-white/90">
-                            {{ $item['judul'] }}
-                        </span>
+                    <span class="ml-2 text-white/90">
+                        {{ $item['judul'] }}
+                    </span>
 
-                        <span class="ml-2 text-white/90">
-                            — {{ $item['kabupaten'] }}
-                        </span>
-                    </div>
+                    <span class="ml-2 text-white/90">
+                        — {{ $item['kabupaten'] }}
+                    </span>
+                </div>
                 @endforeach
             </div>
         </div>
@@ -103,7 +103,7 @@
 </section>
 
 <script>
-    (function () {
+    (function() {
         const clock = document.getElementById('wita-clock');
 
         if (!clock) return;
@@ -202,7 +202,6 @@
         $tkkTable = 'tkk_data';
         }
         $tenagaAhli = 0;
-        $tkkAktif = 0;
 
         if ($tkkTable) {
         $tkkItems = DB::table($tkkTable)
@@ -230,22 +229,6 @@
         // TKK Ahli = jenjang 7-9
         $tenagaAhli = $tkkItems
         ->filter(fn ($item) => in_array((string) $item['jenjang'], ['7', '8', '9'], true))
-        ->count();
-
-        // TKK Aktif = sertifikat masih berlaku
-        $tkkAktif = $tkkItems
-        ->filter(function ($item) {
-
-        if (blank($item['tanggal_kadaluwarsa'])) {
-        return false;
-        }
-
-        try {
-        return \Carbon\Carbon::parse($item['tanggal_kadaluwarsa'])->isFuture();
-        } catch (\Throwable) {
-        return false;
-        }
-        })
         ->count();
         }
 
@@ -284,15 +267,9 @@
         $statistik = [
         [
         'angka' => number_format($tenagaAhli, 0, ',', '.'),
-        'label' => 'TKK Ahli',
+        'label' => 'SKK',
         'icon' => 'tenaga-ahli',
         'url' => route('dashboard.tenaga-kerja'),
-        ],
-        [
-        'angka' => number_format($tkkAktif, 0, ',', '.'),
-        'label' => 'TKK Aktif',
-        'icon' => 'tenaga-terampil',
-        'url' => route('dashboard.tkk-aktif'),
         ],
         [
         'angka' => number_format($totalBujk, 0, ',', '.'),
@@ -312,27 +289,33 @@
         <div class="mx-auto grid max-w-7xl grid-cols-1 items-center gap-y-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-x-10">
 
             {{-- KIRI: STATISTIC CARDS --}}
-            <div class="grid w-full grid-cols-1 gap-8 sm:grid-cols-2">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-                @foreach ($statistik as $item)
+                @php
+                $skk = $statistik[0];
+                $bujk = $statistik[1];
+                $sbu = $statistik[2];
+                @endphp
+
+                {{-- ================= CARD SKK ================= --}}
                 <div
                     role="button"
                     tabindex="0"
-                    data-statistik-url="{{ $item['url'] }}"
-                    class="statistik-card group relative cursor-pointer overflow-hidden rounded-[24px] border border-[#c5cae9]/60 bg-white px-7 py-7 shadow-[0_14px_35px_rgba(33,50,94,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(33,50,94,0.14)]">
+                    data-statistik-url="{{ $skk['url'] }}"
+                    class="statistik-card group relative cursor-pointer overflow-hidden rounded-[26px] border border-[#c5cae9]/60 bg-white shadow-[0_14px_35px_rgba(33,50,94,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(33,50,94,0.14)]">
 
-                    {{-- Top Accent --}}
-                    <span class="absolute left-0 top-0 h-1.5 w-full bg-[#21325e]"></span>
+                    <span class="absolute left-0 top-0 h-2 w-full bg-[#21325e]"></span>
 
-                    <div class="flex items-center gap-5">
+                    <div class="flex h-full min-h-[320px] flex-col items-center justify-center px-10 py-10">
 
-                        {{-- Icon --}}
-                        <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-[#eef2ff] text-[#21325e] transition duration-300 group-hover:scale-105 group-hover:bg-[#f7e578] group-hover:text-black group-hover:shadow-lg">
+                        <div class="mb-8 flex h-28 w-28 items-center justify-center rounded-3xl bg-[#eef2ff] text-[#21325e] transition duration-300 group-hover:bg-[#f7e578] group-hover:scale-110 group-hover:shadow-lg">
 
-                            {{-- Tenaga Ahli --}}
-                            @if ($item['icon'] === 'tenaga-ahli')
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-14 w-14"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                stroke-width="1.9">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M6 10a6 6 0 0112 0" />
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -344,65 +327,97 @@
                                     d="M5.5 21a6.5 6.5 0 0113 0" />
                             </svg>
 
-                            {{-- Tenaga Terampil --}}
-                            @elseif ($item['icon'] === 'tenaga-terampil')
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M14 5l5 5" />
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M4 20l7.5-7.5" />
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M13 4l7 7-3 3-7-7 3-3z" />
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M5 6l4 4" />
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M4 7l3-3" />
-                            </svg>
-
-                            {{-- NIB --}}
-                            @elseif ($item['icon'] === 'nib')
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M7 3h7l5 5v13H7V3z" />
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M14 3v5h5" />
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M10 13h6M10 17h6M10 9h1" />
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M4 7v14h12" />
-                            </svg>
-
-                            {{-- SBU --}}
-                            @else
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M7 4h10a2 2 0 012 2v9a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z" />
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M9 8h6M9 11h6" />
-                                <circle cx="12" cy="15" r="2" />
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M10.5 17l-1 3 2.5-1.3L14.5 20l-1-3" />
-                            </svg>
-                            @endif
                         </div>
 
-                        {{-- Text --}}
-                        <div>
-                            <h3 class="text-4xl font-extrabold leading-none text-[#21325e]">
-                                {{ $item['angka'] }}
-                            </h3>
+                        <h3 class="text-6xl font-extrabold text-[#21325e]">
+                            {{ $skk['angka'] }}
+                        </h3>
 
-                            <p class="mt-2 text-sm font-semibold leading-snug text-[#21325e]/70">
-                                {{ $item['label'] }}
-                            </p>
+                        <p class="mt-4 text-xl font-bold tracking-wide text-[#21325e]/70">
+                            {{ $skk['label'] }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+                {{-- ================= KOLOM KANAN ================= --}}
+                <div class="flex flex-col gap-8">
+
+                    @foreach([$bujk,$sbu] as $item)
+
+                    <div
+                        role="button"
+                        tabindex="0"
+                        data-statistik-url="{{ $item['url'] }}"
+                        class="statistik-card group relative flex-1 cursor-pointer overflow-hidden rounded-[26px] border border-[#c5cae9]/60 bg-white shadow-[0_14px_35px_rgba(33,50,94,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(33,50,94,0.14)]">
+
+                        <span class="absolute left-0 top-0 h-2 w-full bg-[#21325e]"></span>
+
+                        <div class="flex h-full items-center gap-6 px-8 py-8">
+
+                            <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-[#eef2ff] text-[#21325e] transition duration-300 group-hover:bg-[#f7e578] group-hover:scale-105">
+
+                                @if($item['icon']=='nib')
+
+                                {{-- Icon BUJK --}}
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-10 w-10"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    stroke-width="1.9">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M7 3h7l5 5v13H7V3z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M14 3v5h5" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M10 13h6M10 17h6M10 9h1" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M4 7v14h12" />
+                                </svg>
+
+                                @else
+
+                                {{-- Icon SBU --}}
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-10 w-10"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    stroke-width="1.9">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M7 4h10a2 2 0 012 2v9a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M9 8h6M9 11h6" />
+                                    <circle cx="12" cy="15" r="2" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M10.5 17l-1 3 2.5-1.3L14.5 20l-1-3" />
+                                </svg>
+
+                                @endif
+
+                            </div>
+
+                            <div>
+
+                                <h3 class="text-5xl font-extrabold text-[#21325e]">
+                                    {{ $item['angka'] }}
+                                </h3>
+
+                                <p class="mt-2 text-base font-semibold text-[#21325e]/70">
+                                    {{ $item['label'] }}
+                                </p>
+
+                            </div>
+
                         </div>
 
                     </div>
+
+                    @endforeach
+
                 </div>
-                @endforeach
 
             </div>
 

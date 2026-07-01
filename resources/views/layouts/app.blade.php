@@ -10,8 +10,8 @@
     <link rel="shortcut icon" href="{{ asset('images/logo-sibikon.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/logo-sibikon.png') }}">
     <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
@@ -47,12 +47,19 @@
             <div class="flex items-center justify-between py-5">
 
                 {{-- Logo --}}
-                <a href="{{ route('beranda') }}" class="flex items-center gap-4">
+                <a href="{{ route('beranda') }}" class="flex items-center gap-4 group">
                     <div>
-                        <h1 class="text-3xl font-extrabold leading-none tracking-tight text-white">
-                            SIBIKON
-                        </h1>
-                        <p class="text-sm text-white/70">
+                        <div class="inline-block">
+                            <h1
+                                class="text-3xl md:text-4xl font-black leading-none tracking-wide text-white"
+                                style="text-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);">
+                                SIBIKON
+                            </h1>
+
+                            <div class="mt-2 mb-1.5 h-1 w-full rounded-full bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 transition-all duration-300 group-hover:scale-x-105 origin-left"></div>
+                        </div>
+
+                        <p class="text-xs md:text-sm leading-snug text-white/75 tracking-wide">
                             Sistem Informasi Bina Konstruksi Provinsi Kalimantan Timur
                         </p>
                     </div>
@@ -420,8 +427,7 @@
                     href="https://linktr.ee/dev_optimalisasi_sibikon"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="text-sm text-white/65 hover:text-white"
-                >
+                    class="text-sm text-white/65 hover:text-white">
                     Copyright © 2026, Developed by Project PKL Sistem Informasi 23 Universitas Mulawarman Tahun 2026. All rights reserved.
                 </a>
             </div>
