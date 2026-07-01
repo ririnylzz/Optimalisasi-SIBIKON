@@ -33,7 +33,8 @@
                     Dinas Pekerjaan<br>
                     Umum Penataan<br>
                     Ruang Dan<br>
-                    <span class="text-yellow-400">Perumahan Rakyat</span>
+                    Perumahan Rakyat<br>
+                    <span class="text-yellow-400">Kalimantan Timur</span>
                 </h1>
 
                 <p class="mt-8 max-w-2xl text-lg leading-8 text-white/85 md:text-xl">
