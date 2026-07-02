@@ -44,22 +44,30 @@
 
         {{-- Main Navbar --}}
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between py-5">
+            <div class="flex items-center justify-between py-4">
 
                 {{-- Logo --}}
                 <a href="{{ route('beranda') }}" class="flex items-center gap-4 group">
                     <div>
-                        <div class="inline-block">
-                            <h1
-                                class="text-3xl md:text-4xl font-black leading-none tracking-wide text-white"
-                                style="text-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);">
+                        <div class="inline-block relative">
+                            <style>
+                                @keyframes gradient-x {
+                                    0%, 100% { background-position: 0% 50%; }
+                                    50% { background-position: 100% 50%; }
+                                }
+                                .animate-gradient-x {
+                                    background-size: 200% auto;
+                                    animation: gradient-x 4s ease-in-out infinite;
+                                }
+                            </style>
+                            <h1 class="animate-gradient-x text-3xl md:text-4xl font-black leading-none tracking-wide bg-gradient-to-r from-white via-yellow-300 to-amber-500 bg-clip-text text-transparent drop-shadow-md pb-1.5">
                                 SIBIKON
                             </h1>
-
-                            <div class="mt-2 mb-1.5 h-1 w-full rounded-full bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 transition-all duration-300 group-hover:scale-x-105 origin-left"></div>
+                            <!-- Interactive Hover Line -->
+                            <div class="absolute bottom-0 left-1/2 h-1 w-0 -translate-x-1/2 rounded-full bg-gradient-to-r from-yellow-300 to-amber-500 transition-all duration-300 ease-out group-hover:w-full shadow-lg"></div>
                         </div>
 
-                        <p class="text-xs md:text-sm leading-snug text-white/75 tracking-wide">
+                        <p class="text-xs md:text-sm leading-snug text-white/75 tracking-wide mt-0.5">
                             Sistem Informasi Bina Konstruksi Provinsi Kalimantan Timur
                         </p>
                     </div>
