@@ -387,15 +387,9 @@
                         @enderror
                     </div>
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-600">
-                        <p class="font-semibold text-slate-800">Urutan kolom jika memakai template sederhana:</p>
-                        <p>1. Nama</p>
-                        <p>2. Kabupaten</p>
-                        <p>3. Klasifikasi</p>
-                        <p>4. Jabatan Kerja</p>
-                        <p>5. Jenjang</p>
-                        <p>6. Asosiasi</p>
-                        <p>7. Tanggal Aktif</p>
-                        <p>8. Tanggal Kadaluwarsa</p>
+                        <p class="font-semibold text-slate-800">Aturan import:</p>
+                        <p>1. File yang didukung: CSV dan XLSX.</p>
+                        <p>2. Tanggal data terbaru wajib diisi untuk menandai periode pembaruan data.</p>
                     </div>
 
                     <div class="flex items-center gap-2">

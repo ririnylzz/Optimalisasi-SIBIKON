@@ -355,8 +355,7 @@ $toastMessages[] = [
                             <p class="font-semibold text-slate-800">Aturan import:</p>
                             <p>1. File yang didukung: <span class="font-medium text-slate-800">CSV</span> dan <span class="font-medium text-slate-800">XLSX</span>.</p>
                             <p>2. Tanggal data terbaru wajib diisi untuk menandai periode pembaruan data.</p>
-                            <p>3. Header bisa dari template sederhana atau dari file sumber mentah yang punya alias kolom BUJK.</p>
-                            <p>4. Data dengan NIB sama akan digabung dan di-update, bukan ditambahkan duplikat baru.</p>
+                            <p>3. Data dengan NIB sama akan digabung dan di-update, bukan ditambahkan duplikat baru.</p>
                         </div>
 
                         <div class="flex items-center gap-2">

@@ -302,8 +302,9 @@ $toastMessages[] = ['type' => 'error', 'message' => $errors->first()];
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-600">
                         <p class="font-semibold text-slate-800">Aturan import:</p>
                         <p>1. File yang didukung: <span class="font-medium text-slate-800">CSV</span> dan <span class="font-medium text-slate-800">XLSX</span>.</p>
+                        <p>2. Tanggal data terbaru wajib diisi untuk menandai periode pembaruan data.</p>
                         <p>2. Header yang didukung: nama, bidang_usaha, alamat, kabupaten, provinsi, kontak.</p>
-                        <p>3. Data dengan nama dan kabupaten sama akan di-update, bukan ditambahkan duplikat baru.</p>
+                        <p>3. Data dengan nama dan kabupaten sama akan di-update, bukan ditambahkan duplikat baru.</p></p>
                     </div>
 
                     <div class="flex items-center gap-2">
